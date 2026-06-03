@@ -539,13 +539,12 @@ function renderUsuarios(usuarios) {
             <td><span class="${badgeClass}"><span class="bdot"></span>${activo}</span></td>
             <td>
                 <div class="row-actions">
-                    <button class="btn-action-sm" onclick="seleccionarUsuario(${u.id_usuario}, '${(u.nombre + ' ' + u.apellido_paterno).replace(/'/g, "\\'")}')">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/></svg>
-                        Ver Tickets
-                    </button>
-                    <button class="btn-action-sm ${btnClass}" onclick="toggleUsuario(${u.id_usuario}, ${u.activo ? 1 : 0})">${btnText}</button>
+                <button class="btn-action-sm" onclick="seleccionarUsuario(${u.id_usuario}, '${(u.nombre + ' ' + u.apellido_paterno).replace(/'/g, "\\'")}')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/></svg>
+                Ver Tickets
+                </button>
                 </div>
-            </td>
+                </td>
         </tr>`;
     }).join('');
 
@@ -876,9 +875,8 @@ function cancelarTicket(idTicket, idUsuarioOverride = null) {
 
                 if (data.ok) {
                     showNotification('success', '¡Éxito!', 'El ticket ha sido cancelado correctamente.');
-                    if (uid) renderTickets(TICKETS_POR_USUARIO[uid] || [], filtroTicketActual);
-                    else renderTicketsGlobal(TODOS_LOS_TICKETS, filtroTicketActual);
-                } else {
+                    setTimeout(() => location.reload(), 1200);
+                }else {
                     showNotification('danger', 'Error', data.message || 'No se pudo cancelar el ticket.');
                 }
             } catch (err) {
