@@ -363,16 +363,34 @@ public function storeUsuario(Request $request)
         ->join('usuario as usu','ticket.id_usuario',     '=', 'usu.id_usuario')
         ->leftJoin('tecnico as tec','ticket.id_tecnico_asignado', '=', 'tec.id_tecnico')
         ->select(
-            'ticket.*',
+            'ticket.id_ticket',
+            'ticket.codigo_ticket',
+            'ticket.id_cliente',
+            'ticket.id_usuario',
+            'ticket.id_tecnico_asignado',
+            'ticket.id_tipo_ticket',
+            'ticket.id_prioridad',
+            'ticket.id_estado',
+            'ticket.tipo_equipo',
+            'ticket.marca',
+            'ticket.modelo',
+            'ticket.serie_serial',
+            'ticket.asunto',
+            'ticket.problema',
+            'ticket.fecha_programado',
+            'ticket.fecha_en_proceso',
+            'ticket.fecha_resuelto',
+            'ticket.created_at',
+            'ticket.updated_at',
             'tipo_ticket.nombre           as tipo_ticket_nombre',
             'prioridad.nombre             as prioridad_nombre',
             'prioridad.color_hex          as prioridad_color',
             'estado_ticket.nombre_estado  as estado',
-            DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno) as usuario_nombre"),
+            DB::raw("(usu.nombre||' '||usu.apellido_paterno) as usuario_nombre"),
             'usu.codigo_usuario',
             'usu.correo                   as usuario_correo',
             'usu.dni                      as usuario_dni',
-            DB::raw("COALESCE(CONCAT(tec.nombre,' ',tec.apellido_paterno), 'Sin asignar') as tecnico_nombre")
+            DB::raw("COALESCE(tec.nombre||' '||tec.apellido_paterno, 'Sin asignar') as tecnico_nombre")
         )
         ->whereIn('ticket.id_usuario', $usuarioIds)
         ->whereBetween('ticket.created_at', [$desde, $hasta])
