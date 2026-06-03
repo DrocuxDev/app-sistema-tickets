@@ -7,6 +7,7 @@ use App\Models\Cliente;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ClienteController extends Controller
 {
@@ -340,5 +341,63 @@ public function storeUsuario(Request $request)
                     ->get();
 
     return view('cliente.contactos', compact('cliente', 'usuarios'));
+}
+    public function reportePdf(Request $request)
+{
+    $cliente    = Cliente::find(session('id'));
+    $usuarios   = Usuario::where('id_cliente', $cliente->id_cliente)->get();
+    $usuarioIds = $usuarios->pluck('id_usuario')->toArray();
+
+    $desde = $request->desde . ' 00:00:00';
+    $hasta = $request->hasta . ' 23:59:59';
+
+    // Si es individual, filtrar solo ese usuario
+    if ($request->tipo === 'individual' && $request->usuario_id) {
+        $usuarioIds = [$request->usuario_id];
+    }
+
+    $tickets = DB::table('ticket')
+        ->join('tipo_ticket',   'ticket.id_tipo_ticket', '=', 'tipo_ticket.id_tipo_ticket')
+        ->join('prioridad',     'ticket.id_prioridad',   '=', 'prioridad.id_prioridad')
+        ->join('estado_ticket', 'ticket.id_estado',      '=', 'estado_ticket.id_estado')
+        ->join('usuario as usu','ticket.id_usuario',     '=', 'usu.id_usuario')
+        ->leftJoin('tecnico as tec','ticket.id_tecnico_asignado', '=', 'tec.id_tecnico')
+        ->select(
+            'ticket.*',
+            'tipo_ticket.nombre           as tipo_ticket_nombre',
+            'prioridad.nombre             as prioridad_nombre',
+            'prioridad.color_hex          as prioridad_color',
+            'estado_ticket.nombre_estado  as estado',
+            DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno) as usuario_nombre"),
+            'usu.codigo_usuario',
+            'usu.correo                   as usuario_correo',
+            'usu.dni                      as usuario_dni',
+            DB::raw("COALESCE(CONCAT(tec.nombre,' ',tec.apellido_paterno), 'Sin asignar') as tecnico_nombre")
+        )
+        ->whereIn('ticket.id_usuario', $usuarioIds)
+        ->whereBetween('ticket.created_at', [$desde, $hasta])
+        ->orderByDesc('ticket.created_at')
+        ->get();
+
+    // Estadísticas globales
+    $stats = [
+        'total'      => $tickets->count(),
+        'cerrados'   => $tickets->where('estado', 'Cerrado')->count(),
+        'cancelados' => $tickets->where('estado', 'Cancelado')->count(),
+        'pendientes' => $tickets->whereIn('estado', ['Pendiente', 'Abierto'])->count(),
+        'en_proceso' => $tickets->where('estado', 'En Proceso')->count(),
+    ];
+
+    // Agrupar por usuario para detalle
+    $porUsuario = $tickets->groupBy('usuario_nombre');
+
+    $pdf = Pdf::loadView('cliente.reporte-pdf', compact(
+        'cliente', 'tickets', 'stats', 'porUsuario',
+        'request', 'usuarios', 'usuarioIds'
+    ))->setPaper('a4', 'portrait');
+
+    $nombreArchivo = 'reporte_' . $cliente->ruc . '_' . $request->desde . '_' . $request->hasta . '.pdf';
+
+    return $pdf->download($nombreArchivo);
 }
 }

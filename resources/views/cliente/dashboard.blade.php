@@ -1,6 +1,7 @@
 @include('components.cliente.sidebar-cliente')
 @include('components.cliente.nuevousuario')
 @include('components.notificaciones.alertas')
+@include('components.cliente.modalreporte')
 
 <div class="main-content">
     <div class="container-fluid">
@@ -15,9 +16,14 @@
                     <i class="fas fa-database"></i> {{ $usuarios->count() }} usuarios registrados en total
                 </p>
             </div>
-            <button class="btn-nuevo" onclick="openModal()">
-                <i class="fas fa-plus-circle"></i> Nuevo Usuario
-            </button>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <button class="btn-reporte" onclick="openModalReporte()">
+                    <i class="fas fa-file-pdf"></i> Descargar Reporte
+                </button>
+                <button class="btn-nuevo" onclick="openModal()">
+                    <i class="fas fa-plus-circle"></i> Nuevo Usuario
+                </button>
+            </div>
         </div>
 
         <!-- STATS / FILTROS -->
@@ -212,6 +218,22 @@
 </div>
 
 <style>
+    .btn-reporte {
+    background: #c53030;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.3s;
+    margin-right: 10px;
+    }
+    .btn-reporte i { margin-right: 8px; }
+    .btn-reporte:hover { background: #9b2c2c; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(197,48,48,0.3); }
+
     .main-content {
         margin-left: 260px;
         padding: 40px;
