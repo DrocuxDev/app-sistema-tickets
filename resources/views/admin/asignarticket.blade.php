@@ -725,8 +725,13 @@ function renderTickets(tickets, filtroInicial) {
         const fecha = t.created_at ? new Date(t.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 
         const btnAsignar = t.estado === 'PENDIENTE' ? `<button class="btn-action-sm" onclick="abrirAsignar(${t.id_ticket}, this)">🔧 Asignar</button>` : '';
-        const btnCancelar = t.estado === 'PROGRAMADO' ? `<button class="btn-action-sm btn-deactivate" onclick="cancelarTicket(${t.id_ticket})">❌ Cancelar</button>` : '';
-
+        const esCancelabe = t.estado === 'PROGRAMADO';
+        const btnCancelar = t.estado === 'PROGRAMADO' ? `<button class="btn-action-sm btn-deactivate" onclick="cancelarTicket(${t.id_ticket})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            Cancelar
+        </button>` : '';
         return `<tr data-id="${t.id_ticket}" data-estado="${t.estado}" data-search="${(t.asunto + ' ' + t.razon_social + ' ' + t.id_ticket).toLowerCase()}">
             <td class="cell-id">#${t.id_ticket}</td>
             <td class="cell-name">${t.asunto || 'Sin asunto'}</td>
@@ -805,9 +810,13 @@ function renderTicketsGlobal(tickets, filtroInicial) {
         const prioColor = t.prioridad_color ? `background:${t.prioridad_color}20;color:${t.prioridad_color};border:1px solid ${t.prioridad_color}40` : '';
         const fecha = t.created_at ? new Date(t.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 
-        const btnAsignar = t.estado === 'PENDIENTE' ? `<button class="btn-action-sm" onclick="abrirAsignar(${t.id_ticket}, this, ${t.id_usuario})">🔧 Asignar</button>` : '';
-        const btnCancelar = t.estado === 'PROGRAMADO' ? `<button class="btn-action-sm btn-deactivate" onclick="cancelarTicket(${t.id_ticket}, ${t.id_usuario})">❌ Cancelar</button>` : '';
-
+        const esCancelabe = t.estado === 'PROGRAMADO';
+        const btnCancelar = t.estado === 'PROGRAMADO' ? `<button class="btn-action-sm btn-deactivate" onclick="cancelarTicket(${t.id_ticket})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            Cancelar
+        </button>` : '';
         return `<tr data-id="${t.id_ticket}" data-estado="${t.estado}" data-search="${(t.asunto + ' ' + t.razon_social + ' ' + t.id_ticket).toLowerCase()}">
             <td class="cell-id">#${t.id_ticket}</td>
             <td class="cell-name">${t.asunto || 'Sin asunto'}</td>
@@ -855,7 +864,20 @@ function abrirAsignar(idTicket, btnEl, idUsuarioOverride = null) {
 }
 
 function cancelarTicket(idTicket, idUsuarioOverride = null) {
+    // ✅ VALIDACIÓN: Buscar el ticket y verificar estado
     const uid = idUsuarioOverride || usuarioActual;
+    const tickets = uid ? (TICKETS_POR_USUARIO[uid] || []) : TODOS_LOS_TICKETS;
+    const ticket = tickets.find(t => t.id_ticket == idTicket);
+
+    if (!ticket) {
+        showNotification('danger', 'Error', 'Ticket no encontrado.');
+        return;
+    }
+
+    if (ticket.estado !== 'PROGRAMADO') {
+        showNotification('warning', 'No permitido', 'Solo se pueden cancelar tickets en estado PROGRAMADO.');
+        return;
+    }
 
     ModalSystem.show('question', {
         title: '¿Cancelar ticket?',
@@ -875,8 +897,9 @@ function cancelarTicket(idTicket, idUsuarioOverride = null) {
 
                 if (data.ok) {
                     showNotification('success', '¡Éxito!', 'El ticket ha sido cancelado correctamente.');
+                    // ✅ RECARGA la página para actualizar todos los contadores
                     setTimeout(() => location.reload(), 1200);
-                }else {
+                } else {
                     showNotification('danger', 'Error', data.message || 'No se pudo cancelar el ticket.');
                 }
             } catch (err) {
