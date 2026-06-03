@@ -95,6 +95,7 @@ class UsuarioController extends Controller
 
         return view('usuario.dashboard', compact('usuario', 'tickets'));
     }
+
     public function datos() 
     {
         // Necesitamos buscar al usuario para pasarlo a la vista
@@ -102,65 +103,64 @@ class UsuarioController extends Controller
         return view('usuario.datos', compact('usuario'));
     }
 
-   public function update(Request $request)
-{
-    $usuario = Usuario::find(session('id'));
+    public function update(Request $request)
+    {
+        $usuario = Usuario::find(session('id'));
 
-    $validator = Validator::make($request->all(), [
-        'nombre'           => 'required|string|max:100',
-        'apellido_paterno' => 'required|string|max:100',
-        'apellido_materno' => 'required|string|max:100',
-        'correo'           => 'required|email|unique:usuario,correo,' . $usuario->id_usuario . ',id_usuario',
-        'telefono'         => 'required|digits_between:7,15',
-        'nueva_contraseña' => 'nullable|min:6',
-        'codigo_pais' => [
-        'required',
-        'regex:/^\+?\d{1,4}$/',
-        'max:10'
-        ],
-    ], [
-        'nombre.required'           => 'El nombre es obligatorio.',
-        'nombre.string'             => 'El nombre debe ser un texto válido.',
-        'nombre.max'                => 'El nombre no puede superar los 100 caracteres.',
-        'apellido_paterno.required' => 'El apellido paterno es obligatorio.',
-        'apellido_paterno.string'   => 'El apellido paterno debe ser un texto válido.',
-        'codigo_pais.required'      => 'El código de país es obligatorio.',
-        'apellido_paterno.max'      => 'El apellido paterno no puede superar los 100 caracteres.',
-        'apellido_materno.required' => 'El apellido materno es obligatorio.',
-        'apellido_materno.string'   => 'El apellido materno debe ser un texto válido.',
-        'apellido_materno.max'      => 'El apellido materno no puede superar los 100 caracteres.',
-        'correo.required'           => 'El correo electrónico es obligatorio.',
-        'correo.email'              => 'El correo electrónico no tiene un formato válido.',
-        'correo.unique'             => 'Este correo ya está registrado en otro usuario.',
-        'telefono.required'         => 'El número de teléfono es obligatorio.',
-        'codigo_pais.required' => 'El código de país es obligatorio.',
-        'codigo_pais.regex'    => 'El código de país debe tener formato válido (ej: +51, 51, +1).',
-        'telefono.digits_between'   => 'El teléfono debe tener entre 7 y 15 dígitos numéricos.',
-        'nueva_contraseña.min'      => 'La nueva contraseña debe tener al menos 6 caracteres.',
-    ]);
+        $validator = Validator::make($request->all(), [
+            'nombre'           => 'required|string|max:100',
+            'apellido_paterno' => 'required|string|max:100',
+            'apellido_materno' => 'required|string|max:100',
+            'correo'           => 'required|email|unique:usuario,correo,' . $usuario->id_usuario . ',id_usuario',
+            'telefono'         => 'required|digits_between:7,15',
+            'nueva_contraseña' => 'nullable|min:6',
+            'codigo_pais' => [
+                'required',
+                'regex:/^\+?\d{1,4}$/',
+                'max:10'
+            ],
+        ], [
+            'nombre.required'           => 'El nombre es obligatorio.',
+            'nombre.string'             => 'El nombre debe ser un texto válido.',
+            'nombre.max'                => 'El nombre no puede superar los 100 caracteres.',
+            'apellido_paterno.required' => 'El apellido paterno es obligatorio.',
+            'apellido_paterno.string'   => 'El apellido paterno debe ser un texto válido.',
+            'codigo_pais.required'      => 'El código de país es obligatorio.',
+            'apellido_paterno.max'      => 'El apellido paterno no puede superar los 100 caracteres.',
+            'apellido_materno.required' => 'El apellido materno es obligatorio.',
+            'apellido_materno.string'   => 'El apellido materno debe ser un texto válido.',
+            'apellido_materno.max'      => 'El apellido materno no puede superar los 100 caracteres.',
+            'correo.required'           => 'El correo electrónico es obligatorio.',
+            'correo.email'              => 'El correo electrónico no tiene un formato válido.',
+            'correo.unique'             => 'Este correo ya está registrado en otro usuario.',
+            'telefono.required'         => 'El número de teléfono es obligatorio.',
+            'codigo_pais.required'      => 'El código de país es obligatorio.',
+            'codigo_pais.regex'         => 'El código de país debe tener formato válido (ej: +51, 51, +1).',
+            'telefono.digits_between'   => 'El teléfono debe tener entre 7 y 15 dígitos numéricos.',
+            'nueva_contraseña.min'      => 'La nueva contraseña debe tener al menos 6 caracteres.',
+        ]);
 
-    if ($validator->fails()) {
-        return back()->with('error', $validator->errors()->first());
+        if ($validator->fails()) {
+            return back()->with('error', $validator->errors()->first());
+        }
+
+        $usuario->nombre           = ucfirst(strtolower($request->nombre));
+        $usuario->apellido_paterno = ucfirst(strtolower($request->apellido_paterno));
+        $usuario->apellido_materno = ucfirst(strtolower($request->apellido_materno));
+        $usuario->correo           = $request->correo;
+        $usuario->codigo_pais      = $request->codigo_pais ?? '';
+        $usuario->telefono         = $request->telefono;
+
+        if ($request->filled('nueva_contraseña')) {
+            $usuario->contraseña = Hash::make($request->nueva_contraseña);
+        }
+
+        $usuario->save();
+
+        session(['nombre' => $usuario->nombre]);
+
+        return back()->with('success', 'Perfil actualizado correctamente.');
     }
-
-    $usuario->nombre           = ucfirst(strtolower($request->nombre));
-    $usuario->apellido_paterno = ucfirst(strtolower($request->apellido_paterno));
-    $usuario->apellido_materno = ucfirst(strtolower($request->apellido_materno));
-    $usuario->correo           = $request->correo;
-    $usuario->codigo_pais      = $request->codigo_pais ?? '';
-    $usuario->telefono         = $request->telefono;
-
-    if ($request->filled('nueva_contraseña')) {
-        $usuario->contraseña = Hash::make($request->nueva_contraseña);
-    }
-
-    $usuario->save();
-
-    session(['nombre' => $usuario->nombre]);
-
-    return back()->with('success', 'Perfil actualizado correctamente.');
-}
-
 
     public function logout()
     {
@@ -169,7 +169,6 @@ class UsuarioController extends Controller
         return redirect('/')
             ->with('success', 'Sesión cerrada correctamente.');
     }
-
 
     public function tickets()
     {
@@ -247,7 +246,12 @@ class UsuarioController extends Controller
         return view('usuario.tickets', compact('tickets'));
     }
 
-    public function mail() {
+    /* ── CORREGIDO AQUÍ ────────────────────────────────────────── */
+    /* Se cambió el nombre de 'mail' a 'mailIndex' para coincidir   */
+    /* exactamente con tu archivo de rutas (web.php).               */
+    /* ──────────────────────────────────────────────────────────── */
+    public function mailIndex() 
+    {
         return view('usuario.mail');
     }
 }
