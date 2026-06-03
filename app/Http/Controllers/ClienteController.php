@@ -401,9 +401,10 @@ public function storeUsuario(Request $request)
     $stats = [
         'total'      => $tickets->count(),
         'cerrados'   => $tickets->where('estado', 'CERRADO')->count(),
-        'cancelados' => $tickets->where('estado', 'CANCELADO')->count(),
-        'pendientes' => $tickets->whereIn('estado', ['PENDIENTE', 'ABIERTO', 'PROGRAMADO'])->count(),
+        'programados'=> $tickets->where('estado', 'PROGRAMADO')->count(),
         'en_proceso' => $tickets->where('estado', 'EN PROCESO')->count(),
+        'pendientes' => $tickets->where('estado', 'PENDIENTE')->count(),
+        'cancelados' => $tickets->where('estado', 'CANCELADO')->count(),
     ];
 
     // Agrupar por usuario para detalle

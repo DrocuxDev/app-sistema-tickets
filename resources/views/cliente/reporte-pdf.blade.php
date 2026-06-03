@@ -3,624 +3,386 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family: DejaVu Sans, sans-serif;
-    font-size: 10px;
-    color: #1a202c;
-    background: #ffffff;
-  }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: DejaVu Sans, sans-serif; font-size:10px; color:#1a202c; background:#fff; }
 
-  /* ─── HEADER ─── */
-  .header {
-    background: #13294b;
-    padding: 0;
-  }
-  .header-top {
-    padding: 16px 24px 12px;
-    display: table;
-    width: 100%;
-  }
-  .header-left  { display: table-cell; vertical-align: middle; }
-  .header-right { display: table-cell; vertical-align: middle; text-align: right; }
-  .brand-name { font-size: 16px; font-weight: 700; color: #ffffff; letter-spacing: 1.5px; }
-  .brand-sub  { font-size: 8px; color: #90cdf4; letter-spacing: 2px; margin-top: 2px; }
-  .doc-title  { font-size: 13px; font-weight: 700; color: #ffffff; letter-spacing: .5px; }
-  .doc-sub    { font-size: 9px; color: #90cdf4; margin-top: 3px; }
-  .header-stripe { height: 4px; background: #2b6cb0; }
+/* ── HEADER ── */
+.hdr       { background:#0f2645; width:100%; }
+.hdr-inner { padding:18px 24px 14px; display:table; width:100%; }
+.hdr-l     { display:table-cell; vertical-align:middle; }
+.hdr-r     { display:table-cell; vertical-align:middle; text-align:right; }
+.brand     { font-size:17px; font-weight:700; color:#fff; letter-spacing:2px; }
+.brand-s   { font-size:8px; color:#7ecfff; letter-spacing:2.5px; margin-top:3px; }
+.doc-t     { font-size:13px; font-weight:700; color:#fff; letter-spacing:.5px; }
+.doc-s     { font-size:8.5px; color:#90cdf4; margin-top:4px; }
+.hdr-bar   { height:4px; background:linear-gradient(90deg,#2563eb,#0ea5e9,#2563eb); }
 
-  /* ─── INFO CLIENTE ─── */
-  .block {
-    margin: 14px 20px;
-    border: 1px solid #bee3f8;
-    border-radius: 6px;
-    overflow: hidden;
-    page-break-inside: avoid;
-  }
-  .block-header {
-    background: #2b6cb0;
-    padding: 7px 14px;
-    display: table;
-    width: 100%;
-  }
-  .block-header-left  { display: table-cell; vertical-align: middle; }
-  .block-header-right { display: table-cell; vertical-align: middle; text-align: right; }
-  .block-title { color: white; font-size: 9px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
-  .badge-tipo {
-    background: #90cdf4;
-    color: #13294b;
-    font-size: 8px;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 20px;
-  }
+/* ── WRAPPER ── */
+.wrap { padding-bottom:48px; }
 
-  /* tabla transparente para cliente */
-  .info-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #f0f8ff;
-  }
-  .info-table td {
-    padding: 9px 14px;
-    border-right: 1px solid #bee3f8;
-    border-bottom: 1px solid #bee3f8;
-    vertical-align: top;
-  }
-  .info-table td:last-child { border-right: none; }
-  .info-table tr:last-child td { border-bottom: none; }
-  .lbl { font-size: 8px; color: #2b6cb0; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; display: block; margin-bottom: 3px; }
-  .val { font-size: 10px; font-weight: 600; color: #1a365d; }
+/* ── SECCIÓN BLOQUE ── */
+.blk       { margin:14px 20px; border:1px solid #c3daf5; border-radius:6px; overflow:hidden; page-break-inside:avoid; }
+.blk-hdr   { background:#1e3a5f; padding:8px 14px; display:table; width:100%; }
+.blk-hdr-l { display:table-cell; vertical-align:middle; }
+.blk-hdr-r { display:table-cell; vertical-align:middle; text-align:right; }
+.blk-t     { color:#fff; font-size:9px; font-weight:700; letter-spacing:.9px; text-transform:uppercase; }
+.badge-tipo { background:#38bdf8; color:#0c1a2e; font-size:8px; font-weight:700; padding:3px 10px; border-radius:20px; }
 
-  /* ─── PERIODO ─── */
-  .periodo-bar {
-    margin: 0 20px 14px;
-    background: #f0f8ff;
-    border-left: 4px solid #2b6cb0;
-    border-radius: 0 6px 6px 0;
-    padding: 9px 14px;
-    display: table;
-    width: calc(100% - 40px);
-    page-break-inside: avoid;
-  }
-  .periodo-bar-left  { display: table-cell; vertical-align: middle; }
-  .periodo-bar-right { display: table-cell; vertical-align: middle; text-align: right; }
-  .periodo-label { font-size: 8px; font-weight: 700; color: #2b6cb0; text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 3px; }
-  .periodo-val   { font-size: 10px; font-weight: 700; color: #1a365d; }
-  .gen-label     { font-size: 8px; color: #718096; }
+/* ── TABLA INFO ── */
+.inf-tbl   { width:100%; border-collapse:collapse; background:#eaf2ff; }
+.inf-tbl td { padding:9px 14px; border-right:1px solid #c3daf5; border-bottom:1px solid #c3daf5; vertical-align:top; }
+.inf-tbl td:last-child { border-right:none; }
+.inf-tbl tr:last-child td { border-bottom:none; }
+.lbl { font-size:8px; color:#1e3a5f; font-weight:700; text-transform:uppercase; letter-spacing:.4px; display:block; margin-bottom:3px; }
+.val { font-size:10px; font-weight:600; color:#0f2645; }
 
-  /* ─── TÍTULO DE SECCIÓN ─── */
-  .sec-title {
-    margin: 16px 20px 10px;
-    page-break-inside: avoid;
-    page-break-after: avoid;
-  }
-  .sec-title-text {
-    background: #2b6cb0;
-    color: white;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: .8px;
-    text-transform: uppercase;
-    padding: 6px 14px;
-    border-radius: 4px;
-    display: block;
-  }
+/* ── PERIODO ── */
+.periodo { margin:0 20px 14px; background:#eaf2ff; border-left:4px solid #2563eb; border-radius:0 6px 6px 0; padding:9px 14px; display:table; width:calc(100% - 40px); page-break-inside:avoid; }
+.periodo-l { display:table-cell; vertical-align:middle; }
+.periodo-r { display:table-cell; vertical-align:middle; text-align:right; }
+.p-lbl     { font-size:8px; font-weight:700; color:#1e3a5f; text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:3px; }
+.p-val     { font-size:10px; font-weight:700; color:#0f2645; }
+.p-gen     { font-size:8px; color:#64748b; }
 
-  /* ─── ESTADÍSTICAS ─── */
-  .stats-block {
-    margin: 0 20px 14px;
-    page-break-inside: avoid;
-  }
-  .stats-table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-  }
-  .stats-table td {
-    text-align: center;
-    padding: 12px 8px;
-    border-right: 1px solid #e2e8f0;
-    vertical-align: middle;
-  }
-  .stats-table td:last-child { border-right: none; }
-  .stat-num { font-size: 18px; font-weight: 700; display: block; margin-bottom: 4px; }
-  .stat-lbl { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: #718096; }
-  .s-total  { background: #f7fafc; }  .s-total .stat-num  { color: #2d3748; }
-  .s-cerr   { background: #f0fff4; }  .s-cerr .stat-num   { color: #276749; }
-  .s-proc   { background: #ebf8ff; }  .s-proc .stat-num   { color: #2b6cb0; }
-  .s-pend   { background: #fffbeb; }  .s-pend .stat-num   { color: #975a16; }
-  .s-canc   { background: #fff5f5; }  .s-canc .stat-num   { color: #c53030; }
+/* ── SEC TITLE ── */
+.sec-t { margin:14px 20px 8px; page-break-inside:avoid; page-break-after:avoid; }
+.sec-t span { background:#1e3a5f; color:#fff; font-size:9px; font-weight:700; letter-spacing:.9px; text-transform:uppercase; padding:6px 14px; border-radius:4px; display:block; }
 
-  /* ─── RESUMEN POR USUARIO ─── */
-  .user-wrap { margin: 0 20px 6px; }
-  .user-card {
-    border: 1px solid #bee3f8;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    overflow: hidden;
-    page-break-inside: avoid;
-  }
-  .user-card-top {
-    background: #ebf8ff;
-    padding: 0;
-    border-bottom: 1px solid #bee3f8;
-    display: table;
-    width: 100%;
-  }
-  .user-card-top-left  { display: table-cell; padding: 10px 14px; vertical-align: middle; }
-  .user-card-top-right { display: table-cell; padding: 10px 14px; vertical-align: middle; text-align: right; }
-  .uname { font-size: 11px; font-weight: 700; color: #1a365d; }
-  .ucode { font-size: 9px; color: #4a90d9; margin-top: 3px; }
+/* ── STATS ── */
+.stats-w { margin:0 20px 14px; page-break-inside:avoid; }
+.stats-tbl { width:100%; border-collapse:collapse; border:1px solid #cbd5e1; border-radius:6px; }
+.stats-tbl td { text-align:center; padding:13px 6px; border-right:1px solid #cbd5e1; vertical-align:middle; }
+.stats-tbl td:last-child { border-right:none; }
+.s-n { font-size:20px; font-weight:700; display:block; margin-bottom:4px; }
+.s-l { font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:#64748b; }
 
-  .user-stats-table { border-collapse: collapse; }
-  .user-stats-table td {
-    text-align: center;
-    padding: 4px 10px;
-    border-left: 1px solid #bee3f8;
-    vertical-align: middle;
-  }
-  .user-stats-table td:first-child { border-left: none; }
-  .un { font-size: 16px; font-weight: 700; display: block; }
-  .ul { font-size: 8px; font-weight: 600; text-transform: uppercase; color: #718096; display: block; margin-top: 2px; }
-  .un-total { color: #2d3748; }
-  .un-cerr  { color: #276749; }
-  .un-proc  { color: #2b6cb0; }
-  .un-pend  { color: #975a16; }
-  .un-canc  { color: #c53030; }
+/* colores estadísticas */
+.c-total { background:#f1f5f9; } .c-total .s-n { color:#0f172a; }
+.c-cerr  { background:#f0fdf4; } .c-cerr  .s-n { color:#14532d; }
+.c-prog  { background:#eff6ff; } .c-prog  .s-n { color:#1d4ed8; }
+.c-proc  { background:#fff7ed; } .c-proc  .s-n { color:#9a3412; }
+.c-pend  { background:#fefce8; } .c-pend  .s-n { color:#713f12; }
+.c-canc  { background:#fff1f2; } .c-canc  .s-n { color:#9f1239; }
 
-  .user-card-bottom { padding: 0; }
-  .user-info-table { width: 100%; border-collapse: collapse; }
-  .user-info-table td {
-    padding: 8px 14px;
-    font-size: 10px;
-    border-right: 1px solid #f0f4f8;
-    vertical-align: top;
-  }
-  .user-info-table td:last-child { border-right: none; }
+/* ── USER CARD ── */
+.uw { margin:0 20px; }
+.uc { border:1px solid #c3daf5; border-radius:6px; margin-bottom:10px; overflow:hidden; page-break-inside:avoid; }
+.uc-top { background:#dbeafe; border-bottom:1px solid #c3daf5; display:table; width:100%; }
+.uc-tl  { display:table-cell; padding:10px 14px; vertical-align:middle; width:50%; }
+.uc-tr  { display:table-cell; padding:10px 14px; vertical-align:middle; text-align:right; }
+.uname  { font-size:11px; font-weight:700; color:#0f2645; }
+.ucode  { font-size:9px; color:#2563eb; margin-top:3px; }
+.ust    { border-collapse:collapse; display:inline-table; }
+.ust td { text-align:center; padding:0 10px; border-left:1px solid #bfdbfe; vertical-align:middle; }
+.ust td:first-child { border-left:none; }
+.un     { font-size:15px; font-weight:700; display:block; }
+.ul     { font-size:7.5px; font-weight:600; text-transform:uppercase; color:#64748b; display:block; margin-top:2px; }
 
-  /* ─── TICKET CARDS ─── */
-  .tickets-wrap { margin: 0 20px; }
+/* ── CABECERA SOLICITANTE ── */
+.sol-hdr { background:#1e3a5f; padding:9px 14px; border-radius:6px 6px 0 0; display:table; width:100%; margin-bottom:0; page-break-inside:avoid; page-break-after:avoid; }
+.sol-hdr-l { display:table-cell; vertical-align:middle; }
+.sol-hdr-r { display:table-cell; vertical-align:middle; text-align:right; }
 
-  .ticket-card {
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    margin-bottom: 12px;
-    overflow: hidden;
-    page-break-inside: avoid;
-  }
-  .tc-cerrado   { border-left: 4px solid #38a169; }
-  .tc-proceso   { border-left: 4px solid #3182ce; }
-  .tc-pendiente { border-left: 4px solid #d69e2e; }
-  .tc-cancelado { border-left: 4px solid #e53e3e; }
-  .tc-default   { border-left: 4px solid #a0aec0; }
+/* ── TICKET CARD ── */
+.tw { margin:0 20px; }
+.tc { border:1px solid #e2e8f0; border-radius:0; margin-bottom:2px; overflow:hidden; page-break-inside:avoid; }
+.tc:last-child { margin-bottom:16px; border-radius:0 0 6px 6px; }
+.tc-cerr { border-left:4px solid #16a34a; }
+.tc-prog { border-left:4px solid #2563eb; }
+.tc-proc { border-left:4px solid #ea580c; }
+.tc-pend { border-left:4px solid #ca8a04; }
+.tc-canc { border-left:4px solid #dc2626; }
+.tc-def  { border-left:4px solid #94a3b8; }
 
-  .ticket-header-bar {
-    background: #f7fafc;
-    border-bottom: 1px solid #e2e8f0;
-    display: table;
-    width: 100%;
-    padding: 0;
-  }
-  .ticket-header-bar td {
-    padding: 7px 12px;
-    vertical-align: middle;
-    font-size: 9px;
-  }
-  .ticket-num   { font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: .5px; }
-  .ticket-fecha { color: #4a5568; text-align: right; }
-  .ticket-fecha strong { color: #1a365d; }
+.tc-hdr  { background:#f8fafc; border-bottom:1px solid #e2e8f0; display:table; width:100%; }
+.tc-hdr td { padding:7px 12px; font-size:9px; vertical-align:middle; }
+.tc-num  { font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.5px; }
+.tc-fecha { color:#475569; text-align:right; }
+.tc-fecha strong { color:#0f2645; }
 
-  /* tabla interna del ticket */
-  .ticket-body-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .ticket-body-table > tbody > tr > td {
-    padding: 10px 12px;
-    vertical-align: top;
-    font-size: 10px;
-  }
-  .ticket-col-main { width: 58%; border-right: 1px solid #e2e8f0; }
-  .ticket-col-side { width: 42%; }
+.tc-body { width:100%; border-collapse:collapse; }
+.tc-body > tbody > tr > td { padding:10px 12px; vertical-align:top; }
+.tc-col1 { width:40%; border-right:1px solid #e2e8f0; }
+.tc-col2 { width:30%; border-right:1px solid #e2e8f0; }
+.tc-col3 { width:30%; }
 
-  .ticket-asunto {
-    font-size: 11px;
-    font-weight: 700;
-    color: #1a365d;
-    margin-bottom: 10px;
-    line-height: 1.4;
-  }
+.tc-asunto-lbl { font-size:8px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.3px; display:block; margin-bottom:4px; }
+.tc-asunto     { font-size:11px; font-weight:700; color:#0f2645; line-height:1.4; }
 
-  /* sub-tabla de datos */
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .data-table td {
-    padding: 5px 0;
-    font-size: 10px;
-    vertical-align: top;
-    border-bottom: 1px solid #f0f4f8;
-  }
-  .data-table tr:last-child td { border-bottom: none; }
-  .data-label { color: #718096; font-weight: 700; font-size: 8px; text-transform: uppercase; letter-spacing: .3px; width: 38%; padding-right: 6px; }
-  .data-value { color: #2d3748; font-weight: 600; }
+.dtbl   { width:100%; border-collapse:collapse; }
+.dtbl td { padding:4px 0; font-size:10px; vertical-align:middle; border-bottom:1px solid #f1f5f9; }
+.dtbl tr:last-child td { border-bottom:none; }
+.dlbl   { color:#64748b; font-weight:700; font-size:8px; text-transform:uppercase; width:40%; padding-right:6px; }
+.dval   { color:#1e293b; font-weight:600; }
 
-  /* badges */
-  .badge {
-    display: inline-block;
-    padding: 2px 9px;
-    border-radius: 20px;
-    font-size: 8px;
-    font-weight: 700;
-    letter-spacing: .3px;
-  }
-  .badge-cerrado   { background: #f0fff4; color: #276749; border: 1px solid #c6f6d5; }
-  .badge-proceso   { background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
-  .badge-pendiente { background: #fffbeb; color: #975a16; border: 1px solid #fefcbf; }
-  .badge-cancelado { background: #fff5f5; color: #c53030; border: 1px solid #fed7d7; }
-  .badge-default   { background: #edf2f7; color: #4a5568; border: 1px solid #e2e8f0; }
+.badge  { display:inline-block; padding:2px 9px; border-radius:20px; font-size:8px; font-weight:700; letter-spacing:.3px; }
+.b-cerr { background:#dcfce7; color:#14532d; border:1px solid #bbf7d0; }
+.b-prog { background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; }
+.b-proc { background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; }
+.b-pend { background:#fef9c3; color:#713f12; border:1px solid #fde68a; }
+.b-canc { background:#fee2e2; color:#9f1239; border:1px solid #fecaca; }
+.b-def  { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; }
 
-  .side-section-label {
-    font-size: 8px;
-    font-weight: 700;
-    color: #2b6cb0;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    margin-bottom: 8px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #bee3f8;
-  }
+.tec-lbl { font-size:8px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.3px; display:block; margin-bottom:4px; }
+.tec-val { font-size:10px; font-weight:600; color:#1e293b; }
 
-  /* ─── FOOTER ─── */
-  .footer {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: #13294b;
-    padding: 7px 20px;
-    display: table;
-    width: 100%;
-  }
-  .footer td { font-size: 8px; vertical-align: middle; padding: 0; }
-  .footer-left  { color: #90cdf4; }
-  .footer-right { color: #bee3f8; text-align: right; }
+/* ── NO DATA ── */
+.nodata { margin:0 20px; text-align:center; padding:28px; color:#94a3b8; font-size:10px; border:2px dashed #e2e8f0; border-radius:6px; }
 
-  .no-data {
-    margin: 0 20px;
-    text-align: center;
-    padding: 30px;
-    color: #a0aec0;
-    font-size: 10px;
-    border: 2px dashed #e2e8f0;
-    border-radius: 6px;
-  }
-
-  .content-wrap { padding-bottom: 44px; }
+/* ── FOOTER ── */
+.ftr { position:fixed; bottom:0; left:0; right:0; background:#0f2645; padding:7px 20px; display:table; width:100%; }
+.ftr td { font-size:8px; vertical-align:middle; padding:0; }
+.ftr-l { color:#7ecfff; }
+.ftr-r { color:#bae6fd; text-align:right; }
 </style>
 </head>
 <body>
 
-{{-- ══════════════ HEADER ══════════════ --}}
-<div class="header">
-  <table class="header-top" style="width:100%; border-collapse:collapse;">
+{{-- HEADER --}}
+<div class="hdr">
+  <table class="hdr-inner" style="width:100%;border-collapse:collapse;">
     <tr>
-      <td class="header-left">
-        <div class="brand-name">JHARDSYSTEX</div>
-        <div class="brand-sub">SOLUCIONES ESPECIALIZADAS TI</div>
+      <td class="hdr-l">
+        <div class="brand">JHARDSYSTEX</div>
+        <div class="brand-s">SOLUCIONES ESPECIALIZADAS DE TI</div>
       </td>
-      <td class="header-right">
-        <div class="doc-title">REPORTE DE TICKETS</div>
-        <div class="doc-sub">Generado el {{ now()->format('d/m/Y') }} a las {{ now()->format('H:i') }}</div>
+      <td class="hdr-r">
+        <div class="doc-t">REPORTE DE TICKETS</div>
+        <div class="doc-s">Generado el {{ now()->format('d/m/Y') }} a las {{ now()->format('H:i') }}</div>
       </td>
     </tr>
   </table>
-  <div class="header-stripe"></div>
+  <div class="hdr-bar"></div>
 </div>
 
-<div class="content-wrap">
+<div class="wrap">
 
-{{-- ══════════════ INFO CLIENTE ══════════════ --}}
-<div class="block">
-  <div class="block-header">
-    <table style="width:100%; border-collapse:collapse;">
+{{-- DATOS CLIENTE --}}
+<div class="blk">
+  <div class="blk-hdr">
+    <table style="width:100%;border-collapse:collapse;">
       <tr>
-        <td class="block-header-left"><span class="block-title">Datos del Cliente</span></td>
-        <td class="block-header-right">
-          <span class="badge-tipo">
-            {{ $request->tipo === 'individual' ? 'REPORTE INDIVIDUAL' : 'REPORTE GENERAL' }}
-          </span>
+        <td class="blk-hdr-l"><span class="blk-t">Datos del Cliente</span></td>
+        <td class="blk-hdr-r">
+          <span class="badge-tipo">{{ $request->tipo === 'individual' ? 'REPORTE INDIVIDUAL' : 'REPORTE GENERAL' }}</span>
         </td>
       </tr>
     </table>
   </div>
-  <table class="info-table">
+  <table class="inf-tbl">
     <tr>
-      <td style="width:34%;">
-        <span class="lbl">Razón Social</span>
-        <span class="val">{{ strtoupper($cliente->razon_social) }}</span>
-      </td>
-      <td style="width:22%;">
-        <span class="lbl">RUC</span>
-        <span class="val">{{ $cliente->ruc }}</span>
-      </td>
-      <td style="width:44%;">
-        <span class="lbl">Correo corporativo</span>
-        <span class="val">{{ $cliente->correo }}</span>
-      </td>
+      <td style="width:34%;"><span class="lbl">Razón Social</span><span class="val">{{ strtoupper($cliente->razon_social) }}</span></td>
+      <td style="width:22%;"><span class="lbl">RUC</span><span class="val">{{ $cliente->ruc }}</span></td>
+      <td style="width:44%;"><span class="lbl">Correo Corporativo</span><span class="val">{{ $cliente->correo }}</span></td>
     </tr>
     <tr>
-      <td>
-        <span class="lbl">Rubro</span>
-        <span class="val">{{ $cliente->rubro ?? '—' }}</span>
-      </td>
-      <td>
-        <span class="lbl">Usuarios registrados</span>
-        <span class="val">{{ $usuarios->count() }}</span>
-      </td>
-      <td>
-        <span class="lbl">Sedes</span>
-        <span class="val">{{ $cliente->sedes ?? '—' }}</span>
-      </td>
+      <td><span class="lbl">Rubro</span><span class="val">{{ $cliente->rubro ?? '—' }}</span></td>
+      <td><span class="lbl">Usuarios Registrados</span><span class="val">{{ $usuarios->count() }}</span></td>
+      <td><span class="lbl">Sedes</span><span class="val">{{ $cliente->sedes ?? '—' }}</span></td>
     </tr>
   </table>
 </div>
 
-{{-- ══════════════ PERIODO ══════════════ --}}
-<table class="periodo-bar" style="width:calc(100% - 40px);">
+{{-- PERIODO --}}
+<table class="periodo" style="width:calc(100% - 40px);border-collapse:collapse;">
   <tr>
-    <td class="periodo-bar-left">
-      <span class="periodo-label">Periodo analizado</span>
-      <span class="periodo-val">
-        {{ \Carbon\Carbon::parse($request->desde)->format('d \d\e F \d\e Y') }}
-        &nbsp;&rarr;&nbsp;
-        {{ \Carbon\Carbon::parse($request->hasta)->format('d \d\e F \d\e Y') }}
-      </span>
+    <td class="periodo-l">
+      <span class="p-lbl">Periodo Analizado</span>
+      <span class="p-val">{{ \Carbon\Carbon::parse($request->desde)->format('d \d\e F \d\e Y') }} &nbsp;&rarr;&nbsp; {{ \Carbon\Carbon::parse($request->hasta)->format('d \d\e F \d\e Y') }}</span>
     </td>
-    <td class="periodo-bar-right">
-      <span class="gen-label">Preparado por JHARDSYSTEX &bull; Documento confidencial</span>
-    </td>
+    <td class="periodo-r"><span class="p-gen">Preparado por JHARDSYSTEX &bull; Documento confidencial</span></td>
   </tr>
 </table>
 
-{{-- ══════════════ ESTADÍSTICAS ══════════════ --}}
-<div class="sec-title"><span class="sec-title-text">Resumen Ejecutivo</span></div>
-
-<div class="stats-block">
-  <table class="stats-table" style="width:100%; border-collapse:collapse; border:1px solid #e2e8f0;">
+{{-- RESUMEN EJECUTIVO --}}
+<div class="sec-t"><span>Resumen Ejecutivo</span></div>
+<div class="stats-w">
+  <table class="stats-tbl">
     <tr>
-      <td class="s-total" style="text-align:center; padding:12px 8px; border-right:1px solid #e2e8f0; width:20%;">
-        <span class="stat-num" style="font-size:18px; font-weight:700; display:block; color:#2d3748; margin-bottom:4px;">{{ $stats['total'] }}</span>
-        <span class="stat-lbl" style="font-size:8px; font-weight:700; text-transform:uppercase; color:#718096;">Total Tickets</span>
-      </td>
-      <td class="s-cerr" style="text-align:center; padding:12px 8px; border-right:1px solid #e2e8f0; width:20%; background:#f0fff4;">
-        <span class="stat-num" style="font-size:18px; font-weight:700; display:block; color:#276749; margin-bottom:4px;">{{ $stats['cerrados'] }}</span>
-        <span class="stat-lbl" style="font-size:8px; font-weight:700; text-transform:uppercase; color:#718096;">Cerrados</span>
-      </td>
-      <td class="s-proc" style="text-align:center; padding:12px 8px; border-right:1px solid #e2e8f0; width:20%; background:#ebf8ff;">
-        <span class="stat-num" style="font-size:18px; font-weight:700; display:block; color:#2b6cb0; margin-bottom:4px;">{{ $stats['en_proceso'] }}</span>
-        <span class="stat-lbl" style="font-size:8px; font-weight:700; text-transform:uppercase; color:#718096;">En Proceso</span>
-      </td>
-      <td class="s-pend" style="text-align:center; padding:12px 8px; border-right:1px solid #e2e8f0; width:20%; background:#fffbeb;">
-        <span class="stat-num" style="font-size:18px; font-weight:700; display:block; color:#975a16; margin-bottom:4px;">{{ $stats['pendientes'] }}</span>
-        <span class="stat-lbl" style="font-size:8px; font-weight:700; text-transform:uppercase; color:#718096;">Pendientes</span>
-      </td>
-      <td class="s-canc" style="text-align:center; padding:12px 8px; width:20%; background:#fff5f5;">
-        <span class="stat-num" style="font-size:18px; font-weight:700; display:block; color:#c53030; margin-bottom:4px;">{{ $stats['cancelados'] }}</span>
-        <span class="stat-lbl" style="font-size:8px; font-weight:700; text-transform:uppercase; color:#718096;">Cancelados</span>
-      </td>
+      <td class="c-total" style="width:16.6%;"><span class="s-n">{{ $stats['total'] }}</span><span class="s-l">Total</span></td>
+      <td class="c-cerr"  style="width:16.6%;"><span class="s-n">{{ $stats['cerrados'] }}</span><span class="s-l">Cerrados</span></td>
+      <td class="c-prog"  style="width:16.6%;"><span class="s-n">{{ $tickets->where('estado','PROGRAMADO')->count() }}</span><span class="s-l">Programados</span></td>
+      <td class="c-proc"  style="width:16.6%;"><span class="s-n">{{ $stats['en_proceso'] }}</span><span class="s-l">En Proceso</span></td>
+      <td class="c-pend"  style="width:16.6%;"><span class="s-n">{{ $tickets->where('estado','PENDIENTE')->count() }}</span><span class="s-l">Pendientes</span></td>
+      <td class="c-canc"  style="width:16.6%;"><span class="s-n">{{ $stats['cancelados'] }}</span><span class="s-l">Cancelados</span></td>
     </tr>
   </table>
 </div>
 
-{{-- ══════════════ RESUMEN POR USUARIO ══════════════ --}}
-<div class="sec-title"><span class="sec-title-text">Detalle por Usuario</span></div>
-
-<div class="user-wrap">
-  @forelse($porUsuario as $nombre => $ticketsUser)
+{{-- DETALLE POR USUARIO --}}
+<div class="sec-t"><span>Detalle por Usuario</span></div>
+<div class="uw">
+  @forelse($porUsuario as $nombre => $tu)
     @php
-        $cerr  = $ticketsUser->where('estado', 'CERRADO')->count();
-        $pend  = $ticketsUser->whereIn('estado', ['PENDIENTE', 'ABIERTO', 'PROGRAMADO'])->count();
-        $canc  = $ticketsUser->where('estado', 'CANCELADO')->count();
-        $proc  = $ticketsUser->where('estado', 'EN PROCESO')->count();
-        $first = $ticketsUser->first();
+      $cerr = $tu->where('estado','CERRADO')->count();
+      $prog = $tu->where('estado','PROGRAMADO')->count();
+      $proc = $tu->where('estado','EN PROCESO')->count();
+      $pend = $tu->where('estado','PENDIENTE')->count();
+      $canc = $tu->where('estado','CANCELADO')->count();
+      $f    = $tu->first();
     @endphp
-  <div class="user-card">
-
-    {{-- fila superior: nombre + contadores --}}
-    <table style="width:100%; border-collapse:collapse; background:#ebf8ff; border-bottom:1px solid #bee3f8;">
-      <tr>
-        <td style="padding:10px 14px; vertical-align:middle; width:55%;">
-          <div class="uname">{{ $nombre }}</div>
-          <div class="ucode">
-            Cód: {{ $first->codigo_usuario }}
-            &nbsp;&bull;&nbsp; DNI: {{ $first->usuario_dni }}
-          </div>
-        </td>
-        <td style="padding:10px 14px; vertical-align:middle; text-align:right;">
-          <table class="user-stats-table" style="display:inline-table; border-collapse:collapse;">
-            <tr>
-              <td style="text-align:center; padding:0 10px; border-left:1px solid #bee3f8;">
-                <span class="un un-total" style="font-size:16px; font-weight:700; display:block; color:#2d3748;">{{ $ticketsUser->count() }}</span>
-                <span class="ul" style="font-size:8px; font-weight:600; text-transform:uppercase; color:#718096; display:block; margin-top:2px;">Total</span>
-              </td>
-              <td style="text-align:center; padding:0 10px; border-left:1px solid #bee3f8;">
-                <span class="un" style="font-size:16px; font-weight:700; display:block; color:#276749;">{{ $cerr }}</span>
-                <span class="ul" style="font-size:8px; font-weight:600; text-transform:uppercase; color:#718096; display:block; margin-top:2px;">Cerrados</span>
-              </td>
-              <td style="text-align:center; padding:0 10px; border-left:1px solid #bee3f8;">
-                <span class="un" style="font-size:16px; font-weight:700; display:block; color:#2b6cb0;">{{ $proc }}</span>
-                <span class="ul" style="font-size:8px; font-weight:600; text-transform:uppercase; color:#718096; display:block; margin-top:2px;">En Proceso</span>
-              </td>
-              <td style="text-align:center; padding:0 10px; border-left:1px solid #bee3f8;">
-                <span class="un" style="font-size:16px; font-weight:700; display:block; color:#975a16;">{{ $pend }}</span>
-                <span class="ul" style="font-size:8px; font-weight:600; text-transform:uppercase; color:#718096; display:block; margin-top:2px;">Pendientes</span>
-              </td>
-              <td style="text-align:center; padding:0 10px; border-left:1px solid #bee3f8;">
-                <span class="un" style="font-size:16px; font-weight:700; display:block; color:#c53030;">{{ $canc }}</span>
-                <span class="ul" style="font-size:8px; font-weight:600; text-transform:uppercase; color:#718096; display:block; margin-top:2px;">Cancelados</span>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-
-    {{-- fila inferior: datos de contacto --}}
-    <table style="width:100%; border-collapse:collapse; background:white;">
-      <tr>
-        <td style="padding:8px 14px; width:50%; border-right:1px solid #f0f4f8;">
-          <span class="lbl">Correo electrónico</span>
-          <span class="val">{{ $first->usuario_correo }}</span>
-        </td>
-        <td style="padding:8px 14px; width:50%;">
-          <span class="lbl">Tickets en el periodo</span>
-          <span class="val">{{ $ticketsUser->count() }} ticket(s) registrado(s)</span>
-        </td>
-      </tr>
-    </table>
-
-  </div>
+    <div class="uc">
+      <table class="uc-top" style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td class="uc-tl">
+            <div class="uname">{{ $nombre }}</div>
+            <div class="ucode">Cód: {{ $f->codigo_usuario }} &bull; DNI: {{ $f->usuario_dni }}</div>
+          </td>
+          <td class="uc-tr">
+            <table class="ust">
+              <tr>
+                <td><span class="un" style="color:#0f172a;">{{ $tu->count() }}</span><span class="ul">Total</span></td>
+                <td><span class="un" style="color:#14532d;">{{ $cerr }}</span><span class="ul">Cerrados</span></td>
+                <td><span class="un" style="color:#1d4ed8;">{{ $prog }}</span><span class="ul">Programados</span></td>
+                <td><span class="un" style="color:#9a3412;">{{ $proc }}</span><span class="ul">En Proceso</span></td>
+                <td><span class="un" style="color:#713f12;">{{ $pend }}</span><span class="ul">Pendientes</span></td>
+                <td><span class="un" style="color:#9f1239;">{{ $canc }}</span><span class="ul">Cancelados</span></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <table style="width:100%;border-collapse:collapse;background:#fff;">
+        <tr>
+          <td style="padding:8px 14px;width:50%;border-right:1px solid #f1f5f9;"><span class="lbl">Correo electrónico</span><span class="val">{{ $f->usuario_correo }}</span></td>
+          <td style="padding:8px 14px;width:50%;"><span class="lbl">Tickets en el periodo</span><span class="val">{{ $tu->count() }} ticket(s) registrado(s)</span></td>
+        </tr>
+      </table>
+    </div>
   @empty
-  <div class="no-data">No hay usuarios con tickets en el periodo seleccionado.</div>
+    <div class="nodata">No hay usuarios con tickets en el periodo seleccionado.</div>
   @endforelse
 </div>
 
-{{-- ══════════════ DETALLE DE TICKETS ══════════════ --}}
-<div class="sec-title">
-  <span class="sec-title-text">Tickets del Periodo &mdash; {{ $stats['total'] }} registro(s)</span>
-</div>
+{{-- DETALLE DE TICKETS --}}
+<div class="sec-t"><span>Tickets del Periodo &mdash; {{ $stats['total'] }} registro(s)</span></div>
 
 @if($tickets->isEmpty())
-  <div class="no-data">No se encontraron tickets en el rango de fechas seleccionado.</div>
+  <div class="nodata">No se encontraron tickets en el rango de fechas seleccionado.</div>
 @else
-<div class="tickets-wrap">
+<div class="tw">
+  @php $gi = 0; @endphp
+  @foreach($porUsuario as $nomUsu => $tdu)
+    @php $fu = $tdu->first(); @endphp
 
-  @foreach($porUsuario as $nombreUsuario => $ticketsDelUsuario)
-  @php $firstUser = $ticketsDelUsuario->first(); @endphp
-
-  {{-- ── CABECERA DEL SOLICITANTE ── --}}
-  <table style="width:100%; border-collapse:collapse; margin-bottom:6px; page-break-inside:avoid; page-break-after:avoid;">
-    <tr>
-      <td style="background:#2b6cb0; padding:9px 14px; border-radius:6px 6px 0 0;">
-        <table style="width:100%; border-collapse:collapse;">
-          <tr>
-            <td style="vertical-align:middle;">
-              <span style="font-size:9px; color:#bee3f8; font-weight:700; text-transform:uppercase; letter-spacing:.8px; display:block; margin-bottom:2px;">Solicitante</span>
-              <span style="font-size:12px; color:#ffffff; font-weight:700;">{{ $nombreUsuario }}</span>
-            </td>
-            <td style="vertical-align:middle; text-align:right;">
-              <span style="font-size:9px; color:#bee3f8;">
-                Cód: <strong style="color:white;">{{ $firstUser->codigo_usuario }}</strong>
-                &nbsp;&bull;&nbsp;
-                DNI: <strong style="color:white;">{{ $firstUser->usuario_dni }}</strong>
-                &nbsp;&bull;&nbsp;
-                {{ $firstUser->usuario_correo }}
-              </span>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-
-  {{-- ── TICKETS DE ESTE SOLICITANTE ── --}}
-  @foreach($ticketsDelUsuario as $i => $t)
-  @php
-    $est = strtolower($t->estado);
-        $tcClass = match(true) {
-            str_contains($est, 'cerr')                                 => 'tc-cerrado',
-            str_contains($est, 'proce')                                => 'tc-proceso',
-            str_contains($est, 'pend') || str_contains($est, 'abier') 
-                || str_contains($est, 'progr')                         => 'tc-pendiente',
-            str_contains($est, 'canc')                                 => 'tc-cancelado',
-            default                                                    => 'tc-default',
-        };
-        $badgeClass = match(true) {
-            str_contains($est, 'cerr')                                 => 'badge-cerrado',
-            str_contains($est, 'proce')                                => 'badge-proceso',
-            str_contains($est, 'pend') || str_contains($est, 'abier') 
-                || str_contains($est, 'progr')                         => 'badge-pendiente',
-            str_contains($est, 'canc')                                 => 'badge-cancelado',
-            default                                                    => 'badge-default',
-        };
-    $prioBg = $t->prioridad_color
-        ? 'background:' . $t->prioridad_color . '22; color:' . $t->prioridad_color . '; border:1px solid ' . $t->prioridad_color . '55;'
-        : 'background:#edf2f7; color:#4a5568; border:1px solid #e2e8f0;';
-    // Número global del ticket en el reporte
-    static $globalIdx = 0;
-    $globalIdx++;
-  @endphp
-
-  <div class="ticket-card {{ $tcClass }}" style="border-radius: {{ $loop->last ? '0 0 6px 6px' : '0' }}; margin-bottom: {{ $loop->last ? '16px' : '2px' }};">
-
-    {{-- cabecera del ticket --}}
-    <table style="width:100%; border-collapse:collapse; background:#f7fafc; border-bottom:1px solid #e2e8f0;">
+    {{-- Cabecera solicitante --}}
+    <table style="width:100%;border-collapse:collapse;margin-bottom:0;page-break-inside:avoid;page-break-after:avoid;">
       <tr>
-        <td style="padding:7px 12px; font-size:9px; font-weight:700; color:#718096; text-transform:uppercase; letter-spacing:.5px;">
-          Ticket #{{ str_pad($globalIdx, 3, '0', STR_PAD_LEFT) }}
-          <span style="color:#bee3f8; margin:0 6px;">|</span>
-          <span style="color:#4a90d9;">{{ $t->tipo_ticket_nombre }}</span>
-        </td>
-        <td style="padding:7px 12px; font-size:9px; color:#4a5568; text-align:right;">
-          Creado el <strong style="color:#1a365d;">{{ \Carbon\Carbon::parse($t->created_at)->format('d/m/Y \a \l\a\s H:i') }}</strong>
-        </td>
-      </tr>
-    </table>
-
-    {{-- cuerpo: asunto + datos en una sola fila --}}
-    <table style="width:100%; border-collapse:collapse;">
-      <tr>
-        {{-- asunto --}}
-        <td style="width:40%; padding:10px 12px; vertical-align:top; border-right:1px solid #e2e8f0;">
-          <span style="font-size:8px; font-weight:700; color:#718096; text-transform:uppercase; letter-spacing:.3px; display:block; margin-bottom:4px;">Asunto</span>
-          <span style="font-size:11px; font-weight:700; color:#1a365d; line-height:1.4;">
-            {{ $t->asunto ?? $t->descripcion ?? 'Sin descripción' }}
-          </span>
-        </td>
-        {{-- estado + prioridad --}}
-        <td style="width:30%; padding:10px 12px; vertical-align:top; border-right:1px solid #e2e8f0;">
-          <table style="width:100%; border-collapse:collapse;">
+        <td style="background:#1e3a5f;padding:9px 14px;border-radius:6px 6px 0 0;">
+          <table style="width:100%;border-collapse:collapse;">
             <tr>
-              <td style="padding:4px 0; border-bottom:1px solid #f0f4f8; font-size:8px; font-weight:700; color:#718096; text-transform:uppercase; width:40%;">Estado</td>
-              <td style="padding:4px 0; border-bottom:1px solid #f0f4f8; font-size:10px;">
-                <span class="badge {{ $badgeClass }}">{{ $t->estado }}</span>
+              <td>
+                <span style="font-size:9px;color:#7ecfff;font-weight:700;text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:2px;">Solicitante</span>
+                <span style="font-size:12px;color:#fff;font-weight:700;">{{ $nomUsu }}</span>
               </td>
-            </tr>
-            <tr>
-              <td style="padding:4px 0; font-size:8px; font-weight:700; color:#718096; text-transform:uppercase;">Prioridad</td>
-              <td style="padding:4px 0; font-size:10px;">
-                <span class="badge" style="{{ $prioBg }}">{{ $t->prioridad_nombre }}</span>
+              <td style="text-align:right;">
+                <span style="font-size:9px;color:#bae6fd;">
+                  Cód: <strong style="color:#fff;">{{ $fu->codigo_usuario }}</strong>
+                  &nbsp;&bull;&nbsp; DNI: <strong style="color:#fff;">{{ $fu->usuario_dni }}</strong>
+                  &nbsp;&bull;&nbsp; {{ $fu->usuario_correo }}
+                </span>
               </td>
             </tr>
           </table>
         </td>
-        {{-- técnico --}}
-        <td style="width:30%; padding:10px 12px; vertical-align:top;">
-          <span style="font-size:8px; font-weight:700; color:#718096; text-transform:uppercase; letter-spacing:.3px; display:block; margin-bottom:4px;">Técnico asignado</span>
-          <span style="font-size:10px; font-weight:600; color:#2d3748;">
-            {{ $t->tecnico_nombre ?: 'Sin asignar' }}
-          </span>
-        </td>
       </tr>
     </table>
 
-  </div>{{-- fin ticket-card --}}
-  @endforeach
+    {{-- Tickets del solicitante --}}
+    @foreach($tdu as $t)
+      @php
+        $gi++;
+        $est = strtoupper(trim($t->estado));
+        $tcCls = match(true) {
+          str_contains($est,'CERR')                       => 'tc-cerr',
+          str_contains($est,'PROGR')                      => 'tc-prog',
+          str_contains($est,'PROCE')                      => 'tc-proc',
+          str_contains($est,'PEND')                       => 'tc-pend',
+          str_contains($est,'CANC')                       => 'tc-canc',
+          default                                         => 'tc-def',
+        };
+        $badgeCls = match(true) {
+          str_contains($est,'CERR')                       => 'b-cerr',
+          str_contains($est,'PROGR')                      => 'b-prog',
+          str_contains($est,'PROCE')                      => 'b-proc',
+          str_contains($est,'PEND')                       => 'b-pend',
+          str_contains($est,'CANC')                       => 'b-canc',
+          default                                         => 'b-def',
+        };
+        $prioBg = $t->prioridad_color
+          ? 'background:'.$t->prioridad_color.'22;color:'.$t->prioridad_color.';border:1px solid '.$t->prioridad_color.'55;'
+          : 'background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;';
+      @endphp
 
-  @endforeach
+      <div class="tc {{ $tcCls }}" style="{{ $loop->last ? 'border-radius:0 0 6px 6px;margin-bottom:16px;' : '' }}">
 
+        {{-- Cabecera ticket --}}
+        <table class="tc-hdr" style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td class="tc-num">
+              Ticket #{{ str_pad($gi,3,'0',STR_PAD_LEFT) }}
+              <span style="color:#cbd5e1;margin:0 5px;">|</span>
+              <span style="color:#3b82f6;">{{ $t->tipo_ticket_nombre }}</span>
+            </td>
+            <td class="tc-fecha">
+              Creado el <strong>{{ \Carbon\Carbon::parse($t->created_at)->format('d/m/Y \a \l\a\s H:i') }}</strong>
+            </td>
+          </tr>
+        </table>
+
+        {{-- Cuerpo ticket --}}
+        <table class="tc-body" style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td class="tc-col1">
+              <span class="tc-asunto-lbl">Asunto</span>
+              <span class="tc-asunto">{{ $t->asunto ?? 'Sin descripción' }}</span>
+            </td>
+            <td class="tc-col2">
+              <table class="dtbl">
+                <tr>
+                  <td class="dlbl">Estado</td>
+                  <td class="dval"><span class="badge {{ $badgeCls }}">{{ $t->estado }}</span></td>
+                </tr>
+                <tr>
+                  <td class="dlbl">Prioridad</td>
+                  <td class="dval"><span class="badge" style="{{ $prioBg }}">{{ $t->prioridad_nombre }}</span></td>
+                </tr>
+                @if($t->marca || $t->tipo_equipo)
+                <tr>
+                  <td class="dlbl">Equipo</td>
+                  <td class="dval">{{ implode(' ', array_filter([$t->tipo_equipo, $t->marca, $t->modelo])) }}</td>
+                </tr>
+                @endif
+              </table>
+            </td>
+            <td class="tc-col3">
+              <span class="tec-lbl">Técnico asignado</span>
+              <span class="tec-val">{{ $t->tecnico_nombre ?: 'Sin asignar' }}</span>
+              @if($t->fecha_en_proceso)
+                <span class="tec-lbl" style="margin-top:8px;">En proceso desde</span>
+                <span class="tec-val">{{ \Carbon\Carbon::parse($t->fecha_en_proceso)->format('d/m/Y') }}</span>
+              @endif
+              @if($t->fecha_resuelto)
+                <span class="tec-lbl" style="margin-top:6px;">Resuelto el</span>
+                <span class="tec-val">{{ \Carbon\Carbon::parse($t->fecha_resuelto)->format('d/m/Y') }}</span>
+              @endif
+            </td>
+          </tr>
+        </table>
+
+      </div>
+    @endforeach
+  @endforeach
 </div>
 @endif
 
-</div>{{-- fin content-wrap --}}
+</div>{{-- fin wrap --}}
 
-{{-- ══════════════ FOOTER FIJO ══════════════ --}}
-<table class="footer" style="width:100%; border-collapse:collapse;">
+{{-- FOOTER --}}
+<table class="ftr" style="width:100%;border-collapse:collapse;">
   <tr>
-    <td class="footer-left">JHARDSYSTEX &mdash; Soluciones Especializadas TI &mdash; Documento confidencial</td>
-    <td class="footer-right">{{ $cliente->razon_social }} &bull; RUC {{ $cliente->ruc }} &bull; {{ now()->format('d/m/Y H:i') }}</td>
+    <td class="ftr-l">JHARDSYSTEX &mdash; Soluciones Especializadas de TI &mdash; Documento confidencial</td>
+    <td class="ftr-r">{{ $cliente->razon_social }} &bull; RUC {{ $cliente->ruc }} &bull; {{ now()->format('d/m/Y H:i') }}</td>
   </tr>
 </table>
 
