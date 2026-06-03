@@ -30,6 +30,7 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
     Route::get('/mistickets',    [ClienteController::class, 'tickets'])->name('tickets');
     Route::post('/ticket',       [TicketController::class, 'store'])->name('ticket.store');
     Route::get('/contactos',     [ClienteController::class, 'contactos'])->name('contactos');
+    Route::get('/reporte-pdf', [ClienteController::class, 'reportePdf'])->name('reporte.pdf');
 
     // Gestión de usuarios - AHORA USA EL NUEVO CONTROLADOR
     Route::get('/usuarios',              [ClienteUsuarioController::class, 'index'])->name('usuarios');
