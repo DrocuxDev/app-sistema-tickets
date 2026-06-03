@@ -52,6 +52,14 @@ return new class extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'nombre' => 'Licenciamiento de Software',
+                'prefijo' => 'LIC',
+                'descripcion' => 'Adquisición, activación, renovación y gestión de licencias de software empresarial y herramientas digitales.',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 
