@@ -7,46 +7,46 @@
 body { font-family: DejaVu Sans, sans-serif; font-size:10px; color:#111; background:#fff; }
 
 /* ── HEADER ── */
-.hdr       { background:#1a1a2e; width:100%; }
+.hdr       { background:#1d4ed8; width:100%; }
 .hdr-inner { padding:16px 24px 12px; display:table; width:100%; }
 .hdr-l     { display:table-cell; vertical-align:middle; }
 .hdr-r     { display:table-cell; vertical-align:middle; text-align:right; }
 .brand     { font-size:16px; font-weight:700; color:#fff; letter-spacing:2px; }
-.brand-s   { font-size:8px; color:#aaa; letter-spacing:2px; margin-top:3px; }
+.brand-s   { font-size:8px; color:#bfdbfe; letter-spacing:2px; margin-top:3px; }
 .doc-t     { font-size:12px; font-weight:700; color:#fff; letter-spacing:.5px; }
-.doc-s     { font-size:8px; color:#aaa; margin-top:3px; }
-.hdr-line  { height:3px; background:#333; }
+.doc-s     { font-size:8px; color:#bfdbfe; margin-top:3px; }
+.hdr-line  { height:3px; background:#1e40af; }
 
 /* ── CONTENT ── */
 .wrap { padding-bottom:44px; }
 
 /* ── BLOQUE (secciones con cabecera oscura) ── */
-.blk     { margin:14px 20px; border:1px solid #ccc; border-radius:4px; overflow:hidden; page-break-inside:avoid; }
-.blk-hdr { background:#1a1a2e; padding:7px 14px; display:table; width:100%; }
+.blk     { margin:14px 20px; border:1px solid #bfdbfe; border-radius:4px; overflow:hidden; page-break-inside:avoid; }
+.blk-hdr { background:#1d4ed8; padding:7px 14px; display:table; width:100%; }
 .blk-hdr-l { display:table-cell; vertical-align:middle; }
 .blk-hdr-r { display:table-cell; vertical-align:middle; text-align:right; }
 .blk-t   { color:#fff; font-size:9px; font-weight:700; letter-spacing:.9px; text-transform:uppercase; }
-.badge-tipo { background:#fff; color:#1a1a2e; font-size:8px; font-weight:700; padding:3px 10px; border-radius:20px; }
+.badge-tipo { background:#fff; color:#1d4ed8; font-size:8px; font-weight:700; padding:3px 10px; border-radius:20px; }
 
 /* ── TABLA INFO CLIENTE ── */
 .inf-tbl   { width:100%; border-collapse:collapse; background:#f9f9f9; }
 .inf-tbl td { padding:9px 14px; border-right:1px solid #ddd; border-bottom:1px solid #ddd; vertical-align:top; }
 .inf-tbl td:last-child { border-right:none; }
 .inf-tbl tr:last-child td { border-bottom:none; }
-.lbl { font-size:8px; color:#555; font-weight:700; text-transform:uppercase; letter-spacing:.4px; display:block; margin-bottom:3px; }
+.lbl { font-size:8px; color:#1d4ed8; font-weight:700; text-transform:uppercase; letter-spacing:.4px; display:block; margin-bottom:3px; }
 .val { font-size:10px; font-weight:600; color:#111; }
 
 /* ── PERIODO ── */
-.periodo   { margin:0 20px 14px; background:#f5f5f5; border-left:3px solid #333; padding:9px 14px; display:table; width:calc(100% - 40px); }
+.periodo   { margin:0 20px 14px; background:#eff6ff; padding:9px 14px; display:table; width:calc(100% - 40px); }
 .periodo-l { display:table-cell; vertical-align:middle; }
 .periodo-r { display:table-cell; vertical-align:middle; text-align:right; }
-.p-lbl     { font-size:8px; font-weight:700; color:#333; text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:3px; }
+.p-lbl     { font-size:8px; font-weight:700; color:#1d4ed8; text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:3px; }
 .p-val     { font-size:10px; font-weight:700; color:#111; }
 .p-gen     { font-size:8px; color:#888; }
 
 /* ── SEC TITLE ── */
 .sec-t { margin:14px 20px 8px; }
-.sec-t span { background:#1a1a2e; color:#fff; font-size:9px; font-weight:700; letter-spacing:.9px; text-transform:uppercase; padding:6px 14px; border-radius:3px; display:block; }
+.sec-t span { background:#1d4ed8; color:#fff; font-size:9px; font-weight:700; letter-spacing:.9px; text-transform:uppercase; padding:6px 14px; border-radius:3px; display:block; }
 
 /* ── ESTADÍSTICAS — fondo blanco, números negros, sin color ── */
 .stats-w   { margin:0 20px 14px; }
@@ -75,13 +75,13 @@ body { font-family: DejaVu Sans, sans-serif; font-size:10px; color:#111; backgro
 .tc { border:1px solid #ddd; margin-bottom:2px; overflow:hidden; page-break-inside:avoid; }
 .tc:last-child { margin-bottom:16px; border-radius:0 0 4px 4px; }
 
-/* borde izquierdo por estado — SOLO color aquí */
-.tc-cerr { border-left:4px solid #16a34a; }
-.tc-prog { border-left:4px solid #2563eb; }
-.tc-proc { border-left:4px solid #ea580c; }
-.tc-pend { border-left:4px solid #ca8a04; }
-.tc-canc { border-left:4px solid #dc2626; }
-.tc-def  { border-left:4px solid #94a3b8; }
+/* borde izquierdo tickets — sin línea */
+.tc-cerr { }
+.tc-prog { }
+.tc-proc { }
+.tc-pend { }
+.tc-canc { }
+.tc-def  { }
 
 /* cabecera ticket */
 .tc-hdr  { background:#f5f5f5; border-bottom:1px solid #ddd; display:table; width:100%; }
@@ -106,29 +106,29 @@ body { font-family: DejaVu Sans, sans-serif; font-size:10px; color:#111; backgro
 .dlbl   { color:#666; font-weight:700; font-size:8px; text-transform:uppercase; width:40%; padding-right:6px; }
 .dval   { color:#222; font-weight:600; }
 
-/* ── BADGES — ÚNICO color en el documento ── */
-.badge  { display:inline-block; padding:2px 9px; border-radius:20px; font-size:8px; font-weight:700; letter-spacing:.3px; }
-.b-cerr { background:#dcfce7; color:#14532d; border:1px solid #bbf7d0; }
+/* ── BADGES — todos azul uniforme ── */
+.badge  { display:inline-block; padding:2px 9px; border-radius:20px; font-size:8px; font-weight:700; letter-spacing:.3px; background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; }
+.b-cerr { background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; }
 .b-prog { background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; }
-.b-proc { background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; }
-.b-pend { background:#fef9c3; color:#713f12; border:1px solid #fde68a; }
-.b-canc { background:#fee2e2; color:#9f1239; border:1px solid #fecaca; }
-.b-def  { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; }
+.b-proc { background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; }
+.b-pend { background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; }
+.b-canc { background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; }
+.b-def  { background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; }
 
 .tec-lbl { font-size:8px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:.3px; display:block; margin-bottom:4px; }
 .tec-val { font-size:10px; font-weight:600; color:#222; }
 
 /* ── SOLICITANTE HEADER ── */
-.sol-bg { background:#1a1a2e; padding:9px 14px; border-radius:4px 4px 0 0; display:table; width:100%; }
+.sol-bg { background:#1d4ed8; padding:9px 14px; border-radius:4px 4px 0 0; display:table; width:100%; }
 
 /* ── NO DATA ── */
 .nodata { margin:0 20px; text-align:center; padding:28px; color:#aaa; font-size:10px; border:2px dashed #ddd; border-radius:4px; }
 
 /* ── FOOTER ── */
-.ftr   { position:fixed; bottom:0; left:0; right:0; background:#1a1a2e; padding:7px 20px; display:table; width:100%; }
+.ftr   { position:fixed; bottom:0; left:0; right:0; background:#1d4ed8; padding:7px 20px; display:table; width:100%; }
 .ftr td { font-size:8px; vertical-align:middle; padding:0; }
-.ftr-l { color:#aaa; }
-.ftr-r { color:#ccc; text-align:right; }
+.ftr-l { color:#bfdbfe; }
+.ftr-r { color:#dbeafe; text-align:right; }
 </style>
 </head>
 <body>
@@ -336,7 +336,7 @@ body { font-family: DejaVu Sans, sans-serif; font-size:10px; color:#111; backgro
                 </tr>
                 <tr>
                   <td class="dlbl">Prioridad</td>
-                  <td class="dval"><span class="badge" style="{{ $prioBg }}">{{ $t->prioridad_nombre }}</span></td>
+                  <td class="dval"><span class="badge">{{ $t->prioridad_nombre }}</span></td>
                 </tr>
                 @if($t->tipo_equipo || $t->marca)
                 <tr>
