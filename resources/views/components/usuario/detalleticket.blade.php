@@ -199,13 +199,14 @@
 
 {{-- ── Lightbox ── --}}
 <div id="dtkLightbox" onclick="closeLightbox()"
-    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out;">
+    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;align-items:center;justify-content:center;cursor:zoom-out;flex-direction:column;gap:12px;">
     <img id="dtkLightboxImg" src="" alt=""
-        style="display:none;max-width:92vw;max-height:92vh;border-radius:12px;box-shadow:0 24px 80px rgba(0,0,0,.6);object-fit:contain;">
+        style="display:none;max-width:92vw;max-height:88vh;border-radius:12px;box-shadow:0 24px 80px rgba(0,0,0,.6);object-fit:contain;">
     <video id="dtkLightboxVideo" controls
-        style="display:none;max-width:92vw;max-height:92vh;border-radius:12px;box-shadow:0 24px 80px rgba(0,0,0,.6);">
+        style="display:none;max-width:92vw;max-height:88vh;border-radius:12px;box-shadow:0 24px 80px rgba(0,0,0,.6);">
         <source id="dtkLightboxVideoSrc" src="">
     </video>
+    <div style="color:rgba(255,255,255,.5);font-size:12px;letter-spacing:.05em;">Click en cualquier lugar para cerrar · ESC</div>
 </div>
 
 <style>
@@ -478,10 +479,17 @@ function renderEvidencias(containerId, lista) {
                     <source src="${url}">
                 </video>
                 <div class="dtk-ev-name" title="${nombre}">${nombre}</div>`;
+        } else if (ext === 'pdf') {
+            const ico = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
+            item.innerHTML = `
+                <a href="${url}" target="_blank" class="dtk-ev-file" style="background:#fef2f2;">
+                    ${ico}<span style="color:#dc2626;">PDF</span>
+                </a>
+                <div class="dtk-ev-name" title="${nombre}">${nombre}</div>`;
         } else {
             const ico = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
             item.innerHTML = `
-                <a href="${url}" target="_blank" class="dtk-ev-file">${ico}<span>${ext}</span></a>
+                <a href="${url}" target="_blank" class="dtk-ev-file">${ico}<span>${ext.toUpperCase()}</span></a>
                 <div class="dtk-ev-name" title="${nombre}">${nombre}</div>`;
         }
         grid.appendChild(item);
@@ -497,25 +505,54 @@ function renderReporte(lista) {
 
     if (!lista || lista.length === 0) {
         box.classList.add('dtk-empty-ev');
-        box.style.setProperty('--empty-text', '"— Sin reporte adjunto —"');
         return;
     }
 
-    const rep    = lista[0];
-    const repUrl = '/storage/' + rep.archivo_reporte;
-    const repExt = rep.archivo_reporte.split('.').pop().toLowerCase();
-    const repNom = rep.nombre_original ?? 'Reporte técnico';
-    const ico    = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
-
-    box.style.alignItems    = 'stretch';
+    box.style.alignItems     = 'stretch';
     box.style.justifyContent = 'flex-start';
-    box.innerHTML = `
-        <div class="dtk-ev-grid">
-            <div class="dtk-ev-item">
-                <a href="${repUrl}" target="_blank" class="dtk-ev-file">${ico}<span>${repExt}</span></a>
-                <div class="dtk-ev-name" title="${repNom}">${repNom}</div>
-            </div>
-        </div>`;
+
+    const grid = document.createElement('div');
+    grid.className = 'dtk-ev-grid';
+
+    lista.forEach(rep => {
+        const repUrl = '/storage/' + rep.archivo_reporte;
+        const repExt = rep.archivo_reporte.split('.').pop().toLowerCase();
+        const repNom = rep.nombre_original ?? 'Reporte técnico';
+        const item   = document.createElement('div');
+        item.className = 'dtk-ev-item';
+
+        if (['jpg','jpeg','png','gif','webp'].includes(repExt)) {
+            // Imagen → miniatura clicable que abre lightbox
+            item.innerHTML = `
+                <img src="${repUrl}" alt="${repNom}" class="dtk-ev-thumb"
+                     onclick="openLightbox('${repUrl}','image')">
+                <div class="dtk-ev-name" title="${repNom}">${repNom}</div>`;
+        } else if (repExt === 'pdf') {
+            // PDF → ícono rojo clicable que abre en nueva pestaña
+            const ico = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
+            item.innerHTML = `
+                <a href="${repUrl}" target="_blank" class="dtk-ev-file" style="background:#fef2f2;">
+                    ${ico}<span style="color:#dc2626;">PDF</span>
+                </a>
+                <div class="dtk-ev-name" title="${repNom}">${repNom}</div>`;
+        } else if (['mp4','mov','webm'].includes(repExt)) {
+            // Video → miniatura clicable
+            item.innerHTML = `
+                <video style="width:100%;height:100px;object-fit:cover;display:block;cursor:pointer;"
+                    onclick="openLightbox('${repUrl}','video')" muted>
+                    <source src="${repUrl}">
+                </video>
+                <div class="dtk-ev-name" title="${repNom}">${repNom}</div>`;
+        } else {
+            // Cualquier otro archivo → ícono genérico con descarga
+            const ico = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+            item.innerHTML = `
+                <a href="${repUrl}" target="_blank" class="dtk-ev-file">${ico}<span>${repExt.toUpperCase()}</span></a>
+                <div class="dtk-ev-name" title="${repNom}">${repNom}</div>`;
+        }
+        grid.appendChild(item);
+    });
+    box.appendChild(grid);
 }
 
 // ════════════════════════════════════════

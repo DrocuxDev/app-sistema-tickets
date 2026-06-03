@@ -248,7 +248,7 @@
     {{-- Barra búsqueda --}}
     <div class="tk-search-bar">
         <div class="tk-search-input">
-            <span>&#128269;</span>
+         
             <input type="text" id="searchInput" placeholder="Buscar por código de ticket..." oninput="renderTable()">
         </div>
         <div class="tk-date-wrap">
