@@ -382,10 +382,10 @@ public function storeUsuario(Request $request)
     // Estadísticas globales
     $stats = [
         'total'      => $tickets->count(),
-        'cerrados'   => $tickets->where('estado', 'Cerrado')->count(),
-        'cancelados' => $tickets->where('estado', 'Cancelado')->count(),
-        'pendientes' => $tickets->whereIn('estado', ['Pendiente', 'Abierto'])->count(),
-        'en_proceso' => $tickets->where('estado', 'En Proceso')->count(),
+        'cerrados'   => $tickets->where('estado', 'CERRADO')->count(),
+        'cancelados' => $tickets->where('estado', 'CANCELADO')->count(),
+        'pendientes' => $tickets->whereIn('estado', ['PENDIENTE', 'ABIERTO', 'PROGRAMADO'])->count(),
+        'en_proceso' => $tickets->where('estado', 'EN PROCESO')->count(),
     ];
 
     // Agrupar por usuario para detalle
