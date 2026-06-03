@@ -254,7 +254,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { opacity:.5; cursor:point
     {{-- Header --}}
     <div class="tk-header">
         <div class="tk-header-left">
-            <h1>Mis Tickets</h1>
+            <h1>Panel Usuario</h1>
             <p>Gestiona y hace seguimiento de tus solicitudes de soporte</p>
         </div>
         <button type="button" class="tk-btn-new" onclick="abrirModalTicket()">

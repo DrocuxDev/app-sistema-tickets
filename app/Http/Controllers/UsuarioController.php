@@ -32,9 +32,27 @@ class UsuarioController extends Controller
             ->join('estado_ticket', 'ticket.id_estado',               '=', 'estado_ticket.id_estado')
             ->join('cliente',       'ticket.id_cliente',              '=', 'cliente.id_cliente')
             ->join('usuario as usu','ticket.id_usuario',              '=', 'usu.id_usuario')
-            ->leftJoin('tecnico as tec', 'ticket.id_tecnico_asignado','=', 'tec.id_tecnico')  // ← CAMBIO
+            ->leftJoin('tecnico as tec', 'ticket.id_tecnico_asignado','=', 'tec.id_tecnico')
             ->select(
-                'ticket.*',
+                'ticket.id_ticket',
+                'ticket.codigo_ticket',
+                'ticket.id_cliente',
+                'ticket.id_usuario',
+                'ticket.id_tecnico_asignado',
+                'ticket.id_tipo_ticket',
+                'ticket.id_prioridad',
+                'ticket.id_estado',
+                'ticket.tipo_equipo',
+                'ticket.marca',
+                'ticket.modelo',
+                'ticket.serie_serial',
+                'ticket.asunto',
+                'ticket.problema',
+                'ticket.fecha_programado',
+                'ticket.fecha_en_proceso',
+                'ticket.fecha_resuelto',
+                'ticket.created_at',
+                'ticket.updated_at',
                 'tipo_ticket.nombre              as tipo_ticket_nombre',
                 'prioridad.nombre                as prioridad_nombre',
                 'prioridad.color_hex             as prioridad_color',
@@ -44,8 +62,8 @@ class UsuarioController extends Controller
                 DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
                 'usu.codigo_usuario',
                 DB::raw("(COALESCE(usu.codigo_pais,'')||' '||COALESCE(usu.telefono,'')) as usuario_telefono"),
-                DB::raw("(COALESCE(tec.nombre,'')||' '||COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),  // ← CAMBIO
-                'tec.codigo_tecnico as tecnico_codigo'  // ← CAMBIO
+                DB::raw("(COALESCE(tec.nombre,'')||' '||COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
+                'tec.codigo_tecnico as tecnico_codigo'
             )
             ->where('ticket.id_usuario', session('id'))
             ->orderByDesc('ticket.created_at')
@@ -167,7 +185,25 @@ class UsuarioController extends Controller
             ->join('usuario as usu','ticket.id_usuario',              '=', 'usu.id_usuario')
             ->leftJoin('tecnico as tec', 'ticket.id_tecnico_asignado', '=', 'tec.id_tecnico')
             ->select(
-                'ticket.*',
+                'ticket.id_ticket',
+                'ticket.codigo_ticket',
+                'ticket.id_cliente',
+                'ticket.id_usuario',
+                'ticket.id_tecnico_asignado',
+                'ticket.id_tipo_ticket',
+                'ticket.id_prioridad',
+                'ticket.id_estado',
+                'ticket.tipo_equipo',
+                'ticket.marca',
+                'ticket.modelo',
+                'ticket.serie_serial',
+                'ticket.asunto',
+                'ticket.problema',
+                'ticket.fecha_programado',
+                'ticket.fecha_en_proceso',
+                'ticket.fecha_resuelto',
+                'ticket.created_at',
+                'ticket.updated_at',
                 'tipo_ticket.nombre              as tipo_ticket_nombre',
                 'prioridad.nombre                as prioridad_nombre',
                 'prioridad.color_hex             as prioridad_color',
