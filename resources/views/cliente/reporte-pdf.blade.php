@@ -419,13 +419,13 @@
 
 <div class="user-wrap">
   @forelse($porUsuario as $nombre => $ticketsUser)
-  @php
-    $cerr  = $ticketsUser->where('estado','Cerrado')->count();
-    $pend  = $ticketsUser->whereIn('estado',['Pendiente','Abierto'])->count();
-    $canc  = $ticketsUser->where('estado','Cancelado')->count();
-    $proc  = $ticketsUser->where('estado','En Proceso')->count();
-    $first = $ticketsUser->first();
-  @endphp
+    @php
+        $cerr  = $ticketsUser->where('estado', 'CERRADO')->count();
+        $pend  = $ticketsUser->whereIn('estado', ['PENDIENTE', 'ABIERTO', 'PROGRAMADO'])->count();
+        $canc  = $ticketsUser->where('estado', 'CANCELADO')->count();
+        $proc  = $ticketsUser->where('estado', 'EN PROCESO')->count();
+        $first = $ticketsUser->first();
+    @endphp
   <div class="user-card">
 
     {{-- fila superior: nombre + contadores --}}
@@ -529,20 +529,22 @@
   @foreach($ticketsDelUsuario as $i => $t)
   @php
     $est = strtolower($t->estado);
-    $tcClass = match(true) {
-        str_contains($est,'cerr')                                => 'tc-cerrado',
-        str_contains($est,'proce')                               => 'tc-proceso',
-        str_contains($est,'pend') || str_contains($est,'abier') => 'tc-pendiente',
-        str_contains($est,'canc')                                => 'tc-cancelado',
-        default                                                  => 'tc-default',
-    };
-    $badgeClass = match(true) {
-        str_contains($est,'cerr')                                => 'badge-cerrado',
-        str_contains($est,'proce')                               => 'badge-proceso',
-        str_contains($est,'pend') || str_contains($est,'abier') => 'badge-pendiente',
-        str_contains($est,'canc')                                => 'badge-cancelado',
-        default                                                  => 'badge-default',
-    };
+        $tcClass = match(true) {
+            str_contains($est, 'cerr')                                 => 'tc-cerrado',
+            str_contains($est, 'proce')                                => 'tc-proceso',
+            str_contains($est, 'pend') || str_contains($est, 'abier') 
+                || str_contains($est, 'progr')                         => 'tc-pendiente',
+            str_contains($est, 'canc')                                 => 'tc-cancelado',
+            default                                                    => 'tc-default',
+        };
+        $badgeClass = match(true) {
+            str_contains($est, 'cerr')                                 => 'badge-cerrado',
+            str_contains($est, 'proce')                                => 'badge-proceso',
+            str_contains($est, 'pend') || str_contains($est, 'abier') 
+                || str_contains($est, 'progr')                         => 'badge-pendiente',
+            str_contains($est, 'canc')                                 => 'badge-cancelado',
+            default                                                    => 'badge-default',
+        };
     $prioBg = $t->prioridad_color
         ? 'background:' . $t->prioridad_color . '22; color:' . $t->prioridad_color . '; border:1px solid ' . $t->prioridad_color . '55;'
         : 'background:#edf2f7; color:#4a5568; border:1px solid #e2e8f0;';
