@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use App\Models\Tecnico;
 use App\Models\Usuario;
 use App\Models\Cliente;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
@@ -1134,5 +1135,109 @@ public function clientes()
     return view('admin.clientes', compact(
         'tickets', 'tecnicos', 'usuarios_lista', 'clientes', 'resumen'
     ));
+}
+    public function reportePdf(Request $request)
+{
+    // ── Clientes filtrados ──
+    $clientesQuery = Cliente::orderBy('razon_social');
+    if ($request->filled('cliente_id')) {
+        $clientesQuery->where('id_cliente', $request->cliente_id);
+    }
+    $clientesFiltrados = $clientesQuery->get();
+
+    $desde = $request->desde . ' 00:00:00';
+    $hasta = $request->hasta . ' 23:59:59';
+
+    // ── Usuarios elegibles ──
+    $usuarioIds = Usuario::whereIn('id_cliente', $clientesFiltrados->pluck('id_cliente'))
+                         ->pluck('id_usuario')->toArray();
+
+    if ($request->tipo === 'individual' && $request->filled('usuario_id')) {
+        $usuarioIds = [$request->usuario_id];
+    }
+
+    // ── Tickets ──
+    $tickets = DB::table('ticket')
+        ->join('tipo_ticket',   'ticket.id_tipo_ticket', '=', 'tipo_ticket.id_tipo_ticket')
+        ->join('prioridad',     'ticket.id_prioridad',   '=', 'prioridad.id_prioridad')
+        ->join('estado_ticket', 'ticket.id_estado',      '=', 'estado_ticket.id_estado')
+        ->join('cliente',       'ticket.id_cliente',     '=', 'cliente.id_cliente')
+        ->join('usuario as usu','ticket.id_usuario',     '=', 'usu.id_usuario')
+        ->leftJoin('tecnico as tec','ticket.id_tecnico_asignado', '=', 'tec.id_tecnico')
+        ->select(
+            'ticket.*',
+            'tipo_ticket.nombre           as tipo_ticket_nombre',
+            'prioridad.nombre             as prioridad_nombre',
+            'prioridad.color_hex          as prioridad_color',
+            'estado_ticket.nombre_estado  as estado',
+            'cliente.razon_social',
+            'cliente.ruc',
+            'cliente.id_cliente           as cliente_id',
+            DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno) as usuario_nombre"),
+            'usu.codigo_usuario',
+            'usu.correo                   as usuario_correo',
+            'usu.dni                      as usuario_dni',
+            DB::raw("COALESCE(CONCAT(tec.nombre,' ',tec.apellido_paterno), 'Sin asignar') as tecnico_nombre")
+        )
+        ->whereIn('ticket.id_usuario', $usuarioIds)
+        ->whereBetween('ticket.created_at', [$desde, $hasta])
+        ->orderBy('cliente.razon_social')
+        ->orderByDesc('ticket.created_at')
+        ->get();
+
+    // ── Stats globales ──
+        $stats = [
+            'total'      => $tickets->count(),
+            'cerrados'   => $tickets->where('estado', 'CERRADO')->count(),
+            'cancelados' => $tickets->where('estado', 'CANCELADO')->count(),
+            'pendientes' => $tickets->whereIn('estado', ['PENDIENTE', 'ABIERTO', 'PROGRAMADO'])->count(),
+            'en_proceso' => $tickets->where('estado', 'EN PROCESO')->count(),
+        ];
+
+    // ── Agrupado: por cliente → por usuario ──
+        $porCliente = $tickets->groupBy('cliente_id')->map(function ($tc) {
+            return [
+                'razon_social' => $tc->first()->razon_social,
+                'ruc'          => $tc->first()->ruc,
+                'tickets'      => $tc->count(),
+                'cerrados'     => $tc->where('estado', 'CERRADO')->count(),
+                'cancelados'   => $tc->where('estado', 'CANCELADO')->count(),
+                'pendientes'   => $tc->whereIn('estado', ['PENDIENTE', 'ABIERTO', 'PROGRAMADO'])->count(),
+                'en_proceso'   => $tc->where('estado', 'EN PROCESO')->count(),
+                'por_usuario'  => $tc->groupBy('usuario_nombre'),
+            ];
+        });
+
+    // ── Variables que la vista necesita ──
+    // $porUsuario = resumen global de usuarios (para la sección "Detalle por Usuario")
+    $porUsuario = $tickets->groupBy('usuario_nombre');
+
+    // $usuarios = colección de usuarios (para el count del bloque info)
+    $usuarios = Usuario::whereIn('id_cliente', $clientesFiltrados->pluck('id_cliente'))->get();
+
+    // $cliente = objeto para el bloque header (si es reporte de 1 cliente usamos ese,
+    //            si son todos usamos uno ficticio)
+    if ($request->filled('cliente_id') && $clientesFiltrados->count() === 1) {
+        $cliente = $clientesFiltrados->first();
+    } else {
+        // Objeto genérico para el header cuando son TODOS los clientes
+        $cliente = (object)[
+            'razon_social' => 'TODOS LOS CLIENTES',
+            'ruc'          => '—',
+            'correo'       => '—',
+            'rubro'        => '—',
+            'sedes'        => '—',
+        ];
+    }
+
+    $pdf = Pdf::loadView('admin.reporte-pdf', compact(
+        'clientesFiltrados', 'tickets', 'stats',
+        'porCliente', 'porUsuario', 'usuarios', 'cliente', 'request'
+    ))->setPaper('a4', 'portrait');
+
+    $sufijo  = $request->filled('cliente_id') ? 'cliente_' . $request->cliente_id : 'todos';
+    $archivo = 'reporte_admin_' . $sufijo . '_' . $request->desde . '_' . $request->hasta . '.pdf';
+
+    return $pdf->download($archivo);
 }
 }

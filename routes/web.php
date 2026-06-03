@@ -53,7 +53,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/clientes',      [AdminController::class, 'clientes'])->name('clientes');
     Route::get('/mis-tickets',   [AdminController::class, 'misTickets'])->name('mistickets');
     Route::get('/contactos',     [AdminController::class, 'contactos'])->name('contactos');
-    
+    Route::get('/reporte-pdf', [AdminController::class, 'reportePdf'])->name('reporte.pdf');
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
 
     Route::post('/clientes/{id}/estado', [AdminController::class, 'cambiarEstado']);
