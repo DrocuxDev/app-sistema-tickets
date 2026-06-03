@@ -1,6 +1,7 @@
 @include('components.cliente.sidebar-cliente')
 @include('components.cliente.nuevousuario')
 @include('components.notificaciones.alertas')
+@include('components.cliente.modalreporte')
 
 <div class="main-content">
     <div class="container-fluid">
