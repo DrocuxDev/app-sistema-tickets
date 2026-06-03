@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Ticket;
+use App\Models\EstadoTicket;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
@@ -85,6 +87,7 @@ class AdminController extends Controller
         // ═══════════════════════════════════════════════════════
 
         // ── KPIs Principales ──
+
         $kpi = [
             'total'        => $tickets->count(),
             'pendientes'   => $tickets->where('estado', 'PENDIENTE')->count(),
@@ -92,7 +95,12 @@ class AdminController extends Controller
             'cerrados_hoy' => $tickets->where('estado', 'CERRADO')
                             ->filter(fn($t) => $t->fecha_resuelto && \Carbon\Carbon::parse($t->fecha_resuelto)->isToday())
                             ->count(),
-            'alta_critica' => $tickets->whereIn('prioridad_nombre', ['Alta', 'Crítica', 'Urgente'])->count(),
+
+            'programado' => \App\Models\Ticket::where('id_estado', function($query) {
+                        $query->select('id_estado')
+                            ->from('estado_ticket')
+                            ->where('nombre_estado', 'PROGRAMADO');
+                    })->count(),
         ];
 
         // ── Técnicos: Libres vs Ocupados ──
