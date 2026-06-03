@@ -575,16 +575,21 @@ font-weight: 600;
 <div class="dashboard-content">
 {{-- HEADER + ACCIONES --}}
  <div class="dash-header">
-   <div>
-     <h1 class="dash-title" style="margin-top: 80px; position: relative; z-index: 20;">Panel de Control</h1>
-     <p class="dash-subtitle">Gestión centralizada de tickets y equipo técnico</p>
-   </div>
-   <div class="header-actions">
-     <button class="btn-nuevo bg-blue"   onclick="abrirModalCliente()">+ Cliente</button>
-     <button class="btn-nuevo bg-green"  onclick="abrirModalUsuario()">+ Usuario</button>
-     <button class="btn-nuevo bg-purple" onclick="abrirModalTecnico()">+ Técnico</button>
-   </div>
- </div>
+      <div>
+        <h1 class="dash-title" style="margin-top: 80px; position: relative; z-index: 20;">Panel de Control</h1>
+        <p class="dash-subtitle">Gestión centralizada de tickets y equipo técnico</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-nuevo" 
+              style="background:linear-gradient(135deg,#c53030,#9b2c2c); box-shadow:0 2px 12px rgba(197,48,48,0.35);"
+              onclick="openModalReporteAdmin()">
+          <i class="fas fa-file-pdf"></i> Reporte PDF
+        </button>
+        <button class="btn-nuevo bg-blue"   onclick="abrirModalCliente()">+ Cliente</button>
+        <button class="btn-nuevo bg-green"  onclick="abrirModalUsuario()">+ Usuario</button>
+        <button class="btn-nuevo bg-purple" onclick="abrirModalTecnico()">+ Técnico</button>
+      </div>
+</div>
 
 {{-- FILTROS DE FECHA --}}
  <form method="GET" action="{{ route('admin.dashboard') }}" class="dash-period-form">
