@@ -9,7 +9,7 @@
         <div class="page-header">
             <div>
                 <h1 class="page-title">
-                    <i class="fas fa-user-shield"></i> Gestión de Personal
+                    <i class="fas fa-user-shield"></i> Panel de Cliente
                 </h1>
                 <p class="page-subtitle">
                     <i class="fas fa-database"></i> {{ $usuarios->count() }} usuarios registrados en total

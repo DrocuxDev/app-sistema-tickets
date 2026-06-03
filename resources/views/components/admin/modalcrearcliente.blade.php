@@ -56,19 +56,16 @@
                     </div>
                 </div>
 
-                {{-- Correo y contraseña autogenerados --}}
-                <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-radius:12px;padding:14px 18px;margin-bottom:6px">
-                    <div style="font-size:.72rem;font-weight:700;color:#1d4ed8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">⚡ Datos autogenerados</div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                        <div>
-                            <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">📧 Correo</div>
-                            <div id="cli_correo_preview" style="font-size:.82rem;color:#1e40af;font-weight:600;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #bfdbfe;min-height:32px">———</div>
-                        </div>
-                        <div>
-                            <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">🔑 Contraseña</div>
-                            <div id="cli_pass_preview" style="font-size:.82rem;color:#1e40af;font-weight:600;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #bfdbfe;min-height:32px;letter-spacing:.1em">———</div>
-                        </div>
-                    </div>
+                {{-- Correo real --}}
+                <div style="margin-bottom:6px">
+                    <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">
+                        Correo del cliente <span style="color:#ef4444">*</span>
+                        <span style="font-size:.7rem;color:#6b7280;font-weight:400"> — recibirá las credenciales aquí</span>
+                    </label>
+                    <input id="cli_correo" type="email" placeholder="ejemplo@gmail.com"
+                           style="width:100%;padding:10px 13px;border:2px solid #e5e7eb;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#f9fafb;color:#111827"
+                           onfocus="this.style.borderColor='#1a73e8';this.style.background='#fff'"
+                           onblur="this.style.borderColor='#e5e7eb';this.style.background='#f9fafb'">
                 </div>
             </div>
 
@@ -89,61 +86,40 @@
 function abrirModalCliente() {
     const m = document.getElementById('modalCrearCliente');
     m.style.display = 'flex';
-    document.getElementById('cli_razon_social').value  = '';
-    document.getElementById('cli_ruc').value           = '';
-    document.getElementById('cli_sedes').value         = '';
-    document.getElementById('cli_rubro').value         = '';
-    document.getElementById('cli_correo_preview').textContent = '———';
-    document.getElementById('cli_pass_preview').textContent   = '———';
-
+    document.getElementById('cli_razon_social').value = '';
+    document.getElementById('cli_ruc').value          = '';
+    document.getElementById('cli_sedes').value        = '';
+    document.getElementById('cli_rubro').value        = '';
+    document.getElementById('cli_correo').value       = '';
     const btn = document.getElementById('btnGuardarCliente');
     btn.disabled         = false;
     btn.textContent      = 'Guardar Cliente';
-    btn.style.background = 'linear-gradient(135deg,#0f4c81,#1a73e8)';}
+    btn.style.background = 'linear-gradient(135deg,#0f4c81,#1a73e8)';
+}
 
 function cerrarModalCliente() {
     document.getElementById('modalCrearCliente').style.display = 'none';
 }
 
-function generarDatosCliente() {
-    const rs  = document.getElementById('cli_razon_social').value.trim();
-    const ruc = document.getElementById('cli_ruc').value.trim();
-
-    if (rs) {
-        const slug = rs.toLowerCase()
-                       .normalize('NFD')
-                       .replace(/[\u0300-\u036f]/g, '')
-                       .replace(/[^a-z0-9]/g, '');
-        document.getElementById('cli_correo_preview').textContent = slug + '@' + slug + '.com';
-    } else {
-        document.getElementById('cli_correo_preview').textContent = '———';
-    }
-
-    document.getElementById('cli_pass_preview').textContent = ruc || '———';
-}
+function generarDatosCliente() { /* preview eliminado */ }
 
 async function guardarCliente() {
-    const btn = document.getElementById('btnGuardarCliente');
-    const rs  = document.getElementById('cli_razon_social').value.trim();
-    const ruc = document.getElementById('cli_ruc').value.trim();
+    const btn    = document.getElementById('btnGuardarCliente');
+    const rs     = document.getElementById('cli_razon_social').value.trim();
+    const ruc    = document.getElementById('cli_ruc').value.trim();
+    const correo = document.getElementById('cli_correo').value.trim();
 
-    // ── Validaciones ──────────────────────────────────────────────────────
     const errores = [];
-    if (!rs)              errores.push('La razón social es obligatoria.');
-    if (!ruc)             errores.push('El RUC es obligatorio.');
+    if (!rs)                    errores.push('La razón social es obligatoria.');
+    if (!ruc)                   errores.push('El RUC es obligatorio.');
     else if (ruc.length !== 11) errores.push('El RUC debe tener exactamente 11 dígitos.');
+    if (!correo)                errores.push('El correo del cliente es obligatorio.');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) errores.push('El correo no tiene un formato válido.');
 
     if (errores.length > 0) {
         errores.forEach(e => showNotification('danger', 'Error', e));
         return;
     }
-
-    // ── Preparar datos ────────────────────────────────────────────────────
-    const slug   = rs.toLowerCase()
-                     .normalize('NFD')
-                     .replace(/[\u0300-\u036f]/g, '')
-                     .replace(/[^a-z0-9]/g, '');
-    const correo = slug + '@' + slug + '.com';
 
     const datos = {
         razon_social: rs,
@@ -172,7 +148,6 @@ async function guardarCliente() {
         const data = await res.json();
 
         if (!res.ok) {
-            // Errores de validación Laravel
             if (data.errors) {
                 Object.values(data.errors).flat()
                       .forEach(e => showNotification('danger', 'Error', e));
@@ -186,9 +161,24 @@ async function guardarCliente() {
             cerrarModalCliente();
             setTimeout(() => {
                 ModalSystem.show('success', {
-                    title:       '¡Cliente registrado!',
-                    text:        `La empresa <strong>${rs}</strong> fue creada correctamente.`,
-                    confirmText: 'Aceptar',
+                    title: '¡Cliente registrado!',
+                    text:  `
+                        <div style="text-align:center;">
+                            <div style="font-size:48px;margin-bottom:12px;">📧</div>
+                            <p style="font-size:14px;color:#374151;margin-bottom:8px;">
+                                La empresa <strong>${rs}</strong> fue creada correctamente.
+                            </p>
+                            <p style="font-size:13px;color:#6b7280;">
+                                Se enviaron las credenciales de acceso a:
+                            </p>
+                            <div style="margin-top:10px;padding:10px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;font-size:14px;font-weight:600;color:#1d4ed8;">
+                                📬 ${correo}
+                            </div>
+                            <p style="font-size:12px;color:#9ca3af;margin-top:10px;">
+                                Pídele al cliente que revise su bandeja de entrada o spam.
+                            </p>
+                        </div>`,
+                    confirmText: 'Entendido',
                     onConfirm:   () => location.reload()
                 });
             }, 300);
@@ -199,7 +189,7 @@ async function guardarCliente() {
     } finally {
         btn.disabled         = false;
         btn.textContent      = 'Guardar Cliente';
-        btn.style.background = '';
+        btn.style.background = 'linear-gradient(135deg,#0f4c81,#1a73e8)';
     }
 }
 </script>

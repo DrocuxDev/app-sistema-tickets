@@ -136,24 +136,22 @@
                     <input type="hidden" id="usu_codigo_pais" value="+51">
                 </div>
 
-                {{-- Datos autogenerados --}}
-                <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:12px;padding:14px 18px;margin-bottom:6px">
-                    <div style="font-size:.72rem;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">⚡ Datos autogenerados</div>
-                    <div style="display:grid;grid-template-columns:auto 1fr;gap:12px">
-                        <div>
-                            <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">🪪 Código</div>
-                            <div id="usu_codigo_preview" style="font-size:.85rem;color:#166534;font-weight:700;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #86efac;letter-spacing:.05em;white-space:nowrap">———</div>
-                        </div>
-                        <div>
-                            <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">📧 Correo</div>
-                            <div id="usu_correo_preview" style="font-size:.78rem;color:#166534;font-weight:600;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #86efac;word-break:break-all">———</div>
-                        </div>
-                    </div>
-                    <div style="margin-top:10px">
-                        <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">🔑 Contraseña inicial (= DNI)</div>
-                        <div id="usu_pass_preview" style="font-size:.82rem;color:#166534;font-weight:600;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #86efac;letter-spacing:.1em">———</div>
-                    </div>
+                {{-- Correo real --}}
+                <div style="margin-bottom:16px">
+                    <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">
+                        Correo del usuario <span style="color:#059669">*</span>
+                        <span style="font-size:.7rem;color:#6b7280;font-weight:400"> — recibirá las credenciales aquí</span>
+                    </label>
+                    <input id="usu_correo_real" type="email" placeholder="ejemplo@gmail.com"
+                           style="width:100%;padding:10px 13px;border:2px solid #d1fae5;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#f0fdf4;color:#111827"
+                           onfocus="this.style.borderColor='#059669';this.style.background='#fff'"
+                           onblur="this.style.borderColor='#d1fae5';this.style.background='#f0fdf4'">
                 </div>
+
+                {{-- Previews ocultos usados solo por JS --}}
+                <div id="usu_codigo_preview" style="display:none">———</div>
+                <div id="usu_correo_preview" style="display:none">———</div>
+                <div id="usu_pass_preview"   style="display:none">———</div>
 
             </div>
 
@@ -237,7 +235,7 @@ function abrirModalUsuario() {
     mostrarPaso(1);
 
     // Limpiar campos de texto
-    ['usu_nombre','usu_apellido_paterno','usu_apellido_materno','usu_dni'].forEach(id => {
+    ['usu_nombre','usu_apellido_paterno','usu_apellido_materno','usu_dni','usu_correo_real'].forEach(id => {
         const el = document.getElementById(id); if(el) el.value = '';
     });
 
@@ -253,8 +251,10 @@ function abrirModalUsuario() {
     }
 
     // Limpiar previews
-    ['usu_codigo_preview','usu_correo_preview','usu_pass_preview'].forEach(id =>
-        document.getElementById(id).textContent = '———');
+    ['usu_codigo_preview','usu_correo_preview','usu_pass_preview'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '———';
+    });
 
     // Restaurar botón
     const btn = document.getElementById('btnGuardarUsuario');
@@ -354,29 +354,27 @@ function generarDatosUsuario() {
 }
 
 async function guardarUsuario() {
-    const btn = document.getElementById('btnGuardarUsuario');
-    const n   = document.getElementById('usu_nombre').value.trim();
-    const ap  = document.getElementById('usu_apellido_paterno').value.trim();
-    const am  = document.getElementById('usu_apellido_materno').value.trim();
-    const dni = document.getElementById('usu_dni').value.trim();
-    const tel = document.getElementById('usu_telefono').value.trim();
-    const cp  = document.getElementById('usu_codigo_pais').value.trim();
+    const btn    = document.getElementById('btnGuardarUsuario');
+    const n      = document.getElementById('usu_nombre').value.trim();
+    const ap     = document.getElementById('usu_apellido_paterno').value.trim();
+    const am     = document.getElementById('usu_apellido_materno').value.trim();
+    const dni    = document.getElementById('usu_dni').value.trim();
+    const tel    = document.getElementById('usu_telefono').value.trim();
+    const cp     = document.getElementById('usu_codigo_pais').value.trim();
+    const correo = document.getElementById('usu_correo_real').value.trim();
 
-    // ── Validaciones de longitud en JS antes del envío ──────────────────────
     const errores = [];
     if (!n)                           errores.push('El nombre es obligatorio.');
     else if (n.length > 100)          errores.push('El nombre no puede superar los 100 caracteres.');
-    
     if (!ap)                          errores.push('El apellido paterno es obligatorio.');
     else if (ap.length > 100)         errores.push('El apellido paterno no puede superar los 100 caracteres.');
-    
     if (!am)                          errores.push('El apellido materno es obligatorio.');
     else if (am.length > 100)         errores.push('El apellido materno no puede superar los 100 caracteres.');
-    
     if (!dni)                         errores.push('El documento es obligatorio.');
     else if (dni.length > 15)         errores.push('El documento no puede superar los 15 dígitos.');
-    
     if (!tel)                         errores.push('El teléfono es obligatorio.');
+    if (!correo)                      errores.push('El correo del usuario es obligatorio.');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) errores.push('El correo no tiene un formato válido.');
 
     if (errores.length > 0) {
         errores.forEach(e => showNotification('danger', 'Error', e));
@@ -384,7 +382,6 @@ async function guardarUsuario() {
     }
 
     const codigo = document.getElementById('usu_codigo_preview').textContent;
-    const correo = document.getElementById('usu_correo_preview').textContent;
 
     if (codigo === '———') {
         showNotification('danger', 'Error', 'Completa los datos para generar el código.');
@@ -435,9 +432,24 @@ async function guardarUsuario() {
             cerrarModalUsuario();
             setTimeout(() => {
                 ModalSystem.show('success', {
-                    title:       '¡Usuario registrado!',
-                    text:        `El usuario <strong>${n} ${ap}</strong> fue creado correctamente.`,
-                    confirmText: 'Aceptar',
+                    title: '¡Usuario registrado!',
+                    text:  `
+                        <div style="text-align:center;">
+                            <div style="font-size:48px;margin-bottom:12px;">📧</div>
+                            <p style="font-size:14px;color:#374151;margin-bottom:8px;">
+                                El usuario <strong>${n} ${ap}</strong> fue creado con el código <strong style="color:#059669;">${codigo}</strong>.
+                            </p>
+                            <p style="font-size:13px;color:#6b7280;">
+                                Se enviaron las credenciales de acceso a:
+                            </p>
+                            <div style="margin-top:10px;padding:10px 16px;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;font-size:14px;font-weight:600;color:#166534;">
+                                📬 ${correo}
+                            </div>
+                            <p style="font-size:12px;color:#9ca3af;margin-top:10px;">
+                                Pídele al usuario que revise su bandeja de entrada o spam.
+                            </p>
+                        </div>`,
+                    confirmText: 'Entendido',
                     onConfirm:   () => location.reload()
                 });
             }, 300);

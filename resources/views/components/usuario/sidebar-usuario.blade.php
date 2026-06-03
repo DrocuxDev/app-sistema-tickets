@@ -538,18 +538,20 @@
   <nav class="sb-nav">
     <div class="sb-label">Menú principal</div>
 
-    <a href="{{ route('usuario.datos') }}"
-       class="sb-nav-item {{ Route::is('usuario.datos') ? 'active' : '' }}">
-      <span class="sb-nav-icon"><i class="fa-solid fa-user"></i></span>
-      <span class="sb-nav-text">Mis Datos</span>
-      <span class="sb-tooltip">Mis Datos</span>
-    </a>
+   
 
     <a href="{{ route('usuario.dashboard') }}"
        class="sb-nav-item {{ Route::is('usuario.dashboard') ? 'active' : '' }}">
       <span class="sb-nav-icon"><i class="fa-solid fa-gauge-high"></i></span>
       <span class="sb-nav-text">Dashboard</span>
       <span class="sb-tooltip">Dashboard</span>
+    </a>
+
+     <a href="{{ route('usuario.datos') }}"
+       class="sb-nav-item {{ Route::is('usuario.datos') ? 'active' : '' }}">
+      <span class="sb-nav-icon"><i class="fa-solid fa-user"></i></span>
+      <span class="sb-nav-text">Mis Datos</span>
+      <span class="sb-tooltip">Mis Datos</span>
     </a>
 
 

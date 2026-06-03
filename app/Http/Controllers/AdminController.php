@@ -193,7 +193,7 @@ class AdminController extends Controller
             'correo'       => 'required|email|max:150|unique:cliente,correo',
             'contrasena'   => 'required|string',
             'sedes'        => 'nullable|string|max:200',
-            'rubro'        => 'required|string|max:100', // 🔥 CAMBIADO de 'nullable' a 'required'
+            'rubro'        => 'required|string|max:100',
         ], [
             'razon_social.required' => 'La razón social es obligatoria.',
             'razon_social.max'      => 'La razón social no debe exceder los 200 caracteres.',
@@ -206,12 +206,11 @@ class AdminController extends Controller
             'correo.unique'         => 'Este correo electrónico ya está registrado.',
             'contrasena.required'   => 'La contraseña es obligatoria.',
             'sedes.max'             => 'El campo sedes no debe exceder los 200 caracteres.',
-            'rubro.required'        => 'El rubro de la empresa es obligatorio y debe tener un parámetro válido.', // 🔥 Mensaje en español
+            'rubro.required'        => 'El rubro de la empresa es obligatorio.',
             'rubro.max'             => 'El campo rubro no debe exceder los 100 caracteres.',
         ]);
 
         if ($validator->fails()) {
-            // Devuelve los errores al JavaScript de tu página web con código 422
             return response()->json(['ok' => false, 'errors' => $validator->errors()], 422);
         }
 
@@ -228,6 +227,21 @@ class AdminController extends Controller
                 'updated_at'   => now(),
             ]);
 
+            // Enviar credenciales por correo
+            $clienteObj = (object)[
+                'nombre'           => $request->razon_social,
+                'apellido_paterno' => '',
+                'correo'           => $request->correo,
+                'tipo'             => 'cliente',
+                'razon_social'     => $request->razon_social,
+            ];
+            try {
+                \Illuminate\Support\Facades\Mail::to($request->correo)
+                    ->send(new \App\Mail\CredencialesUsuario($clienteObj, $request->contrasena));
+            } catch (\Exception $mailEx) {
+                \Log::warning('No se pudo enviar el correo al cliente: ' . $mailEx->getMessage());
+            }
+
             return response()->json(['ok' => true]);
 
         } catch (\Exception $e) {
@@ -242,7 +256,7 @@ class AdminController extends Controller
         'nombre'           => 'required|string|max:100',
         'apellido_paterno' => 'required|string|max:100',
         'apellido_materno' => 'required|string|max:100',
-        'dni'              => 'required|string|size:8|unique:usuario,dni',
+        'dni'              => 'required|string|max:15|unique:usuario,dni',
         'codigo_pais'      => 'required|string|max:6',
         'telefono'         => 'required|string|max:15',
         'correo'           => 'required|email|max:150|unique:usuario,correo',
@@ -297,6 +311,19 @@ class AdminController extends Controller
             'created_at'       => now(),
             'updated_at'       => now(),
         ]);
+
+        // Enviar credenciales por correo
+        $usuarioObj = (object)[
+            'nombre'           => ucfirst(strtolower(trim($request->nombre))),
+            'apellido_paterno' => ucfirst(strtolower(trim($request->apellido_paterno))),
+            'correo'           => strtolower(trim($request->correo)),
+        ];
+        try {
+            \Illuminate\Support\Facades\Mail::to($request->correo)
+                ->send(new \App\Mail\CredencialesUsuario($usuarioObj, $request->contrasena));
+        } catch (\Exception $mailEx) {
+            \Log::warning('No se pudo enviar el correo al usuario: ' . $mailEx->getMessage());
+        }
 
         return response()->json(['ok' => true]);
 

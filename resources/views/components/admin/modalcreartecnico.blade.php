@@ -58,23 +58,18 @@
                     </div>
                 </div>
 
-                {{-- Datos autogenerados --}}
-                <div style="background:linear-gradient(135deg,#f5f0ff,#ede9fe);border:1px solid #ddd6fe;border-radius:12px;padding:14px 18px;margin-bottom:6px">
-                    <div style="font-size:.72rem;font-weight:700;color:#6d28d9;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">⚡ Datos autogenerados</div>
-                    <div style="display:grid;grid-template-columns:2fr 3fr;gap:12px">
-                        <div>
-                            <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">🪪 Código</div>
-                            <div id="tec_codigo_preview" style="font-size:.85rem;color:#5b21b6;font-weight:700;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #ddd6fe;letter-spacing:.05em">———</div>
-                        </div>
-                        <div>
-                            <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">🔑 Contraseña inicial</div>
-                            <div id="tec_pass_preview" style="font-size:.82rem;color:#5b21b6;font-weight:600;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #ddd6fe;letter-spacing:.08em">———</div>
-                        </div>
-                    </div>
-                    <div style="margin-top:10px">
-                        <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">📧 Correo Electrónico</div>
-                        <div id="tec_correo_preview" style="font-size:.78rem;color:#5b21b6;font-weight:600;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #ddd6fe;word-break:break-all">———</div>
-                    </div>
+                {{-- Correo real --}}
+                {{-- código oculto usado solo por el JS --}}
+                <div id="tec_codigo_preview" style="display:none"></div>
+                <div style="margin-bottom:6px">
+                    <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">
+                        Correo Gmail del técnico <span style="color:#7c3aed">*</span>
+                        <span style="font-size:.7rem;color:#6b7280;font-weight:400"> — recibirá las credenciales aquí</span>
+                    </label>
+                    <input id="tec_correo" type="email" placeholder="tecnico@gmail.com"
+                           style="width:100%;padding:10px 13px;border:2px solid #ede9fe;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#faf8ff;color:#1e1b4b"
+                           onfocus="this.style.borderColor='#7c3aed';this.style.background='#fff'"
+                           onblur="this.style.borderColor='#ede9fe';this.style.background='#faf8ff'">
                 </div>
 
             </div>
@@ -98,13 +93,11 @@ const _tecCodigosUsados = new Set();
 function abrirModalTecnico() {
     const m = document.getElementById('modalCrearTecnico');
     m.style.display = 'flex';
-    ['tec_nombre','tec_apellido_paterno','tec_apellido_materno','tec_dni'].forEach(id => {
+    ['tec_nombre','tec_apellido_paterno','tec_apellido_materno','tec_dni','tec_correo'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
-    ['tec_codigo_preview','tec_correo_preview','tec_pass_preview'].forEach(id => {
-        document.getElementById(id).textContent = '———';
-    });
+    document.getElementById('tec_codigo_preview').textContent = '———';
     const btn = document.getElementById('btnGuardarTecnico');
     btn.disabled         = false;
     btn.textContent      = 'Guardar Técnico';
@@ -128,8 +121,8 @@ function generarDatosTecnico() {
 
     // Ahora validamos que los 4 campos tengan información coherente antes de previsualizar
     if (!n || !ap || !am || dni.length < 3) {
-        ['tec_codigo_preview','tec_correo_preview','tec_pass_preview'].forEach(id =>
-            document.getElementById(id).textContent = '———');
+        const el = document.getElementById('tec_codigo_preview');
+        if (el) el.textContent = '———';
         return;
     }
 
@@ -149,14 +142,8 @@ function generarDatosTecnico() {
         idx++;
     }
 
-    // Generamos el correo usando el primer nombre limpio + el código generado
-    const primerNombreLimpio = normStr(n.split(' ')[0]);
-    const correo = primerNombreLimpio + codigo.toLowerCase() + '@gmail.com';
-
-    // Seteamos las vistas previas en tiempo real
+    // Seteamos la vista previa del código en tiempo real
     document.getElementById('tec_codigo_preview').textContent = codigo;
-    document.getElementById('tec_correo_preview').textContent = correo;
-    document.getElementById('tec_pass_preview').textContent   = dni;
 }
 
 async function guardarTecnico() {
@@ -165,6 +152,7 @@ async function guardarTecnico() {
     const ap  = document.getElementById('tec_apellido_paterno').value.trim();
     const am  = document.getElementById('tec_apellido_materno').value.trim();
     const dni = document.getElementById('tec_dni').value.trim();
+    const correo = document.getElementById('tec_correo').value.trim();
 
     // ── Validaciones ──────────────────────────────────────────────────────
     const errores = [];
@@ -173,6 +161,8 @@ async function guardarTecnico() {
     if (!am)  errores.push('El apellido materno es obligatorio.');
     if (!dni) errores.push('El DNI es obligatorio.');
     else if (dni.length !== 8) errores.push('El DNI debe tener 8 dígitos.');
+    if (!correo) errores.push('El correo del técnico es obligatorio.');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) errores.push('El correo no tiene un formato válido.');
 
     if (errores.length > 0) {
         errores.forEach(e => showNotification('danger', 'Error', e));
@@ -180,7 +170,6 @@ async function guardarTecnico() {
     }
 
     const codigo = document.getElementById('tec_codigo_preview').textContent;
-    const correo = document.getElementById('tec_correo_preview').textContent;
 
     if (codigo === '———') {
         showNotification('danger', 'Error', 'Completa los datos para generar el código.');
@@ -229,9 +218,24 @@ async function guardarTecnico() {
             cerrarModalTecnico();
             setTimeout(() => {
                 ModalSystem.show('success', {
-                    title:       '¡Técnico registrado!',
-                    text:        `El técnico <strong>${n} ${ap}</strong> fue creado correctamente.`,
-                    confirmText: 'Aceptar',
+                    title: '¡Técnico registrado!',
+                    text:  `
+                        <div style="text-align:center;">
+                            <div style="font-size:48px;margin-bottom:12px;">📧</div>
+                            <p style="font-size:14px;color:#374151;margin-bottom:8px;">
+                                El técnico <strong>${n} ${ap}</strong> fue registrado con el código <strong style="color:#6d28d9;">${codigo}</strong>.
+                            </p>
+                            <p style="font-size:13px;color:#6b7280;">
+                                Se enviaron las credenciales de acceso a:
+                            </p>
+                            <div style="margin-top:10px;padding:10px 16px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;font-size:14px;font-weight:600;color:#6d28d9;">
+                                📬 ${correo}
+                            </div>
+                            <p style="font-size:12px;color:#9ca3af;margin-top:10px;">
+                                Pídele al técnico que revise su bandeja de entrada o spam.
+                            </p>
+                        </div>`,
+                    confirmText: 'Entendido',
                     onConfirm:   () => location.reload()
                 });
             }, 300);
