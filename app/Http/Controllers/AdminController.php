@@ -1165,7 +1165,25 @@ public function clientes()
         ->join('usuario as usu','ticket.id_usuario',     '=', 'usu.id_usuario')
         ->leftJoin('tecnico as tec','ticket.id_tecnico_asignado', '=', 'tec.id_tecnico')
         ->select(
-            'ticket.*',
+            'ticket.id_ticket',
+            'ticket.codigo_ticket',
+            'ticket.id_cliente',
+            'ticket.id_usuario',
+            'ticket.id_tecnico_asignado',
+            'ticket.id_tipo_ticket',
+            'ticket.id_prioridad',
+            'ticket.id_estado',
+            'ticket.tipo_equipo',
+            'ticket.marca',
+            'ticket.modelo',
+            'ticket.serie_serial',
+            'ticket.asunto',
+            'ticket.problema',
+            'ticket.fecha_programado',
+            'ticket.fecha_en_proceso',
+            'ticket.fecha_resuelto',
+            'ticket.created_at',
+            'ticket.updated_at',
             'tipo_ticket.nombre           as tipo_ticket_nombre',
             'prioridad.nombre             as prioridad_nombre',
             'prioridad.color_hex          as prioridad_color',
@@ -1173,11 +1191,11 @@ public function clientes()
             'cliente.razon_social',
             'cliente.ruc',
             'cliente.id_cliente           as cliente_id',
-            DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno) as usuario_nombre"),
+            DB::raw("(usu.nombre||' '||usu.apellido_paterno) as usuario_nombre"),
             'usu.codigo_usuario',
             'usu.correo                   as usuario_correo',
             'usu.dni                      as usuario_dni',
-            DB::raw("COALESCE(CONCAT(tec.nombre,' ',tec.apellido_paterno), 'Sin asignar') as tecnico_nombre")
+            DB::raw("COALESCE(tec.nombre||' '||tec.apellido_paterno, 'Sin asignar') as tecnico_nombre")
         )
         ->whereIn('ticket.id_usuario', $usuarioIds)
         ->whereBetween('ticket.created_at', [$desde, $hasta])
@@ -1187,11 +1205,12 @@ public function clientes()
 
     // ── Stats globales ──
         $stats = [
-            'total'      => $tickets->count(),
-            'cerrados'   => $tickets->where('estado', 'CERRADO')->count(),
-            'cancelados' => $tickets->where('estado', 'CANCELADO')->count(),
-            'pendientes' => $tickets->whereIn('estado', ['PENDIENTE', 'ABIERTO', 'PROGRAMADO'])->count(),
-            'en_proceso' => $tickets->where('estado', 'EN PROCESO')->count(),
+            'total'       => $tickets->count(),
+            'cerrados'    => $tickets->where('estado', 'CERRADO')->count(),
+            'programados' => $tickets->where('estado', 'PROGRAMADO')->count(),
+            'en_proceso'  => $tickets->where('estado', 'EN PROCESO')->count(),
+            'pendientes'  => $tickets->where('estado', 'PENDIENTE')->count(),
+            'cancelados'  => $tickets->where('estado', 'CANCELADO')->count(),
         ];
 
     // ── Agrupado: por cliente → por usuario ──
@@ -1201,9 +1220,10 @@ public function clientes()
                 'ruc'          => $tc->first()->ruc,
                 'tickets'      => $tc->count(),
                 'cerrados'     => $tc->where('estado', 'CERRADO')->count(),
-                'cancelados'   => $tc->where('estado', 'CANCELADO')->count(),
-                'pendientes'   => $tc->whereIn('estado', ['PENDIENTE', 'ABIERTO', 'PROGRAMADO'])->count(),
+                'programados'  => $tc->where('estado', 'PROGRAMADO')->count(),
                 'en_proceso'   => $tc->where('estado', 'EN PROCESO')->count(),
+                'pendientes'   => $tc->where('estado', 'PENDIENTE')->count(),
+                'cancelados'   => $tc->where('estado', 'CANCELADO')->count(),
                 'por_usuario'  => $tc->groupBy('usuario_nombre'),
             ];
         });
