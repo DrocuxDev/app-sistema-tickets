@@ -419,13 +419,13 @@
 
 <div class="user-wrap">
   @forelse($porUsuario as $nombre => $ticketsUser)
-  @php
-    $cerr  = $ticketsUser->where('estado','Cerrado')->count();
-    $pend  = $ticketsUser->whereIn('estado',['Pendiente','Abierto'])->count();
-    $canc  = $ticketsUser->where('estado','Cancelado')->count();
-    $proc  = $ticketsUser->where('estado','En Proceso')->count();
-    $first = $ticketsUser->first();
-  @endphp
+    @php
+        $cerr  = $ticketsUser->where('estado', 'CERRADO')->count();
+        $pend  = $ticketsUser->whereIn('estado', ['PENDIENTE', 'ABIERTO', 'PROGRAMADO'])->count();
+        $canc  = $ticketsUser->where('estado', 'CANCELADO')->count();
+        $proc  = $ticketsUser->where('estado', 'EN PROCESO')->count();
+        $first = $ticketsUser->first();
+    @endphp
   <div class="user-card">
 
     {{-- fila superior: nombre + contadores --}}
