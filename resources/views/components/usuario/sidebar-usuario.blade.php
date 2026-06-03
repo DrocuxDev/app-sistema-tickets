@@ -553,11 +553,11 @@
     </a>
 
 
-    <a href="#"
-       class="sb-nav-item {{ Route::is('usuario.mail') ? 'active' : '' }}">
-      <span class="sb-nav-icon"><i class="fa-solid fa-envelope"></i></span>
-      <span class="sb-nav-text">Mail</span>
-      <span class="sb-tooltip">Mail</span>
+    <a href="{{ route('usuario.tickets') }}"
+       class="sb-nav-item {{ Route::is('usuario.tickets') ? 'active' : '' }}">
+      <span class="sb-nav-icon"><i class="fa-solid fa-chart-bar"></i></span>
+      <span class="sb-nav-text">Reportes</span>
+      <span class="sb-tooltip">Reportes</span>
     </a>
 
   </nav>
