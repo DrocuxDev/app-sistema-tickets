@@ -545,14 +545,6 @@
       <span class="sb-tooltip">Mis Datos</span>
     </a>
 
-    <a href="{{ route('tecnico.dashboard') }}"
-        class="sb-nav-item {{ Route::is('tecnico.dashboard') ? 'active' : '' }}">
-        <span class="sb-nav-icon"><i class="fa-solid fa-gauge-high"></i></span>
-        <span class="sb-nav-text">Dashboard</span>
-        <span class="sb-tooltip">Dashboard</span>
-    </a>
-
-
     <a href="{{ route('tecnico.mistickets') }}"
         class="sb-nav-item {{ Route::is('tecnico.mistickets') ? 'active' : '' }}">
         <span class="sb-nav-icon"><i class="fa-solid fa-ticket"></i></span>
