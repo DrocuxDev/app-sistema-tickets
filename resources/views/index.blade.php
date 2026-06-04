@@ -53,11 +53,26 @@
         }
 
         /* ─── Grid overlay decorativo ─────────────────────────── */
-        .grid-overlay {
+        .login-panel.grid-overlay,
+        .carousel-panel.grid-overlay {
+            position: relative;
+            overflow: visible;
+        }
+
+        .login-panel.grid-overlay::before,
+        .carousel-panel.grid-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-image:
-                linear-gradient(rgba(43,127,255,.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(43,127,255,.04) 1px, transparent 1px);
-            background-size: 28px 28px;
+                linear-gradient(rgba(43,127,255,.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(43,127,255,.06) 1px, transparent 1px);
+            background-size: 20px 20px;  /* ← Reducido de 28px a 20px */
+            pointer-events: none;
+            z-index: 1;
         }
 
         /* ─────────────────────────────────────────────────────── */
