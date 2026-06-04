@@ -482,6 +482,7 @@
                 </div>
 
                 {{-- Recordarme / Olvidé --}}
+                {{-- 
                 <div class="row-meta anim-fade-up-3">
                     <label class="remember-label">
                         <div class="remember-box"></div>
@@ -490,6 +491,7 @@
                     </label>
                     <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
                 </div>
+                --}}
 
                 {{-- Submit --}}
                 <div class="anim-fade-up-4">
