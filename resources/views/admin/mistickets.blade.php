@@ -3,183 +3,179 @@
 @include('components.notificaciones.alertas')
 @include('components.admin.editardetalleticket')
 @include('components.admin.detalleticket')
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+<meta charset="UTF-8">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
-
 <div class="main-content">
 <div class="container-fluid">
+{{-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ --}}
+ <div class="page-header">
+     <div class="page-header-left">
+         <div class="page-header-icon">
+             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                 <path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/>
+             </svg>
+         </div>
+         <div>
+             <h1 class="page-title">Mis Tickets</h1>
+             <p class="page-subtitle">Tickets asignados a ti — {{ session('nombre') }}</p>
+         </div>
+     </div>
+ </div>
 
-    {{-- ══════════════════════════════════════════
-         HEADER
-    ══════════════════════════════════════════ --}}
-    <div class="page-header">
-        <div class="page-header-left">
-            <div class="page-header-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/>
-                </svg>
-            </div>
-            <div>
-                <h1 class="page-title">Mis Tickets</h1>
-                <p class="page-subtitle">Tickets asignados a ti — {{ session('nombre') }}</p>
-            </div>
-        </div>
-    </div>
+{{-- ══════════════════════════════════════════
+     STATS GLOBALES (INTERACTUABLES)
+══════════════════════════════════════════ --}}
+@php
+    $mt_total = $resumen['total'] ?? 0; 
+    $mt_programado = $resumen['programado'] ?? 0;
+    $mt_proceso = $resumen['en_proceso'] ?? 0;
+    $mt_cerrado = $resumen['cerrado'] ?? 0;
+    $mt_cancelado = $resumen['cancelado'] ?? 0;
+@endphp
 
-    {{-- ══════════════════════════════════════════
-         STATS GLOBALES (INTERACTUABLES)
-    ══════════════════════════════════════════ --}}
-    @php
-        $mt_total = $resumen['total'] ?? 0;
-        $mt_programado = $resumen['programado'] ?? 0;
-        $mt_proceso = $resumen['en_proceso'] ?? 0;
-        $mt_cerrado = $resumen['cerrado'] ?? 0;
-        $mt_cancelado = $resumen['cancelado'] ?? 0;
-    @endphp
+ <div class="stats-container" id="stats-global">
+     <div class="stat-card" onclick="mtFiltrarDesdeStat('todos')" style="cursor: pointer;" title="Ver todos los tickets">
+         <div class="stat-icon si-t">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                 <path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/>
+             </svg>
+         </div>
+         <div class="stat-body">
+             <span class="stat-value">{{ $mt_total }}</span>
+             <span class="stat-label">Total</span>
+         </div>
+     </div>
 
-    <div class="stats-container" id="stats-global">
-        <div class="stat-card" onclick="mtFiltrarDesdeStat('todos')" style="cursor: pointer;" title="Ver todos los tickets">
-            <div class="stat-icon si-t">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $mt_total }}</span>
-                <span class="stat-label">Total</span>
-            </div>
-        </div>
+     <div class="stat-card" onclick="mtFiltrarDesdeStat('PROGRAMADO')" style="cursor: pointer;" title="Ver tickets programados">
+         <div class="stat-icon" style="background: var(--erp-violet-bg); color: var(--erp-violet);">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                 <line x1="16" y1="2" x2="16" y2="6"/>
+                 <line x1="8" y1="2" x2="8" y2="6"/>
+                 <line x1="3" y1="10" x2="21" y2="10"/>
+             </svg>
+         </div>
+         <div class="stat-body">
+             <span class="stat-value">{{ $mt_programado }}</span>
+             <span class="stat-label">Programados</span>
+         </div>
+     </div>
 
-        <div class="stat-card" onclick="mtFiltrarDesdeStat('PROGRAMADO')" style="cursor: pointer;" title="Ver tickets programados">
-            <div class="stat-icon" style="background: var(--erp-violet-bg); color: var(--erp-violet);">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $mt_programado }}</span>
-                <span class="stat-label">Programados</span>
-            </div>
-        </div>
+     <div class="stat-card" onclick="mtFiltrarDesdeStat('EN PROCESO')" style="cursor: pointer;" title="Ver tickets en proceso">
+         <div class="stat-icon" style="background: rgba(22,101,52,.10); color: #166534;">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+             </svg>
+         </div>
+         <div class="stat-body">
+             <span class="stat-value">{{ $mt_proceso }}</span>
+             <span class="stat-label">En Proceso</span>
+         </div>
+     </div>
 
-        <div class="stat-card" onclick="mtFiltrarDesdeStat('EN PROCESO')" style="cursor: pointer;" title="Ver tickets en proceso">
-            <div class="stat-icon" style="background: rgba(22,101,52,.10); color: #166534;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $mt_proceso }}</span>
-                <span class="stat-label">En Proceso</span>
-            </div>
-        </div>
+     <div class="stat-card" onclick="mtFiltrarDesdeStat('CERRADO')" style="cursor: pointer;" title="Ver tickets cerrados">
+         <div class="stat-icon" style="background: rgba(100,116,139,.10); color: #475569;">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                 <polyline points="22 4 12 14.01 9 11.01"/>
+             </svg>
+         </div>
+         <div class="stat-body">
+             <span class="stat-value">{{ $mt_cerrado }}</span>
+             <span class="stat-label">Cerrados</span>
+         </div>
+     </div>
 
-        <div class="stat-card" onclick="mtFiltrarDesdeStat('CERRADO')" style="cursor: pointer;" title="Ver tickets cerrados">
-            <div class="stat-icon" style="background: rgba(100,116,139,.10); color: #475569;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $mt_cerrado }}</span>
-                <span class="stat-label">Cerrados</span>
-            </div>
-        </div>
+     <div class="stat-card" onclick="mtFiltrarDesdeStat('CANCELADO')" style="cursor: pointer;" title="Ver tickets cancelados">
+         <div class="stat-icon" style="background: rgba(153,27,27,.10); color: #991b1b;">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                 <circle cx="12" cy="12" r="10"/>
+                 <line x1="15" y1="9" x2="9" y2="15"/>
+                 <line x1="9" y1="9" x2="15" y2="15"/>
+             </svg>
+         </div>
+         <div class="stat-body">
+             <span class="stat-value">{{ $mt_cancelado }}</span>
+             <span class="stat-label">Cancelados</span>
+         </div>
+     </div>
+ </div>
 
-        <div class="stat-card" onclick="mtFiltrarDesdeStat('CANCELADO')" style="cursor: pointer;" title="Ver tickets cancelados">
-            <div class="stat-icon" style="background: rgba(153,27,27,.10); color: #991b1b;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $mt_cancelado }}</span>
-                <span class="stat-label">Cancelados</span>
-            </div>
-        </div>
-    </div>
+{{-- ══════════════════════════════════════════
+     TOOLBAR (Filtros + Búsqueda)
+══════════════════════════════════════════ --}}
+ <div class="erp-toolbar">
+     <div class="filter-section">
+         <span class="filter-section-lbl">Estado</span>
+         <div class="seg-ctrl">
+             <button class="filter-toggle active" data-mt-status="todos" onclick="mtFiltrar('todos', this)">
+                Todos  <span class="ft-ct">{{ $mt_total }}</span>
+             </button>
+             <button class="filter-toggle" data-mt-status="PROGRAMADO" onclick="mtFiltrar('PROGRAMADO', this)">
+                Programado  <span class="ft-ct">{{ $mt_programado }}</span>
+             </button>
+             <button class="filter-toggle" data-mt-status="EN PROCESO" onclick="mtFiltrar('EN PROCESO', this)">
+                En Proceso  <span class="ft-ct">{{ $mt_proceso }}</span>
+             </button>
+             <button class="filter-toggle" data-mt-status="CERRADO" onclick="mtFiltrar('CERRADO', this)">
+                Cerrado  <span class="ft-ct">{{ $mt_cerrado }}</span>
+             </button>
+             <button class="filter-toggle" data-mt-status="CANCELADO" onclick="mtFiltrar('CANCELADO', this)">
+                Cancelado  <span class="ft-ct">{{ $mt_cancelado }}</span>
+             </button>
+         </div>
+     </div>
+     <div class="toolbar-search">
+         <input type="text" class="search-input" placeholder="Buscar por asunto, cliente o código..." id="mt-buscar" oninput="mtBuscar()">
+         <button class="btn-search" onclick="mtBuscar()">
+             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                 <circle cx="11" cy="11" r="8"/>
+                 <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+             </svg>
+            Buscar
+         </button>
+     </div>
+ </div>
 
-    {{-- ══════════════════════════════════════════
-         TOOLBAR (Filtros + Búsqueda)
-    ══════════════════════════════════════════ --}}
-    <div class="erp-toolbar">
-        <div class="filter-section">
-            <span class="filter-section-lbl">Estado</span>
-            <div class="seg-ctrl">
-                <button class="filter-toggle active" data-mt-status="todos" onclick="mtFiltrar('todos', this)">
-                    Todos <span class="ft-ct">{{ $mt_total }}</span>
-                </button>
-                <button class="filter-toggle" data-mt-status="PROGRAMADO" onclick="mtFiltrar('PROGRAMADO', this)">
-                    Programado <span class="ft-ct">{{ $mt_programado }}</span>
-                </button>
-                <button class="filter-toggle" data-mt-status="EN PROCESO" onclick="mtFiltrar('EN PROCESO', this)">
-                    En Proceso <span class="ft-ct">{{ $mt_proceso }}</span>
-                </button>
-                <button class="filter-toggle" data-mt-status="CERRADO" onclick="mtFiltrar('CERRADO', this)">
-                    Cerrado <span class="ft-ct">{{ $mt_cerrado }}</span>
-                </button>
-                <button class="filter-toggle" data-mt-status="CANCELADO" onclick="mtFiltrar('CANCELADO', this)">
-                    Cancelado <span class="ft-ct">{{ $mt_cancelado }}</span>
-                </button>
-            </div>
-        </div>
-        <div class="toolbar-search">
-            <input type="text" class="search-input" placeholder="Buscar por asunto, cliente o código..." id="mt-buscar" oninput="mtBuscar()">
-            <button class="btn-search" onclick="mtBuscar()">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"/>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-                Buscar
-            </button>
-        </div>
-    </div>
+{{-- ══════════════════════════════════════════
+     TABLA DE TICKETS
+══════════════════════════════════════════ --}}
+ <div class="erp-table-container">
+     <table class="erp-table">
+         <thead>
+             <tr>
+                 <th style="width:60px">ID</th>
+                 <th>Asunto</th>
+                 <th>Cliente</th>
+                 <th>Estado</th>
+                 <th>Prioridad</th>
+                 <th>Fecha</th>
+                 <th style="width:140px">Acciones</th>
+             </tr>
+         </thead>
+         <tbody id="mt-tbody">
+             <!-- JS llenará esto dinámicamente -->
+         </tbody>
+     </table>
+ </div>
 
-    {{-- ══════════════════════════════════════════
-         TABLA DE TICKETS
-    ══════════════════════════════════════════ --}}
-    <div class="erp-table-container">
-        <table class="erp-table">
-            <thead>
-                <tr>
-                    <th style="width:60px">ID</th>
-                    <th>Asunto</th>
-                    <th>Cliente</th>
-                    <th>Estado</th>
-                    <th>Prioridad</th>
-                    <th>Fecha</th>
-                    <th style="width:140px">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="mt-tbody">
-                <!-- JS llenará esto dinámicamente -->
-            </tbody>
-        </table>
-    </div>
-
-    {{-- ══════════════════════════════════════════
-         EMPTY STATE
-    ══════════════════════════════════════════ --}}
-    <div class="erp-empty-state" id="mt-empty" style="display:none;">
-        <div class="erp-empty-ico">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"/>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-        </div>
-        <p class="erp-empty-ttl">Sin tickets para mostrar</p>
-        <p class="erp-empty-desc">No hay tickets que coincidan con los filtros aplicados.</p>
-    </div>
-
+{{-- ══════════════════════════════════════════
+     EMPTY STATE
+══════════════════════════════════════════ --}}
+ <div class="erp-empty-state" id="mt-empty" style="display:none;">
+     <div class="erp-empty-ico">
+         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+             <circle cx="11" cy="11" r="8"/>
+             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+         </svg>
+     </div>
+     <p class="erp-empty-ttl">Sin tickets para mostrar</p>
+     <p class="erp-empty-desc">No hay tickets que coincidan con los filtros aplicados.</p>
+ </div>
 </div>
 </div>
 
@@ -214,6 +210,35 @@ function mtRender() {
         );
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // ORDENAMIENTO POR PRIORIDAD (y desempate por fecha)
+    // ═══════════════════════════════════════════════════════════════
+    const pesoPrioridad = {
+        'urgente': 5, 'crítica': 5, 'critica': 5,
+        'alta': 4,
+        'media': 3,
+        'normal': 2,
+        'baja': 1
+    };
+
+    lista.sort((a, b) => {
+        // Usar prioridad_orden si el backend lo envía, si no, calcular por nombre
+        const nombreA = (a.prioridad_nombre || a.prioridad || 'normal').toLowerCase();
+        const nombreB = (b.prioridad_nombre || b.prioridad || 'normal').toLowerCase();
+        
+        const pesoA = a.prioridad_orden !== undefined ? a.prioridad_orden : (pesoPrioridad[nombreA] ?? 0);
+        const pesoB = b.prioridad_orden !== undefined ? b.prioridad_orden : (pesoPrioridad[nombreB] ?? 0);
+
+        if (pesoB !== pesoA) {
+            return pesoB - pesoA; // Mayor prioridad primero (descendente)
+        }
+        
+        // Desempate: ordenar por fecha de creación (más reciente primero)
+        const fechaA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const fechaB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return fechaB - fechaA;
+    });
+
     if (!lista.length) {
         tbody.innerHTML = '';
         empty.style.display = 'flex';
@@ -227,7 +252,7 @@ function mtRender() {
                             t.estado === 'PROGRAMADO' ? 'badge-programado' :
                             t.estado === 'EN PROCESO' ? 'badge-proceso' :
                             t.estado === 'CERRADO' ? 'badge-cerrado' : 'badge-cancelado';
-                            
+
         const prioColor = t.prioridad_color ? `background:${t.prioridad_color}20;color:${t.prioridad_color};border:1px solid ${t.prioridad_color}40` : '';
         const fecha = t.created_at ? new Date(t.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 
@@ -250,12 +275,12 @@ function mtRender() {
                     </button>
                     ${t.estado === 'PROGRAMADO' ? `
                     <button class="btn-action-sm btn-deactivate" onclick="mtCancelarTicket(${t.id_ticket})">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
-                    </svg>
-                    Cancelar
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg>
+                        Cancelar
                     </button>
                     ` : ''}
                 </div>
@@ -268,7 +293,7 @@ function mtRender() {
 function mtFiltrar(estado, btn) {
     mtFiltroActual = estado;
     document.querySelectorAll('.filter-toggle[data-mt-status]').forEach(p => p.classList.remove('active'));
-    
+
     if (btn) {
         btn.classList.add('active');
     } else {
@@ -279,7 +304,7 @@ function mtFiltrar(estado, btn) {
 }
 
 // ── Filtrar desde Stat Card (Interactivo) ─────────────────────────
-function mtFiltrarDesdeStat(estado) {
+function mtFiltrarDesdeStat(estado) { 
     mtFiltrar(estado, null);
     document.querySelector('.erp-table-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -297,7 +322,7 @@ document.addEventListener('DOMContentLoaded', mtRender);
 function cerrarPanelEdicion() {}
 
 function abrirDetalleInteligente(id, estado) {
-    const estadosFinales  = ['CERRADO', 'CANCELADO'];
+    const estadosFinales = ['CERRADO', 'CANCELADO'];
 
     if (estadosFinales.includes(estado)) {
         if (typeof abrirDetalleTicket === 'function') {
@@ -332,17 +357,13 @@ function mtCancelarTicket(idTicket) {
                     }
                 });
                 const data = await res.json();
-                
+
                 if (data.ok) {
                     // Notificación de éxito (toast)
                     showNotification('success', '¡Éxito!', 'El ticket ha sido cancelado correctamente.');
-                    
+
                     // Actualiza la tabla instantáneamente sin recargar la página
                     mtRender(); 
-                    
-                    // Si prefieres recarga completa de la página en lugar de actualización dinámica, 
-                    // descomenta la siguiente línea y comenta mtRender():
-                    // setTimeout(() => location.reload(), 1000);
                 } else {
                     showNotification('danger', 'Error', data.message || 'No se pudo cancelar el ticket.');
                 }
@@ -386,7 +407,7 @@ ESTILOS UNIFICADOS (ERP DESIGN - AZUL JEAN)
     --erp-shadow:       0 1px 2px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.07);
     --erp-shadow-md:    0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
 }
-
+ 
 .main-content {
     margin-left: 260px;
     padding: 34px 32px;
@@ -542,7 +563,7 @@ body.sb-collapsed .main-content { margin-left: 70px; }
 .badge-cerrado,
 .badge-cancelado {
     display: inline-flex;
-    align-items: center;
+    align-items: center; 
     gap: 5px;
     padding: 3px 8px;
     border-radius: 4px;
@@ -553,7 +574,7 @@ body.sb-collapsed .main-content { margin-left: 70px; }
 }
 .badge-pendiente  { background: rgba(245,158,11,.12); color: #d97706; }
 .badge-programado { background: rgba(26,110,216,.12); color: var(--erp-primary-h); }
-.badge-proceso    { background: rgba(22,101,52,.12);  color: var(--erp-success); }
+.badge-proceso    { background: rgba(22,101,52,.12); color: var(--erp-success); }
 .badge-cerrado    { background: rgba(100,116,139,.10); color: #475569; }
 .badge-cancelado  { background: var(--erp-danger-bg); color: var(--erp-danger); }
 
@@ -564,13 +585,12 @@ body.sb-collapsed .main-content { margin-left: 70px; }
     height: 5px;
     border-radius: 50%;
     flex-shrink: 0;
-    /* margin-right ya no es necesario porque usamos gap en el padre */
 }
 .badge-pendiente  .bdot { background: #d97706; }
 .badge-programado .bdot { background: var(--erp-primary-h); }
 .badge-proceso    .bdot { background: var(--erp-success); }
 .badge-cerrado    .bdot { background: #475569; }
-.badge-cancelado  .bdot { background: var(--erp-danger); }
+.badge-cancelado  .bdot { background: var(--erp-danger); } 
 
 .row-actions { display: flex; gap: 5px; align-items: center; flex-wrap: nowrap; }
 .btn-action-sm {

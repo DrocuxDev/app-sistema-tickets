@@ -5,353 +5,348 @@
 @include('components.notificaciones.alertas')
 @include('components.admin.detalleticket')
 @include('components.admin.modalasignartecnico')
-
 {{-- ══ GOOGLE FONTS ══ --}}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-
 <div class="main-content">
 <div class="container-fluid">
-    <div class="page-header">
-        <div class="page-header-left">
-            <div class="page-header-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-                    <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-                    <rect x="14" y="14" width="7" height="7" rx="1.5"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-                </svg>
-            </div>
-            <div>
-                <h1 class="page-title">Panel de Administración</h1>
-                <p class="page-subtitle">Gestión global de clientes, usuarios y tickets</p>
-            </div>
-        </div>
-    </div>
+<div class="page-header">
+<div class="page-header-left">
+<div class="page-header-icon">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="3" width="7" height="7" rx="1.5"/>
+<rect x="14" y="3" width="7" height="7" rx="1.5"/>
+<rect x="14" y="14" width="7" height="7" rx="1.5"/>
+<rect x="3" y="14" width="7" height="7" rx="1.5"/>
+</svg>
+</div>
+<div>
+<h1 class="page-title">Panel de Administración</h1>
+<p class="page-subtitle">Gestión global de clientes, usuarios y tickets</p>
+</div>
+</div>
+</div>
+<div class="breadcrumb-nav" id="breadcrumb-nav">
+<span class="bc-item active" id="bc-inicio" onclick="volverInicio()">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;vertical-align:-1px">
+<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+</svg>
+Inicio
+</span>
+<span class="bc-sep" id="bc-sep-1" style="display:none">›</span>
+<span class="bc-item" id="bc-cliente" style="display:none"></span>
+<span class="bc-sep" id="bc-sep-2" style="display:none">›</span>
+<span class="bc-item" id="bc-usuario" style="display:none"></span>
+</div>
 
-    <div class="breadcrumb-nav" id="breadcrumb-nav">
-        <span class="bc-item active" id="bc-inicio" onclick="volverInicio()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;vertical-align:-1px">
-                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-            </svg>
-            Inicio
-        </span>
-        <span class="bc-sep" id="bc-sep-1" style="display:none">›</span>
-        <span class="bc-item" id="bc-cliente" style="display:none"></span>
-        <span class="bc-sep" id="bc-sep-2" style="display:none">›</span>
-        <span class="bc-item" id="bc-usuario" style="display:none"></span>
-    </div>
-
-    <div class="stats-container" id="stats-global">
-        <div class="stat-card stat-clientes" onclick="volverInicio()" style="cursor: pointer;" title="Ir a Clientes Registrados">
-            <div class="stat-icon si-c">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="7" width="20" height="14" rx="2"/>
-                    <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $clientes->count() }}</span>
-                <span class="stat-label">Clientes</span>
-            </div>
-        </div>
-
-        <div class="stat-card stat-total" onclick="filtrarTicketsGlobalStats('todos')" style="cursor: pointer;" title="Ver todos los tickets">
-            <div class="stat-icon si-t">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $resumen['total'] }}</span>
-                <span class="stat-label">Total Tickets</span>
-            </div>
-        </div>
-
-        <div class="stat-card stat-pendiente" onclick="filtrarTicketsGlobalStats('PENDIENTE')" style="cursor: pointer;" title="Ver tickets pendientes">
-            <div class="stat-icon" style="background: rgba(245,158,11,.10); color: #d97706;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12 6 12 12 16 14"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $resumen['pendiente'] }}</span>
-                <span class="stat-label">Pendientes</span>
-            </div>
-        </div>
-
-        <div class="stat-card stat-programado" onclick="filtrarTicketsGlobalStats('PROGRAMADO')" style="cursor: pointer;" title="Ver tickets programados">
-            <div class="stat-icon" style="background: rgba(26,110,216,.10); color: #1a6ed8;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $resumen['programado'] }}</span>
-                <span class="stat-label">Programados</span>
-            </div>
-        </div>
-
-        <div class="stat-card stat-proceso" onclick="filtrarTicketsGlobalStats('EN PROCESO')" style="cursor: pointer;" title="Ver tickets en proceso">
-            <div class="stat-icon" style="background: rgba(22,101,52,.10); color: #166534;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $resumen['en_proceso'] }}</span>
-                <span class="stat-label">En Proceso</span>
-            </div>
-        </div>
-
-        <div class="stat-card stat-cerrado" onclick="filtrarTicketsGlobalStats('CERRADO')" style="cursor: pointer;" title="Ver tickets cerrados">
-            <div class="stat-icon" style="background: rgba(100,116,139,.10); color: #475569;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $resumen['cerrado'] }}</span>
-                <span class="stat-label">Cerrados</span>
-            </div>
-        </div>
-
-        <div class="stat-card stat-cancelado" onclick="filtrarTicketsGlobalStats('CANCELADO')" style="cursor: pointer;" title="Ver tickets cancelados">
-            <div class="stat-icon" style="background: rgba(153,27,27,.10); color: #991b1b;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
-                </svg>
-            </div>
-            <div class="stat-body">
-                <span class="stat-value">{{ $resumen['cancelado'] }}</span>
-                <span class="stat-label">Cancelados</span>
-            </div>
-        </div>
-    </div>
-
-    <div id="panel-clientes">
-        <div class="section-header">
-            <div class="section-title-group">
-                <div class="section-title-icon">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                </div>
-                <h2 class="section-title">Clientes Registrados</h2>
-            </div>
-        </div>
-
-        <div class="erp-toolbar">
-            <div class="filter-section">
-                <span class="filter-section-lbl">Estado</span>
-                <div class="seg-ctrl">
-                    <button class="filter-toggle active" data-cstatus="all" onclick="filtrarClientes(this)">
-                        Todos <span class="ft-ct">{{ $clientes->count() }}</span>
-                    </button>
-                    <button class="filter-toggle" data-cstatus="activo" onclick="filtrarClientes(this)">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
-                        Activos <span class="ft-ct">{{ $clientes->where('activo', 1)->count() }}</span>
-                    </button>
-                    <button class="filter-toggle" data-cstatus="inactivo" onclick="filtrarClientes(this)">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                        Inactivos <span class="ft-ct">{{ $clientes->where('activo', 0)->count() }}</span>
-                    </button>
-                </div>
-            </div>
-            <div class="toolbar-search">
-                <input type="text" class="search-input" placeholder="Buscar por razón social, RUC o correo..." id="buscar-cliente" onkeyup="aplicarFiltrosClientes()">
-                <button class="btn-search" onclick="aplicarFiltrosClientes()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    Buscar
-                </button>
-            </div>
-        </div>
-
-        <div class="erp-table-container">
-            <table class="erp-table">
-                <thead>
-                    <tr>
-                        <th style="width:60px">Cód.</th>
-                        <th>Razón Social</th>
-                        <th>RUC</th>
-                        <th>Correo</th>
-                        <th>Rubro</th>
-                        <th style="width:90px">Usuarios</th>
-                        <th style="width:90px">Tickets</th>
-                        <th style="width:100px">Estado</th>
-                        <th style="width:140px">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-clientes">
-                    @forelse($clientes as $cliente)
-                    @php
-                        $usuariosCliente = \App\Models\Usuario::where('id_cliente', $cliente->id_cliente)->get();
-                        $totalUsuarios   = $usuariosCliente->count();
-                        $ticketsCliente  = $tickets->where('id_cliente', $cliente->id_cliente);
-                        $ticketCount     = $ticketsCliente->count();
-                    @endphp
-                    <tr data-id="{{ $cliente->id_cliente }}" data-status="{{ $cliente->activo ? 'activo' : 'inactivo' }}" data-search="{{ strtolower($cliente->razon_social . ' ' . $cliente->ruc . ' ' . $cliente->correo) }}">
-                        <td class="cell-id">#{{ $cliente->id_cliente }}</td>
-                        <td class="cell-name">
-                            <div class="cliente-name-wrapper">
-                                <div class="avatar-small avatar-empresa">{{ strtoupper(substr($cliente->razon_social, 0, 2)) }}</div>
-                                <span>{{ Str::limit($cliente->razon_social, 40) }}</span>
-                            </div>
-                        </td>
-                        <td>{{ $cliente->ruc ?? '—' }}</td>
-                        <td>{{ Str::limit($cliente->correo ?? '—', 25) }}</td>
-                        <td>{{ $cliente->rubro ?? '—' }}</td>
-                        <td><span class="type-badge tb-c"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>{{ $totalUsuarios }}</span></td>
-                        <td><span class="type-badge tb-t"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/></svg>{{ $ticketCount }}</span></td>
-                        <td>
-                            @if($cliente->activo)
-                                <span class="badge-active"><span class="bdot"></span>Activo</span>
-                            @else
-                                <span class="badge-inactive"><span class="bdot"></span>Inactivo</span>
-                            @endif
-                        </td>
-                        <td>
-                            <div class="row-actions">
-                                <button class="btn-action-sm" onclick="seleccionarCliente({{ $cliente->id_cliente }}, '{{ addslashes($cliente->razon_social) }}')">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                    Ver Usuarios
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr id="erp-empty-row-clientes">
-                        <td colspan="9">
-                            <div class="erp-empty-state">
-                                <div class="erp-empty-ico">
-                                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                                </div>
-                                <p class="erp-empty-ttl">Sin clientes registrados</p>
-                                <p class="erp-empty-desc">No hay clientes en el sistema.</p>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="panel-usuarios" style="display:none">
-        <div class="back-btn-row">
-            <button class="btn-back" onclick="volverInicio()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-                Volver a Clientes
-            </button>
-            <h2 class="section-title" id="titulo-usuarios">Usuarios</h2>
-        </div>
-
-        <div class="erp-toolbar">
-            <div class="filter-section">
-                <span class="filter-section-lbl">Estado</span>
-                <div class="seg-ctrl">
-                    <button class="filter-toggle active" data-ustatus="all" onclick="filtrarUsuarios(this)">
-                        Todos <span class="ft-ct" id="count-utodos">0</span>
-                    </button>
-                    <button class="filter-toggle" data-ustatus="activo" onclick="filtrarUsuarios(this)">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
-                        Activos <span class="ft-ct" id="count-uactivos">0</span>
-                    </button>
-                    <button class="filter-toggle" data-ustatus="inactivo" onclick="filtrarUsuarios(this)">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                        Inactivos <span class="ft-ct" id="count-uinactivos">0</span>
-                    </button>
-                </div>
-            </div>
-            <div class="toolbar-search">
-                <input type="text" class="search-input" placeholder="Buscar por nombre, DNI o correo..." id="buscar-usuario" onkeyup="aplicarFiltrosUsuarios()">
-                <button class="btn-search" onclick="aplicarFiltrosUsuarios()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    Buscar
-                </button>
-            </div>
-        </div>
-
-        <div class="erp-table-container">
-            <table class="erp-table">
-                <thead>
-                    <tr>
-                        <th>Cód.</th>
-                        <th>Nombre</th>
-                        <th>DNI</th>
-                        <th>Correo</th>
-                        <th>Tickets</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-usuarios"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="panel-tickets" style="display:none">
-        <div class="back-btn-row">
-            <button class="btn-back" id="btn-back-tickets" onclick="volverInicio()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-                Volver a Clientes
-            </button>
-            <h2 class="section-title" id="titulo-tickets">Tickets</h2>
-        </div>
-
-        <div class="erp-toolbar">
-            <div class="filter-section">
-                <span class="filter-section-lbl">Estado</span>
-                <div class="seg-ctrl">
-                    <button class="filter-toggle active" data-tstatus="todos" onclick="filtrarTicketsUI(this)">Todos <span class="ft-ct" id="count-ttodos">0</span></button>
-                    <button class="filter-toggle" data-tstatus="PENDIENTE" onclick="filtrarTicketsUI(this)">Pendiente</button>
-                    <button class="filter-toggle" data-tstatus="PROGRAMADO" onclick="filtrarTicketsUI(this)">Programado</button>
-                    <button class="filter-toggle" data-tstatus="EN PROCESO" onclick="filtrarTicketsUI(this)">En Proceso</button>
-                    <button class="filter-toggle" data-tstatus="CERRADO" onclick="filtrarTicketsUI(this)">Cerrado</button>
-                    <button class="filter-toggle" data-tstatus="CANCELADO" onclick="filtrarTicketsUI(this)">Cancelado</button>
-                </div>
-            </div>
-            <div class="toolbar-search">
-                <input type="text" class="search-input" placeholder="Buscar por asunto, ID o cliente..." id="buscar-ticket" onkeyup="aplicarFiltrosTickets()">
-                <button class="btn-search" onclick="aplicarFiltrosTickets()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    Buscar
-                </button>
-            </div>
-        </div>
-
-        <div class="erp-table-container">
-            <table class="erp-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Asunto</th>
-                        <th>Cliente</th>
-                        <th>Estado</th>
-                        <th>Prioridad</th>
-                        <th>Fecha</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-tickets"></tbody>
-            </table>
-        </div>
-    </div>
-
+<div class="stats-container" id="stats-global">
+<div class="stat-card stat-clientes" onclick="volverInicio()" style="cursor: pointer;" title="Ir a Clientes Registrados">
+<div class="stat-icon si-c">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+<rect x="2" y="7" width="20" height="14" rx="2"/>
+<path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+</svg>
+</div>
+<div class="stat-body">
+<span class="stat-value">{{ $clientes->count() }}</span>
+<span class="stat-label">Clientes</span>
 </div>
 </div>
 
+<div class="stat-card stat-total" onclick="filtrarTicketsGlobalStats('todos')" style="cursor: pointer;" title="Ver todos los tickets">
+<div class="stat-icon si-t">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+<path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/>
+</svg>
+</div>
+<div class="stat-body">
+<span class="stat-value">{{ $resumen['total'] }}</span>
+<span class="stat-label">Total Tickets</span>
+</div>
+</div>
+
+<div class="stat-card stat-pendiente" onclick="filtrarTicketsGlobalStats('PENDIENTE')" style="cursor: pointer;" title="Ver tickets pendientes">
+<div class="stat-icon" style="background: rgba(245,158,11,.10); color: #d97706;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="10"/>
+<polyline points="12 6 12 12 16 14"/>
+</svg>
+</div>
+<div class="stat-body">
+<span class="stat-value">{{ $resumen['pendiente'] }}</span>
+<span class="stat-label">Pendientes</span>
+</div>
+</div>
+
+<div class="stat-card stat-programado" onclick="filtrarTicketsGlobalStats('PROGRAMADO')" style="cursor: pointer;" title="Ver tickets programados">
+<div class="stat-icon" style="background: rgba(26,110,216,.10); color: #1a6ed8;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+<line x1="16" y1="2" x2="16" y2="6"/>
+<line x1="8" y1="2" x2="8" y2="6"/>
+<line x1="3" y1="10" x2="21" y2="10"/>
+</svg>
+</div>
+<div class="stat-body">
+<span class="stat-value">{{ $resumen['programado'] }}</span>
+<span class="stat-label">Programados</span>
+</div>
+</div>
+
+<div class="stat-card stat-proceso" onclick="filtrarTicketsGlobalStats('EN PROCESO')" style="cursor: pointer;" title="Ver tickets en proceso">
+<div class="stat-icon" style="background: rgba(22,101,52,.10); color: #166534;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+</svg>
+</div>
+<div class="stat-body">
+<span class="stat-value">{{ $resumen['en_proceso'] }}</span>
+<span class="stat-label">En Proceso</span>
+</div>
+</div>
+
+<div class="stat-card stat-cerrado" onclick="filtrarTicketsGlobalStats('CERRADO')" style="cursor: pointer;" title="Ver tickets cerrados">
+<div class="stat-icon" style="background: rgba(100,116,139,.10); color: #475569;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+<polyline points="22 4 12 14.01 9 11.01"/>
+</svg>
+</div>
+<div class="stat-body">
+<span class="stat-value">{{ $resumen['cerrado'] }}</span>
+<span class="stat-label">Cerrados</span>
+</div>
+</div>
+
+<div class="stat-card stat-cancelado" onclick="filtrarTicketsGlobalStats('CANCELADO')" style="cursor: pointer;" title="Ver tickets cancelados">
+<div class="stat-icon" style="background: rgba(153,27,27,.10); color: #991b1b;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="10"/>
+<line x1="15" y1="9" x2="9" y2="15"/>
+<line x1="9" y1="9" x2="15" y2="15"/>
+</svg>
+</div>
+<div class="stat-body">
+<span class="stat-value">{{ $resumen['cancelado'] }}</span>
+<span class="stat-label">Cancelados</span>
+</div>
+</div>
+</div>
+
+<div id="panel-clientes">
+<div class="section-header">
+<div class="section-title-group">
+<div class="section-title-icon">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+<circle cx="9" cy="7" r="4"/>
+<path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+<path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+</svg>
+</div>
+<h2 class="section-title">Clientes Registrados</h2>
+</div>
+</div>
+
+<div class="erp-toolbar">
+<div class="filter-section">
+<span class="filter-section-lbl">Estado</span>
+<div class="seg-ctrl">
+<button class="filter-toggle active" data-cstatus="all" onclick="filtrarClientes(this)">
+Todos <span class="ft-ct">{{ $clientes->count() }}</span>
+</button>
+<button class="filter-toggle" data-cstatus="activo" onclick="filtrarClientes(this)">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <polyline points="9 12 11 14 15 10"/> </svg>
+Activos <span class="ft-ct">{{ $clientes->where('activo', 1)->count() }}</span>
+</button>
+<button class="filter-toggle" data-cstatus="inactivo" onclick="filtrarClientes(this)">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <line x1="15" y1="9" x2="9" y2="15"/> <line x1="9" y1="9" x2="15" y2="15"/> </svg>
+Inactivos <span class="ft-ct">{{ $clientes->where('activo', 0)->count() }}</span>
+</button>
+</div>
+</div>
+<div class="toolbar-search">
+<input type="text" class="search-input" placeholder="Buscar por razón social, RUC o correo..." id="buscar-cliente" onkeyup="aplicarFiltrosClientes()">
+<button class="btn-search" onclick="aplicarFiltrosClientes()">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"> <circle cx="11" cy="11" r="8"/> <line x1="21" y1="21" x2="16.65" y2="16.65"/> </svg>
+Buscar
+</button>
+</div>
+</div>
+
+<div class="erp-table-container">
+<table class="erp-table">
+<thead>
+<tr>
+<th style="width:60px">Cód.</th>
+<th>Razón Social</th>
+<th>RUC</th>
+<th>Correo</th>
+<th>Rubro</th>
+<th style="width:90px">Usuarios</th>
+<th style="width:90px">Tickets</th>
+<th style="width:100px">Estado</th>
+<th style="width:140px">Acciones</th>
+</tr>
+</thead>
+<tbody id="tbody-clientes">
+@forelse($clientes as $cliente)
+@php
+$usuariosCliente = \App\Models\Usuario::where('id_cliente', $cliente->id_cliente)->get();
+$totalUsuarios   = $usuariosCliente->count();
+$ticketsCliente  = $tickets->where('id_cliente', $cliente->id_cliente);
+$ticketCount     = $ticketsCliente->count();
+@endphp
+<tr data-id="{{ $cliente->id_cliente }}" data-status="{{ $cliente->activo ? 'activo' : 'inactivo' }}" data-search="{{ strtolower($cliente->razon_social . ' ' . $cliente->ruc . ' ' . $cliente->correo) }}">
+<td class="cell-id">#{{ $cliente->id_cliente }}</td>
+<td class="cell-name">
+<div class="cliente-name-wrapper">
+<div class="avatar-small avatar-empresa">{{ strtoupper(substr($cliente->razon_social, 0, 2)) }}</div>
+<span>{{ Str::limit($cliente->razon_social, 40) }}</span>
+</div>
+</td>
+<td>{{ $cliente->ruc ?? '—' }}</td>
+<td>{{ Str::limit($cliente->correo ?? '—', 25) }}</td>
+<td>{{ $cliente->rubro ?? '—' }}</td>
+<td> <span class="type-badge tb-c"> <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"> <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/> <circle cx="9" cy="7" r="4"/> </svg>{{ $totalUsuarios }}</span> </td>
+<td> <span class="type-badge tb-t"> <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"> <path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/> </svg>{{ $ticketCount }}</span> </td>
+<td>
+@if($cliente->activo)
+<span class="badge-active"> <span class="bdot"></span>Activo</span>
+@else
+<span class="badge-inactive"> <span class="bdot"></span>Inactivo</span>
+@endif
+</td>
+<td>
+<div class="row-actions">
+<button class="btn-action-sm" onclick="seleccionarCliente({{ $cliente->id_cliente }}, '{{ addslashes($cliente->razon_social) }}')">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/> <circle cx="12" cy="7" r="4"/> </svg>
+Ver Usuarios
+</button>
+</div>
+</td>
+</tr>
+@empty
+<tr id="erp-empty-row-clientes">
+<td colspan="9">
+<div class="erp-empty-state">
+<div class="erp-empty-ico">
+<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"> <circle cx="11" cy="11" r="8"/> <line x1="21" y1="21" x2="16.65" y2="16.65"/> </svg>
+</div>
+<p class="erp-empty-ttl">Sin clientes registrados</p>
+<p class="erp-empty-desc">No hay clientes en el sistema.</p>
+</div>
+</td>
+</tr>
+@endforelse
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="panel-usuarios" style="display:none">
+<div class="back-btn-row">
+<button class="btn-back" onclick="volverInicio()">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"> <polyline points="15 18 9 12 15 6"/> </svg>
+Volver a Clientes
+</button>
+<h2 class="section-title" id="titulo-usuarios">Usuarios</h2>
+</div>
+
+<div class="erp-toolbar">
+<div class="filter-section">
+<span class="filter-section-lbl">Estado</span>
+<div class="seg-ctrl">
+<button class="filter-toggle active" data-ustatus="all" onclick="filtrarUsuarios(this)">
+Todos <span class="ft-ct" id="count-utodos">0</span>
+</button>
+<button class="filter-toggle" data-ustatus="activo" onclick="filtrarUsuarios(this)">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <polyline points="9 12 11 14 15 10"/> </svg>
+Activos <span class="ft-ct" id="count-uactivos">0</span>
+</button>
+<button class="filter-toggle" data-ustatus="inactivo" onclick="filtrarUsuarios(this)">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"> <circle cx="12" cy="12" r="10"/> <line x1="15" y1="9" x2="9" y2="15"/> <line x1="9" y1="9" x2="15" y2="15"/> </svg>
+Inactivos <span class="ft-ct" id="count-uinactivos">0</span>
+</button>
+</div>
+</div>
+<div class="toolbar-search">
+<input type="text" class="search-input" placeholder="Buscar por nombre, DNI o correo..." id="buscar-usuario" onkeyup="aplicarFiltrosUsuarios()">
+<button class="btn-search" onclick="aplicarFiltrosUsuarios()">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"> <circle cx="11" cy="11" r="8"/> <line x1="21" y1="21" x2="16.65" y2="16.65"/> </svg>
+Buscar
+</button>
+</div>
+</div>
+
+<div class="erp-table-container">
+<table class="erp-table">
+<thead>
+<tr>
+<th>Cód.</th>
+<th>Nombre</th>
+<th>DNI</th>
+<th>Correo</th>
+<th>Tickets</th>
+<th>Estado</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody id="tbody-usuarios"></tbody>
+</table>
+</div>
+</div>
+
+<div id="panel-tickets" style="display:none">
+<div class="back-btn-row">
+<button class="btn-back" id="btn-back-tickets" onclick="volverInicio()">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"> <polyline points="15 18 9 12 15 6"/> </svg>
+Volver a Clientes
+</button>
+<h2 class="section-title" id="titulo-tickets">Tickets</h2>
+</div>
+
+<div class="erp-toolbar">
+<div class="filter-section">
+<span class="filter-section-lbl">Estado</span>
+<div class="seg-ctrl">
+<button class="filter-toggle active" data-tstatus="todos" onclick="filtrarTicketsUI(this)">Todos <span class="ft-ct" id="count-ttodos">0</span></button>
+<button class="filter-toggle" data-tstatus="PENDIENTE" onclick="filtrarTicketsUI(this)">Pendiente</button>
+<button class="filter-toggle" data-tstatus="PROGRAMADO" onclick="filtrarTicketsUI(this)">Programado</button>
+<button class="filter-toggle" data-tstatus="EN PROCESO" onclick="filtrarTicketsUI(this)">En Proceso</button>
+<button class="filter-toggle" data-tstatus="CERRADO" onclick="filtrarTicketsUI(this)">Cerrado</button>
+<button class="filter-toggle" data-tstatus="CANCELADO" onclick="filtrarTicketsUI(this)">Cancelado</button>
+</div>
+</div>
+<div class="toolbar-search">
+<input type="text" class="search-input" placeholder="Buscar por asunto, ID o cliente..." id="buscar-ticket" onkeyup="aplicarFiltrosTickets()">
+<button class="btn-search" onclick="aplicarFiltrosTickets()">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"> <circle cx="11" cy="11" r="8"/> <line x1="21" y1="21" x2="16.65" y2="16.65"/> </svg>
+Buscar
+</button>
+</div>
+</div>
+
+<div class="erp-table-container">
+<table class="erp-table">
+<thead>
+<tr>
+<th>ID</th>
+<th>Asunto</th>
+<th>Cliente</th>
+<th>Estado</th>
+<th>Prioridad</th>
+<th>Fecha</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody id="tbody-tickets"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
 <script>
 const USUARIOS_POR_CLIENTE = @json(\App\Models\Usuario::all()->groupBy('id_cliente')->map(fn($u) => $u->values()));
 const TICKETS_POR_USUARIO = @json($tickets->groupBy('id_usuario')->map(fn($t) => $t->values()));
@@ -449,15 +444,15 @@ function seleccionarCliente(idCliente, nombre) {
 
     document.getElementById('bc-cliente').textContent = '🏢 ' + nombre;
     document.getElementById('bc-cliente').style.display = 'inline';
-    document.getElementById('bc-sep-1').style.display   = 'inline';
-    document.getElementById('bc-usuario').style.display  = 'none';
-    document.getElementById('bc-sep-2').style.display    = 'none';
+    document.getElementById('bc-sep-1').style.display = 'inline';
+    document.getElementById('bc-usuario').style.display = 'none';
+    document.getElementById('bc-sep-2').style.display = 'none';
     document.getElementById('bc-inicio').classList.remove('active');
     document.getElementById('bc-cliente').classList.add('active');
 
     document.getElementById('panel-clientes').style.display = 'none';
-    document.getElementById('panel-tickets').style.display   = 'none';
-    document.getElementById('panel-usuarios').style.display  = '';
+    document.getElementById('panel-tickets').style.display = 'none';
+    document.getElementById('panel-usuarios').style.display = '';
     document.getElementById('titulo-usuarios').textContent = 'Usuarios de ' + nombre;
 
     const usuarios = USUARIOS_POR_CLIENTE[idCliente] || [];
@@ -470,16 +465,16 @@ function seleccionarUsuario(idUsuario, nombre) {
 
     document.getElementById('bc-usuario').textContent = '👤 ' + nombre;
     document.getElementById('bc-usuario').style.display = 'inline';
-    document.getElementById('bc-sep-2').style.display   = 'inline';
+    document.getElementById('bc-sep-2').style.display = 'inline';
     document.getElementById('bc-cliente').classList.remove('active');
     document.getElementById('bc-usuario').classList.add('active');
 
     document.getElementById('panel-usuarios').style.display = 'none';
-    document.getElementById('panel-tickets').style.display  = '';
+    document.getElementById('panel-tickets').style.display = '';
     document.getElementById('titulo-tickets').textContent = 'Tickets de ' + nombre;
 
     const btnBack = document.getElementById('btn-back-tickets');
-    btnBack.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> Volver a Usuarios`;
+    btnBack.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"> <polyline points="15 18 9 12 15 6"/> </svg> Volver a Usuarios`;
     btnBack.setAttribute('onclick', 'volverUsuarios()');
 
     const tickets = TICKETS_POR_USUARIO[idUsuario] || [];
@@ -491,9 +486,9 @@ function volverInicio() {
     usuarioActual = null;
     viniendoDeUsuario = false;
 
-    document.getElementById('panel-clientes').style.display  = '';
-    document.getElementById('panel-usuarios').style.display   = 'none';
-    document.getElementById('panel-tickets').style.display   = 'none';
+    document.getElementById('panel-clientes').style.display = '';
+    document.getElementById('panel-usuarios').style.display = 'none';
+    document.getElementById('panel-tickets').style.display = 'none';
 
     ['bc-sep-1','bc-cliente','bc-sep-2','bc-usuario'].forEach(id => {
         document.getElementById(id).style.display = 'none';
@@ -504,10 +499,10 @@ function volverInicio() {
 
 function volverUsuarios() {
     usuarioActual = null;
-    document.getElementById('panel-tickets').style.display  = 'none';
+    document.getElementById('panel-tickets').style.display = 'none';
     document.getElementById('panel-usuarios').style.display = '';
-    document.getElementById('bc-sep-2').style.display       = 'none';
-    document.getElementById('bc-usuario').style.display     = 'none';
+    document.getElementById('bc-sep-2').style.display = 'none';
+    document.getElementById('bc-usuario').style.display = 'none';
     document.getElementById('bc-usuario').classList.remove('active');
     document.getElementById('bc-cliente').classList.add('active');
 }
@@ -524,28 +519,28 @@ function renderUsuarios(usuarios) {
     let activos = 0, inactivos = 0;
     tbody.innerHTML = usuarios.map(u => {
         const tickets = TICKETS_POR_USUARIO[u.id_usuario] || [];
-        const activo  = u.activo ? 'Activo' : 'Inactivo';
+        const activo = u.activo ? 'Activo' : 'Inactivo';
         const badgeClass = u.activo ? 'badge-active' : 'badge-inactive';
         const btnClass = u.activo ? 'btn-deactivate' : 'btn-activate';
-        const btnText  = u.activo ? 'Desactivar' : 'Activar';
+        const btnText = u.activo ? 'Desactivar' : 'Activar';
         if(u.activo) activos++; else inactivos++;
 
         return `<tr data-id="${u.id_usuario}" data-activo="${u.activo ? 1 : 0}" data-search="${(u.nombre + ' ' + u.apellido_paterno + ' ' + u.dni + ' ' + u.correo + ' ' + u.codigo_usuario).toLowerCase()}">
-            <td class="cell-id">${u.codigo_usuario || '#' + u.id_usuario}</td>
-            <td class="cell-name">${u.nombre} ${u.apellido_paterno}</td>
-            <td>${u.dni || '—'}</td>
-            <td>${u.correo || '—'}</td>
-            <td><span class="type-badge tb-t"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/></svg>${tickets.length}</span></td>
-            <td><span class="${badgeClass}"><span class="bdot"></span>${activo}</span></td>
-            <td>
-                <div class="row-actions">
-                <button class="btn-action-sm" onclick="seleccionarUsuario(${u.id_usuario}, '${(u.nombre + ' ' + u.apellido_paterno).replace(/'/g, "\\'")}')">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/></svg>
-                Ver Tickets
-                </button>
-                </div>
-                </td>
-        </tr>`;
+<td class="cell-id">${u.codigo_usuario || '#' + u.id_usuario}</td>
+<td class="cell-name">${u.nombre} ${u.apellido_paterno}</td>
+<td>${u.dni || '—'}</td>
+<td>${u.correo || '—'}</td>
+<td> <span class="type-badge tb-t"> <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"> <path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/> </svg>${tickets.length}</span> </td>
+<td> <span class="${badgeClass}"> <span class="bdot"></span>${activo}</span> </td>
+<td>
+<div class="row-actions">
+<button class="btn-action-sm" onclick="seleccionarUsuario(${u.id_usuario}, '${(u.nombre + ' ' + u.apellido_paterno).replace(/'/g, "\\'")}')">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 1 2-2z"/> </svg>
+Ver Tickets
+</button>
+</div>
+</td>
+</tr>`;
     }).join('');
 
     document.getElementById('count-utodos').textContent = usuarios.length;
@@ -559,10 +554,10 @@ function renderUsuarios(usuarios) {
     aplicarFiltrosUsuarios();
 }
 
-// ── TOGGLE USUARIO (CORREGIDO) ──────────────────────────────
+// ── TOGGLE USUARIO (CORREGIDO) ────────────────────────────────
 function toggleUsuario(id, activo) {
     // activo: 1 = está activo (lo vamos a desactivar → nuevoEstado = 0)
-    //         0 = está inactivo (lo vamos a activar → nuevoEstado = 1)
+    //         0 = está inactivo (lo vamos a activar →  nuevoEstado = 1)
     const nuevoEstado = activo ? 0 : 1;
     const accion = nuevoEstado ? 'activar' : 'desactivar';
     const titulo = nuevoEstado ? '¿Activar usuario?' : '¿Desactivar usuario?';
@@ -615,8 +610,8 @@ function ejecutarToggle(id, nuevoEstado, accionVerbo) {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content 
-                         || document.querySelector('meta[name="_token"]')?.content
-                         || '{{ csrf_token() }}'
+                || document.querySelector('meta[name="_token"]')?.content
+                || '{{ csrf_token() }}'
         },
         body: JSON.stringify({ activo: nuevoEstado })
     })
@@ -666,7 +661,7 @@ function actualizarFilaUsuario(id, nuevoEstado) {
     if (badgeTd) {
         const texto = nuevoEstado ? 'Activo' : 'Inactivo';
         const clase = nuevoEstado ? 'badge-active' : 'badge-inactive';
-        badgeTd.innerHTML = `<span class="${clase}"><span class="bdot"></span>${texto}</span>`;
+        badgeTd.innerHTML = `<span class="${clase}"> <span class="bdot"></span>${texto}</span>`;
     }
 
     // Actualizar botón (columna 7, último botón)
@@ -691,7 +686,7 @@ function actualizarContadoresUsuarios(nuevoEstado) {
     const cActivos = document.getElementById('count-uactivos');
     const cInactivos = document.getElementById('count-uinactivos');
     const cTodos = document.getElementById('count-utodos');
-    
+
     if (cActivos && cInactivos) {
         let a = parseInt(cActivos.textContent) || 0;
         let i = parseInt(cInactivos.textContent) || 0;
@@ -712,6 +707,34 @@ function renderTickets(tickets, filtroInicial) {
         return;
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // ORDENAMIENTO POR PRIORIDAD (y desempate por fecha)
+    // ═══════════════════════════════════════════════════════════════
+    const pesoPrioridad = {
+        'urgente': 5, 'crítica': 5, 'critica': 5,
+        'alta': 4,
+        'media': 3,
+        'normal': 2,
+        'baja': 1
+    };
+
+    tickets.sort((a, b) => {
+        const nombreA = (a.prioridad_nombre || a.prioridad || 'normal').toLowerCase();
+        const nombreB = (b.prioridad_nombre || b.prioridad || 'normal').toLowerCase();
+        
+        const pesoA = a.prioridad_orden !== undefined ? a.prioridad_orden : (pesoPrioridad[nombreA] ?? 0);
+        const pesoB = b.prioridad_orden !== undefined ? b.prioridad_orden : (pesoPrioridad[nombreB] ?? 0);
+
+        if (pesoB !== pesoA) {
+            return pesoB - pesoA; // Mayor prioridad primero (descendente)
+        }
+        
+        // Desempate: ordenar por fecha de creación (más reciente primero)
+        const fechaA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const fechaB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return fechaB - fechaA;
+    });
+
     let counts = { todos: 0, PENDIENTE: 0, PROGRAMADO: 0, 'EN PROCESO': 0, CERRADO: 0, CANCELADO: 0 };
     tbody.innerHTML = tickets.map(t => {
         counts['todos']++;
@@ -728,23 +751,23 @@ function renderTickets(tickets, filtroInicial) {
         const btnCancelar = t.estado === 'PROGRAMADO' ? `<button class="btn-action-sm btn-deactivate" onclick="cancelarTicket(${t.id_ticket})">❌ Cancelar</button>` : '';
 
         return `<tr data-id="${t.id_ticket}" data-estado="${t.estado}" data-search="${(t.asunto + ' ' + t.razon_social + ' ' + t.id_ticket).toLowerCase()}">
-            <td class="cell-id">#${t.id_ticket}</td>
-            <td class="cell-name">${t.asunto || 'Sin asunto'}</td>
-            <td>${t.razon_social || '—'}</td>
-            <td><span class="${estadoClass}"><span class="bdot"></span>${t.estado}</span></td>
-            <td><span class="type-badge" style="${prioColor}">${t.prioridad_nombre || 'Normal'}</span></td>
-            <td>${fecha}</td>
-            <td>
-                <div class="row-actions">
-                    <button class="btn-action-sm" onclick="verDetalleTicket(${t.id_ticket})">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        Detalle
-                    </button>
-                    ${btnAsignar}
-                    ${btnCancelar}
-                </div>
-            </td>
-        </tr>`;
+<td class="cell-id">#${t.id_ticket}</td>
+<td class="cell-name">${t.asunto || 'Sin asunto'}</td>
+<td>${t.razon_social || '—'}</td>
+<td> <span class="${estadoClass}"> <span class="bdot"></span>${t.estado}</span> </td>
+<td> <span class="type-badge" style="${prioColor}">${t.prioridad_nombre || 'Normal'}</span> </td>
+<td>${fecha}</td>
+<td>
+<div class="row-actions">
+<button class="btn-action-sm" onclick="verDetalleTicket(${t.id_ticket})">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/> <circle cx="12" cy="12" r="3"/> </svg>
+Detalle
+</button>
+${btnAsignar}
+${btnCancelar}
+</div>
+</td>
+</tr>`;
     }).join('');
 
     ['todos','PENDIENTE','PROGRAMADO','EN PROCESO','CERRADO','CANCELADO'].forEach(k => {
@@ -779,7 +802,7 @@ function filtrarTicketsGlobalStats(estado) {
     document.getElementById('titulo-tickets').textContent = titulo;
 
     const btnBack = document.getElementById('btn-back-tickets');
-    btnBack.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> Volver a Clientes`;
+    btnBack.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"> <polyline points="15 18 9 12 15 6"/> </svg> Volver a Clientes`;
     btnBack.setAttribute('onclick', 'volverInicio()');
 
     renderTicketsGlobal(TODOS_LOS_TICKETS, estado);
@@ -792,6 +815,34 @@ function renderTicketsGlobal(tickets, filtroInicial) {
         ['todos','PENDIENTE','PROGRAMADO','EN PROCESO','CERRADO','CANCELADO'].forEach(k => { const el = document.getElementById('count-t'+k); if(el) el.textContent = '0'; });
         return;
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ORDENAMIENTO POR PRIORIDAD (y desempate por fecha)
+    // ═══════════════════════════════════════════════════════════════
+    const pesoPrioridad = {
+        'urgente': 5, 'crítica': 5, 'critica': 5,
+        'alta': 4,
+        'media': 3,
+        'normal': 2,
+        'baja': 1
+    };
+
+    tickets.sort((a, b) => {
+        const nombreA = (a.prioridad_nombre || a.prioridad || 'normal').toLowerCase();
+        const nombreB = (b.prioridad_nombre || b.prioridad || 'normal').toLowerCase();
+        
+        const pesoA = a.prioridad_orden !== undefined ? a.prioridad_orden : (pesoPrioridad[nombreA] ?? 0);
+        const pesoB = b.prioridad_orden !== undefined ? b.prioridad_orden : (pesoPrioridad[nombreB] ?? 0);
+
+        if (pesoB !== pesoA) {
+            return pesoB - pesoA; // Mayor prioridad primero (descendente)
+        }
+        
+        // Desempate: ordenar por fecha de creación (más reciente primero)
+        const fechaA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const fechaB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return fechaB - fechaA;
+    });
 
     let counts = { todos: 0, PENDIENTE: 0, PROGRAMADO: 0, 'EN PROCESO': 0, CERRADO: 0, CANCELADO: 0 };
     tbody.innerHTML = tickets.map(t => {
@@ -809,23 +860,23 @@ function renderTicketsGlobal(tickets, filtroInicial) {
         const btnCancelar = t.estado === 'PROGRAMADO' ? `<button class="btn-action-sm btn-deactivate" onclick="cancelarTicket(${t.id_ticket}, ${t.id_usuario})">❌ Cancelar</button>` : '';
 
         return `<tr data-id="${t.id_ticket}" data-estado="${t.estado}" data-search="${(t.asunto + ' ' + t.razon_social + ' ' + t.id_ticket).toLowerCase()}">
-            <td class="cell-id">#${t.id_ticket}</td>
-            <td class="cell-name">${t.asunto || 'Sin asunto'}</td>
-            <td>${t.razon_social || '—'}</td>
-            <td><span class="${estadoClass}"><span class="bdot"></span>${t.estado}</span></td>
-            <td><span class="type-badge" style="${prioColor}">${t.prioridad_nombre || 'Normal'}</span></td>
-            <td>${fecha}</td>
-            <td>
-                <div class="row-actions">
-                    <button class="btn-action-sm" onclick="verDetalleTicket(${t.id_ticket})">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        Detalle
-                    </button>
-                    ${btnAsignar}
-                    ${btnCancelar}
-                </div>
-            </td>
-        </tr>`;
+<td class="cell-id">#${t.id_ticket}</td>
+<td class="cell-name">${t.asunto || 'Sin asunto'}</td>
+<td>${t.razon_social || '—'}</td>
+<td> <span class="${estadoClass}"> <span class="bdot"></span>${t.estado}</span> </td>
+<td> <span class="type-badge" style="${prioColor}">${t.prioridad_nombre || 'Normal'}</span> </td>
+<td>${fecha}</td>
+<td>
+<div class="row-actions">
+<button class="btn-action-sm" onclick="verDetalleTicket(${t.id_ticket})">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/> <circle cx="12" cy="12" r="3"/> </svg>
+Detalle
+</button>
+${btnAsignar}
+${btnCancelar}
+</div>
+</td>
+</tr>`;
     }).join('');
 
     ['todos','PENDIENTE','PROGRAMADO','EN PROCESO','CERRADO','CANCELADO'].forEach(k => {
@@ -841,7 +892,7 @@ function renderTicketsGlobal(tickets, filtroInicial) {
     aplicarFiltrosTickets();
 }
 
-// ─── ACCIONES ────────────────────────────────────────────────
+// ─── ACCIONES ─────────────────────────────────────────────────
 function abrirAsignar(idTicket, btnEl, idUsuarioOverride = null) {
     const uid = idUsuarioOverride || usuarioActual;
     const tickets = uid ? (TICKETS_POR_USUARIO[uid] || []) : TODOS_LOS_TICKETS;
@@ -903,7 +954,7 @@ function verDetalleTicket(idTicket) {
         .then(ticket => {
             const contenido = document.getElementById('detalleTicketContenido');
             if (contenido) {
-                contenido.innerHTML = `<h3>Ticket #${ticket.id_ticket}</h3><p><strong>Asunto:</strong> ${ticket.asunto || 'Sin asunto'}</p><p><strong>Estado:</strong> ${ticket.estado}</p>`;
+                contenido.innerHTML = `<h3>Ticket #${ticket.id_ticket}</h3> <p><strong>Asunto:</strong> ${ticket.asunto || 'Sin asunto'}</p> <p><strong>Estado:</strong> ${ticket.estado}</p>`;
             }
             modal.style.display = 'flex';
         })
@@ -921,19 +972,18 @@ document.getElementById('bc-cliente').addEventListener('click', function() {
     volverUsuarios();
 });
 </script>
-
 <style>
 :root {
-    --erp-bg: #f1f4f8; --erp-card: #ffffff; --erp-text: #0f172a; --erp-text-2: #334155; --erp-muted: #64748b;
-    --erp-border: #e2e8f0; --erp-border-li: #f1f5f9;
-    --erp-primary: #0f4a8a; --erp-primary-h: #1a6ed8; --erp-primary-bg: #eff6ff;
-    --erp-success: #166534; --erp-success-bg: #f0fdf4;
-    --erp-danger: #991b1b; --erp-danger-bg: #fef2f2;
-    --erp-teal: #0f766e; --erp-teal-bg: #f0fdfa;
-    --erp-violet: #5b21b6; --erp-violet-bg: #f5f3ff;
-    --erp-radius: 6px;
-    --erp-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.07);
-    --erp-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+--erp-bg: #f1f4f8; --erp-card: #ffffff; --erp-text: #0f172a; --erp-text-2: #334155; --erp-muted: #64748b;
+--erp-border: #e2e8f0; --erp-border-li: #f1f5f9;
+--erp-primary: #0f4a8a; --erp-primary-h: #1a6ed8; --erp-primary-bg: #eff6ff;
+--erp-success: #166534; --erp-success-bg: #f0fdf4;
+--erp-danger: #991b1b; --erp-danger-bg: #fef2f2;
+--erp-teal: #0f766e; --erp-teal-bg: #f0fdfa;
+--erp-violet: #5b21b6; --erp-violet-bg: #f5f3ff;
+--erp-radius: 6px;
+--erp-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.07);
+--erp-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
 }
 
 .main-content { margin-left: 260px; padding: 34px 32px; background: var(--erp-bg); min-height: 100vh; font-family: 'Plus Jakarta Sans', -apple-system, system-ui, sans-serif; transition: margin-left 0.35s ease; box-sizing: border-box; }
@@ -1009,7 +1059,7 @@ body.sb-collapsed .main-content { margin-left: 70px; }
 .type-badge.tb-t { background: var(--erp-violet-bg); color: var(--erp-violet); }
 
 .badge-active, .badge-inactive, .badge-pendiente, .badge-programado, .badge-proceso, .badge-cerrado, .badge-cancelado { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 4px; font-size: 0.73rem; font-weight: 600; line-height: 1; }
-.badge-active   { background: var(--erp-success-bg); color: var(--erp-success); }
+.badge-active { background: var(--erp-success-bg); color: var(--erp-success); } 
 .badge-inactive { background: var(--erp-danger-bg); color: var(--erp-danger); }
 .badge-pendiente { background: rgba(245,158,11,.12); color: #d97706; border: 1px solid rgba(245,158,11,.28); }
 .badge-programado { background: rgba(26,110,216,.12); color: var(--erp-primary-h); border: 1px solid rgba(26,110,216,.28); }
@@ -1041,14 +1091,14 @@ body.sb-collapsed .main-content { margin-left: 70px; }
 
 @media (max-width: 1024px) { .main-content { margin-left: 0 !important; padding: 24px 20px; padding-top: 68px; } }
 @media (max-width: 768px) {
-    .main-content { padding: 16px; padding-top: 68px; }
-    .page-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px; }
-    .stats-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .section-header, .back-btn-row { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .erp-toolbar { flex-direction: column; align-items: stretch; }
-    .filter-section { width: 100%; }
-    .seg-ctrl { width: 100%; justify-content: center; }
-    .toolbar-search { width: 100%; margin-left: 0; }
-    .toolbar-search .search-input { width: 100%; }
+.main-content { padding: 16px; padding-top: 68px; }
+.page-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px; }
+.stats-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.section-header, .back-btn-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+.erp-toolbar { flex-direction: column; align-items: stretch; }
+.filter-section { width: 100%; }
+.seg-ctrl { width: 100%; justify-content: center; }
+.toolbar-search { width: 100%; margin-left: 0; }
+.toolbar-search .search-input { width: 100%; }
 }
 </style>
