@@ -70,7 +70,7 @@ class LoginController extends Controller
 
             return $esAdmin
                 ? redirect()->route('admin.dashboard')
-                : redirect()->route('tecnico.dashboard');
+                : redirect()->route('tecnico.mistickets');
         }
 
         // --- 5. SECCIÓN: CLIENTE (Empresas) ---
