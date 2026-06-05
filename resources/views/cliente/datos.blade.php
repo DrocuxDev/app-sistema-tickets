@@ -303,9 +303,11 @@
         TABLET (769px – 1024px)
         Sidebar colapsado → margen de 70px
         ══════════════════════════════════════════ */
+    /* ── Tablet (769px – 1024px) ── */
         @media (min-width: 769px) and (max-width: 1024px) {
             .main-content {
-                margin-left: 70px;
+                margin-left: 0 !important;
+                padding-top: 80px;
             }
         }
 

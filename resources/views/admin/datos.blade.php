@@ -390,7 +390,8 @@ body.sb-collapsed .main-content {
 
 @media (min-width: 769px) and (max-width: 1024px) {
     .main-content {
-        margin-left: 70px;
+        margin-left: 0 !important;
+        padding-top: 80px;
     }
 }
 

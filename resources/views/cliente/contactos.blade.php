@@ -333,7 +333,7 @@
 
     /* ── Responsive ── */
     @media (min-width: 769px) and (max-width: 1024px) {
-        .main-content { margin-left: 70px; }
+        .main-content { margin-left: 0 !important; padding-top: 80px; }
     }
 
     @media (max-width: 768px) {
