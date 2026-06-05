@@ -552,7 +552,7 @@ font-weight: 600;
 
 /* ══ RESPONSIVE ══════════════════════════════════════════════════════════ */
 @media (max-width: 1024px)  {
-.dashboard-content { padding: 20px 20px 40px; padding-top: 82px; }
+.dashboard-content { margin-left: 0 !important; padding: 20px 20px 40px; padding-top: 82px; }
 .quick-item { grid-template-columns: 1fr auto; }
 .btn-view-sm { display: none; }
 }

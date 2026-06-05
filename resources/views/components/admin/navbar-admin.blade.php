@@ -451,12 +451,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isSidebarOpen) {
           // Cerrar
           sidebar.classList.remove('sb-open');
-          if (overlay) overlay.classList.remove('visible');
+          if (overlay) { overlay.classList.remove('visible'); }
           document.body.style.overflow = '';
         } else {
           // Abrir
           sidebar.classList.add('sb-open');
-          if (overlay) overlay.classList.add('visible');
+          if (overlay) { overlay.classList.add('visible'); }
           document.body.style.overflow = 'hidden';
         }
       } else {

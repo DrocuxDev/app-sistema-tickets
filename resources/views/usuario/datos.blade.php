@@ -158,6 +158,10 @@
     .btn-save svg { width: 13px; height: 13px; fill: white; }
 
     /* Responsivo */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .main-content { margin-left: 0 !important; padding-top: 80px; }
+    }
+
     @media (max-width: 768px) {
         .main-content { margin-left: 0 !important; padding: 20px 16px; padding-top: 80px; }
         .form-grid { grid-template-columns: 1fr; }

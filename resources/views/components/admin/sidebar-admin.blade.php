@@ -3,6 +3,7 @@
       Solo el sidebar izquierdo — incluir con @include(...)
       ============================================================ --}}
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -199,11 +200,15 @@
       .sb-toggle { display: none !important; }
       #sb-hamburger { display: none !important; }
 
-      /* Sidebar fuera de pantalla por defecto en móvil */
-      #jhs-sidebar { width: var(--sb-w) !important; transform: translateX(-100%); }
+      /* Sidebar ocupa pantalla completa desde top:0 */
+      #jhs-sidebar { width: var(--sb-w) !important; transform: translateX(-100%); top: 0 !important; height: 100vh !important; }
       #jhs-sidebar.sb-open { transform: translateX(0); }
       #jhs-sidebar.collapsed { width: var(--sb-w) !important; transform: translateX(-100%); }
       #jhs-sidebar.collapsed.sb-open { transform: translateX(0); }
+
+      /* Overlay activo en móvil */
+      #sb-overlay { display: none; }
+      #sb-overlay.visible { display: block; }
 
       /* Restaurar elementos al abrir */
       #jhs-sidebar .sb-header { height: auto !important; padding: 26px 20px 20px !important; opacity: 1 !important; pointer-events: auto !important; }
@@ -224,7 +229,7 @@
     @media (min-width: 769px) and (max-width: 1024px) {
       .sb-toggle { display: none !important; }
       #sb-hamburger { display: flex !important; }
-      #jhs-sidebar { width: var(--sb-w) !important; transform: translateX(-100%); }
+      #jhs-sidebar { width: var(--sb-w) !important; transform: translateX(-100%); top: 0 !important; height: 100vh !important; }
       #jhs-sidebar.sb-open { transform: translateX(0); }
       #jhs-sidebar.collapsed { width: var(--sb-w) !important; transform: translateX(-100%); }
       #jhs-sidebar.collapsed.sb-open { transform: translateX(0); }
