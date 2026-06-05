@@ -80,6 +80,12 @@
 
 <style>
 @keyframes acSlideIn { from{transform:translateY(-20px) scale(.97);opacity:0} to{transform:none;opacity:1} }
+@media (max-width:540px) {
+  #modalCrearCliente > div { margin:8px !important; }
+  #modalCrearCliente [style*="grid-template-columns:1fr 1fr"],
+  #modalCrearCliente [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns:1fr !important; }
+  #modalCrearCliente [style*="padding:26px 28px"] { padding:16px 14px !important; }
+}
 </style>
 
 <script>

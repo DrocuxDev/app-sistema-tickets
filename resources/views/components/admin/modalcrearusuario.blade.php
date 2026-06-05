@@ -169,6 +169,13 @@
 <style>
 @keyframes uSlideIn { from{transform:translateY(-20px) scale(.97);opacity:0} to{transform:none;opacity:1} }
 .usu-cli-item.selected { border-color:#059669 !important; background:#f0fdf4 !important; }
+@media (max-width:540px) {
+  #modalCrearUsuario > div { margin:8px !important; }
+  #modalCrearUsuario [style*="grid-template-columns:1fr 1fr"],
+  #modalCrearUsuario [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns:1fr !important; }
+  #modalCrearUsuario [style*="padding:26px 28px"],
+  #modalCrearUsuario [style*="padding:24px 28px"] { padding:16px 14px !important; }
+}
 
 /* ── PARCHE CSS PARA MOVER LA ALERTA FLOTANTE AL FRENTE ── */
 div[class*="notification"], 

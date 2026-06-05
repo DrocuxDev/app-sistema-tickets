@@ -53,7 +53,15 @@
   background: var(--erp-bg);
 }
 @media (max-width: 1024px) { .erp-content-wrapper { padding: 20px; padding-top: 75px; } }
-@media (max-width: 768px)  { .erp-content-wrapper { padding: 16px; padding-top: 65px; } }
+@media (max-width: 768px)  {
+  .erp-content-wrapper { padding: 16px; padding-top: 65px; }
+  .erp-toolbar { flex-direction: column; align-items: flex-start; }
+  .filter-section { width: 100%; flex-wrap: wrap; }
+  .seg-ctrl { flex-wrap: wrap; }
+  .toolbar-search { width: 100%; margin-left: 0 !important; }
+  .toolbar-search .search-input { width: 100%; box-sizing: border-box; }
+  .erp-table-container { overflow-x: auto; }
+}
 
 /* ── Z-Index: Modales > Navbar > Sidebar (no tocar) ─────────────────── */
 #modalVerDetalle, .modal-system-overlay,

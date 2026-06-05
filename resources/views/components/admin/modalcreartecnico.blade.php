@@ -85,6 +85,21 @@
 
 <style>
 @keyframes tSlideIn { from{transform:translateY(-20px) scale(.97);opacity:0} to{transform:none;opacity:1} }
+
+/* Responsive modal */
+@media (max-width: 540px) {
+  #modalCrearTecnico > div { margin: 8px !important; }
+  #modalCrearTecnico [style*="grid-template-columns:1fr 1fr"],
+  #modalCrearTecnico [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  #modalCrearTecnico [style*="padding:26px 28px"] {
+    padding: 16px 14px !important;
+  }
+  #modalCrearTecnico [style*="padding:22px 28px"] {
+    padding: 16px !important;
+  }
+}
 </style>
 
 <script>
