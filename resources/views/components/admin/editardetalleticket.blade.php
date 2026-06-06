@@ -540,6 +540,9 @@
 .tec-reporte-preview-item .tec-rp-name { font-size: 12px; font-weight: 600; color: #1e40af; }
 .tec-reporte-preview-item .tec-rp-size { font-size: 11px; color: #64748b; }
 
+@media (max-width: 768px) {
+    .tec-header { flex-wrap: wrap; gap: 10px; }
+}
 @media (max-width: 540px) {
     .tec-row-3, .tec-row-2 { grid-template-columns: 1fr; }
     .tec-dates-grid { grid-template-columns: 1fr; }

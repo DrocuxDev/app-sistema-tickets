@@ -1,5 +1,6 @@
 @include('components.cliente.sidebar-cliente')
 @include('components.usuario.detalleticket')
+@include('components.responsive-global')
 
 <style>
 /* ══ LAYOUT ══ */
@@ -553,6 +554,13 @@ body.sb-collapsed .mt-main { margin-left: 70px; }
     .mt-estado-select {
         min-width: 100%;
     }
+    .mt-header { flex-direction: column; align-items: flex-start; }
+    .mt-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+@media (max-width: 480px) {
+    .mt-inner { padding: 12px; }
+    .mt-table { min-width: 520px; }
+    .mt-panel-header { flex-direction: column; align-items: stretch; gap: 10px; }
 }
 </style>
 

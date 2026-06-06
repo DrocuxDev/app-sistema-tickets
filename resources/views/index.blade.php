@@ -388,7 +388,21 @@
         /* ─── Responsive ──────────────────────────────────────── */
         @media (max-width: 900px) {
             .carousel-panel { display: none; }
-            .login-panel    { width: 100%; }
+            .login-panel    { width: 100%; border-right: none; }
+            body { overflow: auto; }
+            .app-layout { overflow: auto; min-height: 100vh; height: auto; }
+        }
+        @media (max-width: 480px) {
+            .login-panel { padding: 28px 20px; }
+            .login-inner { width: 100%; max-width: 100%; }
+            .login-heading h2 { font-size: 1.5rem; }
+            .jhs-input { font-size: 15px; }
+            .btn-submit { padding: 14px; font-size: 14px; }
+            .login-footer .footer-links { flex-direction: column; gap: 8px; align-items: center; }
+        }
+        @media (max-width: 360px) {
+            .login-panel { padding: 20px 16px; }
+            .logo-box img { max-width: 48px; max-height: 48px; }
         }
     </style>
 </head>

@@ -130,8 +130,13 @@ body.sb-collapsed .tk-main { margin-left: 70px; }
     .tk-pills{width:100%;}
     .tk-grid{grid-template-columns:1fr;}
 }
+@media (max-width:480px) {
+    .tk-main { padding-top: 64px; }
+    .tk-inner { padding: 12px; }
+    .tk-cards { grid-template-columns: 1fr; gap: 10px; }
+}
 @media (max-width:420px) {
-    .tk-cards{grid-template-columns:1fr 1fr;}
+    .tk-cards { grid-template-columns: 1fr; }
 }
 </style>
 

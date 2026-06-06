@@ -47,20 +47,41 @@
 }
 
 /* ── Layout wrapper ─────────────────────────────────────────────────── */
+.dashboard-content,
 .erp-content-wrapper {
   padding: 24px 32px;
   min-height: 100vh;
   background: var(--erp-bg);
 }
-@media (max-width: 1024px) { .erp-content-wrapper { padding: 20px; padding-top: 75px; } }
+@media (max-width: 1024px) {
+  .dashboard-content,
+  .erp-content-wrapper { padding: 20px; padding-top: 75px; }
+  .erp-header { margin-top: 0; }
+}
 @media (max-width: 768px)  {
+  .dashboard-content,
   .erp-content-wrapper { padding: 16px; padding-top: 65px; }
   .erp-toolbar { flex-direction: column; align-items: flex-start; }
   .filter-section { width: 100%; flex-wrap: wrap; }
   .seg-ctrl { flex-wrap: wrap; }
   .toolbar-search { width: 100%; margin-left: 0 !important; }
   .toolbar-search .search-input { width: 100%; box-sizing: border-box; }
-  .erp-table-container { overflow-x: auto; }
+  .erp-table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .erp-header { flex-direction: column; align-items: stretch; margin-top: 0; }
+  .erp-actions { width: 100%; }
+  .erp-stats-strip .stat-card { min-width: calc(50% - 6px); }
+}
+@media (max-width: 480px) {
+  .dashboard-content,
+  .erp-content-wrapper { padding: 12px; padding-top: 65px; }
+  .erp-stats-strip { flex-direction: column; }
+  .erp-stats-strip .stat-card { min-width: 100%; }
+  .erp-actions { flex-direction: column; }
+  .erp-actions button { width: 100%; justify-content: center; }
+  .erp-table { min-width: 640px; }
+  .erp-pagination { flex-direction: column; gap: 10px; text-align: center; }
+  .pagination-controls { justify-content: center; flex-wrap: wrap; }
+  .toolbar-sep { display: none; }
 }
 
 /* ── Z-Index: Modales > Navbar > Sidebar (no tocar) ─────────────────── */

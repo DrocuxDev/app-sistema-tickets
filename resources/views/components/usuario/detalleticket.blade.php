@@ -396,12 +396,16 @@
     border-radius: 99px; 
 }
 
+@media (max-width: 768px) {
+    .dtk-header { flex-wrap: wrap; gap: 10px; }
+    .dtk-header-right { flex-wrap: wrap; }
+}
 @media (max-width: 540px) {
     .dtk-row-3, .dtk-row-2 { grid-template-columns: 1fr; }
     .dtk-dates-grid { grid-template-columns: 1fr; }
     .dtk-body, .dtk-section { padding-left: 14px; padding-right: 14px; }
 }
-@media (max-width: 380px) {
+@media (max-width: 480px) {
     .dtk-footer { flex-direction: column-reverse; }
     .dtk-btn-ghost, .dtk-btn-primary { width: 100%; justify-content: center; }
 }

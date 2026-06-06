@@ -266,6 +266,9 @@
     opacity: .45; cursor: not-allowed;
 }
 
+@media (max-width: 768px) {
+    .mat-info-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+}
 @media (max-width: 540px) {
     .mat-body { padding: 16px; }
     .mat-footer { flex-direction: column-reverse; }

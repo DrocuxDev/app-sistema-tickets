@@ -284,7 +284,8 @@
         .modal-body   { padding: 18px 16px; }
         .modal-header { padding: 16px 18px; }
         .modal-footer { padding: 16px; }
-        .form-grid    { grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-grid    { grid-template-columns: 1fr; gap: 12px; }
+        .form-group.full { grid-column: 1; }
         .modal-exito-body { padding: 25px 20px 15px; }
         .modal-exito-footer { padding: 12px 20px 20px; }
     }

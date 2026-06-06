@@ -35,7 +35,7 @@
             </div>
 
             {{-- Footer --}}
-            <div style="padding:14px 28px 24px;display:flex;gap:10px;justify-content:flex-end">
+            <div id="dt_footer" class="modal-form-footer" style="padding:14px 28px 24px;display:flex;gap:10px;justify-content:flex-end">
                 <button onclick="cerrarModalDetalle()" style="padding:10px 22px;border-radius:10px;border:2px solid #e5e7eb;background:#fff;color:#6b7280;font-weight:600;cursor:pointer;font-size:.9rem" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='#fff'">Cancelar</button>
                 <button id="btnGuardarDetalle" onclick="guardarDetalle()" style="padding:10px 26px;border-radius:10px;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:.9rem;transition:.2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Guardar Cambios</button>
             </div>
@@ -45,6 +45,16 @@
 
 <style>
 @keyframes dtSlideIn { from{transform:translateY(-20px) scale(.97);opacity:0} to{transform:none;opacity:1} }
+
+@media (max-width: 540px) {
+    #modalVerDetalle #dt_campos { grid-template-columns: 1fr; }
+    #modalVerDetalle #dt_header { padding: 16px 18px; flex-wrap: wrap; gap: 10px; }
+    #modalVerDetalle #dt_header > div:first-child { flex: 1; min-width: 0; }
+    #modalVerDetalle #dt_badge_estado { font-size: .72rem; }
+}
+@media (max-width: 420px) {
+    #modalVerDetalle > div { margin: 8px; }
+}
 </style>
 
 <script>

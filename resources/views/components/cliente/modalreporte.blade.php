@@ -25,7 +25,7 @@
         <label style="font-size:13px; font-weight:600; color:#4a5568; display:block; margin-bottom:8px;">
           <i class="fas fa-users" style="margin-right:6px; color:#c53030;"></i> ¿Qué reporte deseas?
         </label>
-        <div style="display:flex; gap:10px;">
+        <div class="mr-tipo-options" style="display:flex; gap:10px;">
           <label style="flex:1; border:2px solid #e2e8f0; border-radius:10px; padding:12px;
                         cursor:pointer; text-align:center; transition:all 0.2s;" id="opt-todos"
                  onclick="seleccionarTipo('todos')">
@@ -58,7 +58,7 @@
       </div>
 
       <!-- Rango de fechas -->
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;">
+      <div class="mr-date-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;">
         <div>
           <label style="font-size:13px; font-weight:600; color:#4a5568; display:block; margin-bottom:8px;">
             <i class="fas fa-calendar-alt" style="margin-right:6px; color:#c53030;"></i> Fecha desde
@@ -84,7 +84,7 @@
     </div>
 
     <!-- Footer -->
-    <div style="padding:16px 24px; border-top:1px solid #edf2f7; display:flex; gap:12px;">
+    <div class="mr-modal-footer" style="padding:16px 24px; border-top:1px solid #edf2f7; display:flex; gap:12px;">
       <button onclick="closeModalReporte()" style="flex:1; padding:12px; border:none; background:#edf2f7;
               color:#4a5568; border-radius:10px; cursor:pointer; font-weight:600; transition:all 0.2s;">
         <i class="fas fa-times"></i> Cancelar
@@ -97,6 +97,16 @@
     </div>
   </div>
 </div>
+
+<style>
+@media (max-width: 540px) {
+    #modal-reporte > div { width: 95%; max-height: 90vh; overflow-y: auto; }
+    #modal-reporte .mr-date-grid { grid-template-columns: 1fr; }
+    #modal-reporte .mr-tipo-options { flex-direction: column; }
+    #modal-reporte .mr-modal-footer { flex-direction: column; }
+    #modal-reporte .mr-modal-footer button { width: 100%; flex: none; }
+}
+</style>
 
 <script>
 let tipoReporte = 'todos';

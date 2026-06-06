@@ -1,375 +1,573 @@
+{{--
+╔═══════════════════════════════════════════════════════════════════╗
+║  alertas.blade.php — Enterprise Notification Layer               ║
+║                                                                   ║
+║  TOAST NOTIFICATIONS                                              ║
+║    showNotification(type, title, message, duration?)             ║
+║    Tipos: 'info' | 'success' | 'warning' | 'danger'             ║
+║    showNotification('success', '¡Guardado!', 'Cambios aplicados')║
+║                                                                   ║
+║  CONFIRMATION MODALS                                              ║
+║    ModalSystem.show(type, config)                                ║
+║    Tipos: 'success' | 'confirm' | 'warning' | 'question'        ║
+║    ModalSystem.show('confirm', {                                 ║
+║      title: '¿Eliminar registro?',                              ║
+║      text:  'Esta acción no se puede deshacer.',                ║
+║      confirmText: 'Sí, eliminar',                               ║
+║      onConfirm: () => { ... }                                    ║
+║    })                                                             ║
+╚═══════════════════════════════════════════════════════════════════╝
+--}}
+
 <style>
-    :root {
-        --bezier-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+/* ─────────────────────────────────────────────────────────────────
+   DESIGN TOKENS
+   ───────────────────────────────────────────────────────────────── */
+:root {
+    --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
-        --info-bg: #E3F2FD; --info-border: #1976D2; --info-text: #1565C0;
-        --success-bg: #E8F5E9; --success-border: #388E3C; --success-text: #2E7D32;
-        --warning-bg: #FFF3E0; --warning-border: #F57C00; --warning-text: #EF6C00;
-        --danger-bg: #FFEBEE; --danger-border: #D32F2F; --danger-text: #C62828;
+    /* ── Toast: Info ───────────────────────────────────────────── */
+    --nt-info-bg:       rgba(239, 246, 255, 0.97);
+    --nt-info-accent:   #3B82F6;
+    --nt-info-icon-bg:  #DBEAFE;
+    --nt-info-icon:     #2563EB;
+    --nt-info-title:    #1E40AF;
 
-        --saas-z-index: 9999;
-        --saas-overlay-bg: rgba(15, 23, 42, 0.4);
-        --saas-card-bg: #ffffff;
-        --saas-card-border: #e2e8f0;
-        --saas-text-title: #0f172a;
-        --saas-text-desc: #475569;
-        --saas-success-icon-bg: #dcfce7;
-        --saas-success-icon: #16a34a;
-        --saas-danger-icon-bg: #fee2e2;
-        --saas-danger-icon: #dc2626;
-        --saas-btn-primary: #0f172a;
-        --saas-btn-primary-hover: #334155;
-        --saas-btn-danger: #dc2626;
-        --saas-btn-danger-hover: #b91c1c;
-        --saas-btn-cancel-bg: #ffffff;
-        --saas-btn-cancel-border: #cbd5e1;
-        --saas-btn-cancel-text: #334155;
-        --saas-btn-cancel-hover: #f8fafc;
-    }
+    /* ── Toast: Success ────────────────────────────────────────── */
+    --nt-ok-bg:         rgba(240, 253, 244, 0.97);
+    --nt-ok-accent:     #10B981;
+    --nt-ok-icon-bg:    #D1FAE5;
+    --nt-ok-icon:       #059669;
+    --nt-ok-title:      #064E3B;
 
-    /* ══ TOASTS ══ */
-    #toast-container {
-        position: fixed;
-        top: 24px;
-        right: 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        z-index: 9999;
-        pointer-events: none;
-    }
+    /* ── Toast: Warning ────────────────────────────────────────── */
+    --nt-warn-bg:       rgba(255, 251, 235, 0.97);
+    --nt-warn-accent:   #F59E0B;
+    --nt-warn-icon-bg:  #FEF3C7;
+    --nt-warn-icon:     #D97706;
+    --nt-warn-title:    #78350F;
 
-    .toast {
-        position: relative;
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        width: 360px;
-        box-sizing: border-box;
-        padding: 16px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        overflow: hidden;
-        pointer-events: auto;
-        transform: translateX(120%);
-        opacity: 0;
-        transition: transform .4s var(--bezier-smooth), opacity .4s var(--bezier-smooth);
-    }
-    .toast.show { transform: translateX(0); opacity: 1; }
-    .toast.hide { opacity: 0; transform: translateX(20px); }
+    /* ── Toast: Danger ─────────────────────────────────────────── */
+    --nt-err-bg:        rgba(254, 242, 242, 0.97);
+    --nt-err-accent:    #EF4444;
+    --nt-err-icon-bg:   #FEE2E2;
+    --nt-err-icon:      #DC2626;
+    --nt-err-title:     #7F1D1D;
 
-    .toast-info    { background: var(--info-bg);    border-left: 4px solid var(--info-border);    color: var(--info-text); }
-    .toast-success { background: var(--success-bg); border-left: 4px solid var(--success-border); color: var(--success-text); }
-    .toast-warning { background: var(--warning-bg); border-left: 4px solid var(--warning-border); color: var(--warning-text); }
-    .toast-danger  { background: var(--danger-bg);  border-left: 4px solid var(--danger-border);  color: var(--danger-text); }
+    /* ── Shared toast ──────────────────────────────────────────── */
+    --nt-msg-color:     #4B5563;
+    --nt-border:        rgba(0, 0, 0, 0.06);
+    --nt-shadow-sm:     0 1px 3px rgba(0,0,0,0.04), 0 6px 16px rgba(0,0,0,0.07);
+    --nt-shadow-hover:  0 1px 3px rgba(0,0,0,0.04), 0 12px 28px rgba(0,0,0,0.11);
 
-    .toast-icon { width: 24px; height: 24px; flex-shrink: 0; }
-    .toast-content { flex: 1; }
-    .toast-title { margin: 0; font-size: 14px; font-weight: 600; }
-    .toast-message { margin-top: 4px; font-size: 13px; line-height: 1.4; }
-    .toast-close { background: transparent; border: none; color: inherit; cursor: pointer; opacity: .6; }
-    .toast-progress {
-        position: absolute; bottom: 0; left: 0;
-        height: 3px; width: 100%;
-        background: currentColor; opacity: .3;
-        transform-origin: left;
-        animation: shrink linear forwards;
-    }
-    @keyframes shrink { to { transform: scaleX(0); } }
+    /* ── Modal ─────────────────────────────────────────────────── */
+    --ms-overlay:   rgba(15, 23, 42, 0.55);
+    --ms-card-bg:   #ffffff;
+    --ms-border:    rgba(148, 163, 184, 0.18);
+    --ms-title:     #0F172A;
+    --ms-desc:      #64748B;
+    --ms-z:         9999;
+}
 
-    @media (max-width: 600px) {
-        #toast-container { top: 16px; left: 16px; right: 16px; }
-        .toast { width: 100%; }
-    }
 
-    /* ══ MODAL CONFIRMACIÓN ══ */
-    .modal-system-overlay {
-        position: fixed;
-        inset: 0;
-        background-color: var(--saas-overlay-bg);
-        backdrop-filter: blur(3px);
-        -webkit-backdrop-filter: blur(3px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: var(--saas-z-index);
-        padding: 24px;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity .25s ease, visibility .25s ease;
-    }
-    .modal-system-overlay.is-active { opacity: 1; visibility: visible; }
+/* ─────────────────────────────────────────────────────────────────
+   TOAST — Contenedor
+   ───────────────────────────────────────────────────────────────── */
+#nt-rack {
+    position: fixed;
+    top: 20px; right: 20px;
+    display: flex; flex-direction: column; gap: 10px;
+    z-index: 9999;
+    pointer-events: none;
+}
 
-    .modal-system-card {
-        background: var(--saas-card-bg);
-        width: 100%;
-        max-width: 420px;
-        border-radius: 12px;
-        border: 1px solid var(--saas-card-border);
-        padding: 32px 24px;
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 8px 10px -6px rgba(0,0,0,.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        opacity: 0;
-        transform: translateY(15px) scale(.98);
-        transition: transform .3s cubic-bezier(0.16, 1, 0.3, 1), opacity .25s ease;
-    }
-    .modal-system-overlay.is-active .modal-system-card { opacity: 1; transform: translateY(0) scale(1); }
+/* ─────────────────────────────────────────────────────────────────
+   TOAST — Base
+   ───────────────────────────────────────────────────────────────── */
+.nt {
+    --nt-accent: currentColor;
+    position: relative;
+    display: flex; align-items: flex-start; gap: 12px;
+    width: 380px; box-sizing: border-box;
+    padding: 14px 14px 14px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--nt-border);
+    box-shadow: var(--nt-shadow-sm), 0 0 0 0.5px rgba(255,255,255,0.6) inset;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    overflow: hidden;
+    pointer-events: auto;
+    /* Entry state */
+    transform: translateX(calc(100% + 24px));
+    opacity: 0;
+    transition:
+        transform 0.5s var(--ease-spring),
+        opacity   0.3s var(--ease-smooth),
+        box-shadow 0.2s ease;
+    will-change: transform, opacity;
+}
 
-    .modal-icon-wrapper {
-        width: 56px; height: 56px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        margin-bottom: 20px;
-    }
-    .modal-icon-wrapper svg { width: 28px; height: 28px; }
-    .modal-title { font-size: 20px; font-weight: 600; color: var(--saas-text-title); margin-bottom: 10px; }
-    .modal-desc  { font-size: 15px; line-height: 1.6; color: var(--saas-text-desc); margin-bottom: 32px; }
+/* Accent bar */
+.nt::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 10px; bottom: 10px;
+    width: 3px;
+    background: var(--nt-accent);
+    border-radius: 0 3px 3px 0;
+    opacity: 0.75;
+}
 
-    .modal-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.nt:hover {
+    box-shadow: var(--nt-shadow-hover), 0 0 0 0.5px rgba(255,255,255,0.6) inset;
+}
 
-    .modal-btn { height: 44px; border-radius: 8px; border: none; cursor: pointer; font-size: 15px; font-weight: 500; transition: .2s; }
-    .modal-btn:active { transform: translateY(1px); }
-    .modal-btn-primary { background: var(--saas-btn-primary); color: white; }
-    .modal-btn-primary:hover { background: var(--saas-btn-primary-hover); }
-    .modal-btn-danger  { background: var(--saas-btn-danger); color: white; }
-    .modal-btn-danger:hover { background: var(--saas-btn-danger-hover); }
-    .modal-btn-cancel  { background: var(--saas-btn-cancel-bg); border: 1px solid var(--saas-btn-cancel-border); color: var(--saas-btn-cancel-text); }
-    .modal-btn-cancel:hover { background: var(--saas-btn-cancel-hover); }
+/* States */
+.nt.show { transform: translateX(0); opacity: 1; }
+.nt.hide { transform: translateX(12px); opacity: 0; transition-duration: 0.25s, 0.2s, 0.2s; }
 
-    @media (min-width: 640px) {
-        .modal-actions { flex-direction: row-reverse; }
-        .modal-btn { min-width: 140px; width: auto; padding: 0 20px; }
-    }
+/* ── Type variants ─────────────────────────────────────────────── */
+.nt-info    { background: var(--nt-info-bg);  --nt-accent: var(--nt-info-accent); }
+.nt-success { background: var(--nt-ok-bg);    --nt-accent: var(--nt-ok-accent); }
+.nt-warning { background: var(--nt-warn-bg);  --nt-accent: var(--nt-warn-accent); }
+.nt-danger  { background: var(--nt-err-bg);   --nt-accent: var(--nt-err-accent); }
 
-    body.modal-open { overflow: hidden; }
+/* ── Icon bubble ───────────────────────────────────────────────── */
+.nt-icon {
+    flex-shrink: 0;
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+}
+.nt-icon svg { width: 16px; height: 16px; stroke-width: 2.3; }
+
+.nt-info    .nt-icon { background: var(--nt-info-icon-bg);  color: var(--nt-info-icon); }
+.nt-success .nt-icon { background: var(--nt-ok-icon-bg);   color: var(--nt-ok-icon); }
+.nt-warning .nt-icon { background: var(--nt-warn-icon-bg); color: var(--nt-warn-icon); }
+.nt-danger  .nt-icon { background: var(--nt-err-icon-bg);  color: var(--nt-err-icon); }
+
+/* ── Content ───────────────────────────────────────────────────── */
+.nt-body  { flex: 1; min-width: 0; padding-top: 1px; }
+
+.nt-title {
+    margin: 0;
+    font-size: 13.5px; font-weight: 600;
+    line-height: 1.3; letter-spacing: -0.1px;
+}
+.nt-msg {
+    margin-top: 3px;
+    font-size: 12.5px; line-height: 1.5;
+    color: var(--nt-msg-color);
+}
+
+.nt-info    .nt-title { color: var(--nt-info-title); }
+.nt-success .nt-title { color: var(--nt-ok-title); }
+.nt-warning .nt-title { color: var(--nt-warn-title); }
+.nt-danger  .nt-title { color: var(--nt-err-title); }
+
+/* ── Close button ──────────────────────────────────────────────── */
+.nt-x {
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; margin-top: 1px;
+    background: transparent; border: none; padding: 0;
+    color: #94A3B8; cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.nt-x:hover   { background: rgba(0,0,0,0.07); color: #475569; }
+.nt-x:focus-visible { outline: 2px solid #3B82F6; outline-offset: 1px; }
+.nt-x svg { width: 11px; height: 11px; stroke-width: 2.5; }
+
+/* ── Progress bar ──────────────────────────────────────────────── */
+.nt-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; opacity: 0.25;
+    transform-origin: left;
+    animation: nt-shrink linear forwards;
+}
+.nt-info    .nt-bar { background: var(--nt-info-accent); }
+.nt-success .nt-bar { background: var(--nt-ok-accent); }
+.nt-warning .nt-bar { background: var(--nt-warn-accent); }
+.nt-danger  .nt-bar { background: var(--nt-err-accent); }
+
+@keyframes nt-shrink { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 560px) {
+    #nt-rack { top: auto; bottom: 16px; left: 12px; right: 12px; }
+    .nt      { width: 100%; }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   MODAL — Fondo / Overlay
+   ───────────────────────────────────────────────────────────────── */
+.ms-veil {
+    position: fixed; inset: 0;
+    background: var(--ms-overlay);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: var(--ms-z); padding: 20px;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.22s ease, visibility 0.22s ease;
+}
+.ms-veil.is-open { opacity: 1; visibility: visible; }
+
+/* ─────────────────────────────────────────────────────────────────
+   MODAL — Tarjeta
+   ───────────────────────────────────────────────────────────────── */
+.ms-card {
+    background: var(--ms-card-bg);
+    width: 100%; max-width: 432px;
+    border-radius: 22px;
+    border: 1px solid var(--ms-border);
+    padding: 36px 28px 28px;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.06) inset,
+        0 4px 6px -1px rgba(0,0,0,0.06),
+        0 24px 48px -8px rgba(0,0,0,0.18);
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+    transition:
+        transform 0.4s var(--ease-spring),
+        opacity   0.25s var(--ease-smooth);
+}
+.ms-veil.is-open .ms-card { opacity: 1; transform: none; }
+
+/* ── Icon ──────────────────────────────────────────────────────── */
+.ms-icon {
+    width: 64px; height: 64px;
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 22px;
+    position: relative;
+}
+.ms-icon svg   { width: 28px; height: 28px; stroke-width: 2.1; }
+.ms-icon::after {
+    content: '';
+    position: absolute; inset: -5px; border-radius: 25px;
+    border: 1.5px dashed currentColor; opacity: 0.14;
+}
+
+/* ── Typography ────────────────────────────────────────────────── */
+.ms-title {
+    margin: 0 0 10px;
+    font-size: 20px; font-weight: 700;
+    color: var(--ms-title); letter-spacing: -0.4px; line-height: 1.25;
+}
+.ms-desc {
+    margin: 0 0 30px;
+    font-size: 14.5px; line-height: 1.65; color: var(--ms-desc);
+}
+
+/* ── Buttons ───────────────────────────────────────────────────── */
+.ms-actions { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+
+@media (min-width: 480px) {
+    .ms-actions { flex-direction: row-reverse; }
+    .ms-btn     { flex: 1; }
+}
+
+.ms-btn {
+    height: 44px;
+    border: none; border-radius: 11px;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: -0.1px; cursor: pointer;
+    transition: all 0.15s var(--ease-smooth);
+    outline-offset: 3px;
+}
+.ms-btn:focus-visible { outline: 2px solid #3B82F6; }
+.ms-btn:active        { transform: scale(0.985); }
+
+.ms-btn-primary {
+    background: #0F172A; color: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.05) inset;
+}
+.ms-btn-primary:hover { background: #1E293B; box-shadow: 0 3px 8px rgba(0,0,0,0.22); }
+
+.ms-btn-danger {
+    background: #EF4444; color: #fff;
+    box-shadow: 0 1px 2px rgba(239,68,68,0.35), 0 0 0 1px rgba(255,255,255,0.08) inset;
+}
+.ms-btn-danger:hover  { background: #DC2626; box-shadow: 0 3px 8px rgba(239,68,68,0.28); }
+
+.ms-btn-cancel {
+    background: #F8FAFC; color: #334155;
+    border: 1px solid rgba(148,163,184,0.35) !important;
+}
+.ms-btn-cancel:hover  { background: #F1F5F9; color: #0F172A; }
+
+body.ms-open { overflow: hidden; }
 </style>
 
+@include('components.responsive-global')
+
 <script>
-/* ══════════════════════════════════════
-   TOAST — para errores, warnings, info
-   Uso: showNotification('danger', 'Título', 'Mensaje')
-══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════
+   TOAST NOTIFICATION SYSTEM  v2
+   ───────────────────────────────────────────────────────────────────
+   Uso: showNotification(type, title, message, duration?)
+   ─ type     'info' | 'success' | 'warning' | 'danger'
+   ─ duration en milisegundos, default 5000
+   ─ Deduplicación automática (no muestra el mismo toast 2 veces)
+
+   Ejemplos:
+     showNotification('success', '¡Guardado!', 'El registro fue actualizado.')
+     showNotification('danger',  'Error 500',  'Intenta de nuevo más tarde.', 7000)
+═══════════════════════════════════════════════════════════════════ */
 class EnterpriseToastSystem {
-    constructor() {
-        this.activeNotifications = new Set();
-        this.setupContainer();
+    #seen = new Set();
+    #rack;
+
+    constructor() { this.#mountRack(); }
+
+    #mountRack() {
+        let el = document.getElementById('nt-rack');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'nt-rack';
+            document.body.appendChild(el);
+        }
+        this.#rack = el;
     }
 
-    setupContainer() {
-        this.container = document.createElement('div');
-        this.container.id = 'toast-container';
-        document.body.appendChild(this.container);
-    }
+    /** Heroicons outline — tamaños a 16×16 vía CSS */
+    #icon = {
+        info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                 <circle cx="12" cy="12" r="9"/>
+                 <line x1="12" y1="11" x2="12" y2="16"/>
+                 <line x1="12" y1="8"  x2="12.01" y2="8"/>
+               </svg>`,
+        success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>`,
+        warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9"  x2="12" y2="13"/>
+                    <circle cx="12" cy="17" r=".4" fill="currentColor"/>
+                  </svg>`,
+        danger: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                   <circle cx="12" cy="12" r="9"/>
+                   <line x1="15" y1="9"  x2="9"  y2="15"/>
+                   <line x1="9"  y1="9"  x2="15" y2="15"/>
+                 </svg>`,
+    };
 
-    getIcon(type) {
-        const icons = {
-            info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                   </svg>`,
-            success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
-                        <path d="M9 12l2 2 4-4"></path>
-                      </svg>`,
-            warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                      </svg>`,
-            danger:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="15" y1="9" x2="9" y2="15"></line>
-                        <line x1="9" y1="9" x2="15" y2="15"></line>
-                      </svg>`
-        };
-        return icons[type] || icons.info;
-    }
+    #xIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6"  y1="6" x2="18" y2="18"/>
+              </svg>`;
 
-    show(type, title, message, duration = 5000) {
-        const hash = `${type}|${title}|${message}`;
-        if (this.activeNotifications.has(hash)) return;
-        this.activeNotifications.add(hash);
+    show(type = 'info', title = '', message = '', duration = 5000) {
+        const key = `${type}|${title}|${message}`;
+        if (this.#seen.has(key)) return;
+        this.#seen.add(key);
 
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        toast.innerHTML = `
-            <div class="toast-icon">${this.getIcon(type)}</div>
-            <div class="toast-content">
-                <div class="toast-title">${title}</div>
-                <div class="toast-message">${message}</div>
+        const el = document.createElement('div');
+        el.className = `nt nt-${type}`;
+        el.setAttribute('role', 'alert');
+        el.setAttribute('aria-live', 'polite');
+        el.innerHTML = `
+            <div class="nt-icon">${this.#icon[type] ?? this.#icon.info}</div>
+            <div class="nt-body">
+                <p class="nt-title">${title}</p>
+                <p class="nt-msg">${message}</p>
             </div>
-            <button class="toast-close">✕</button>
-            <div class="toast-progress" style="animation-duration:${duration}ms;"></div>
+            <button class="nt-x" aria-label="Cerrar notificación">${this.#xIcon}</button>
+            <div class="nt-bar" aria-hidden="true" style="animation-duration:${duration}ms"></div>
         `;
-        this.container.appendChild(toast);
+        this.#rack.appendChild(el);
+        requestAnimationFrame(() => el.classList.add('show'));
 
-        requestAnimationFrame(() => toast.classList.add('show'));
-
-        const removeToast = () => {
-            toast.classList.remove('show');
-            toast.classList.add('hide');
-            setTimeout(() => { toast.remove(); this.activeNotifications.delete(hash); }, 400);
+        const dismiss = () => {
+            el.classList.replace('show', 'hide');
+            el.addEventListener('transitionend', () => {
+                el.remove();
+                this.#seen.delete(key);
+            }, { once: true });
         };
 
-        const timer = setTimeout(removeToast, duration);
-        toast.querySelector('.toast-close').addEventListener('click', () => { clearTimeout(timer); removeToast(); });
+        const tid = setTimeout(dismiss, duration);
+        el.querySelector('.nt-x').addEventListener('click', () => { clearTimeout(tid); dismiss(); });
     }
 }
 
-const toastSystem = new EnterpriseToastSystem();
-
-window.showNotification = function(type, title, message, duration = 5000) {
-    toastSystem.show(type, title, message, duration);
-};
+const _nt = new EnterpriseToastSystem();
+window.showNotification = (...args) => _nt.show(...args);
 
 
-/* ══════════════════════════════════════
-   MODAL — para confirmaciones y éxitos
-   Uso: ModalSystem.show('success', { title, text, confirmText, onConfirm })
-        ModalSystem.show('confirm', { title, text, confirmText, cancelText, onConfirm, onCancel })
-══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════
+   MODAL CONFIRMATION SYSTEM  v2
+   ───────────────────────────────────────────────────────────────────
+   Uso: ModalSystem.show(type, config)
+   ─ type    'success' | 'confirm' | 'warning' | 'question'
+   ─ config  {
+       title              string   — Título del modal
+       text               string   — Descripción / mensaje de cuerpo
+       confirmText        string   — Texto del botón principal   (default: 'Aceptar')
+       cancelText         string   — Texto del botón cancelar    (default: 'Cancelar')
+       closeOnOutsideClick boolean — Cerrar al clic fuera        (default: false)
+       onConfirm()        function — Callback al confirmar
+       onCancel()         function — Callback al cancelar
+       onClose()          function — Callback al cerrar (siempre)
+     }
+
+   Ejemplos:
+     // Modal de éxito
+     ModalSystem.show('success', {
+         title: '¡Registro guardado!',
+         text:  'Los datos han sido almacenados correctamente.',
+         confirmText: 'Entendido',
+         onConfirm: () => window.location.reload(),
+     });
+
+     // Modal de confirmación destructiva
+     ModalSystem.show('confirm', {
+         title: '¿Eliminar usuario?',
+         text:  'Esta acción eliminará permanentemente al usuario y todos sus datos.',
+         confirmText: 'Sí, eliminar',
+         cancelText:  'Cancelar',
+         onConfirm: () => submitDeleteForm(),
+     });
+
+     // Modal de advertencia
+     ModalSystem.show('warning', {
+         title: 'Cambios sin guardar',
+         text:  'Tienes cambios sin guardar. ¿Deseas salir de todas formas?',
+         confirmText: 'Salir sin guardar',
+         onConfirm: () => window.history.back(),
+     });
+═══════════════════════════════════════════════════════════════════ */
 class ModalSystemCore {
-    constructor() {
-        this.modalNode = null;
-        this.previousActiveElement = null;
-        this.options = {};
-        this.handleKeydown = this.handleKeydown.bind(this);
-        this.handleOutsideClick = this.handleOutsideClick.bind(this);
-    }
+    #veil      = null;
+    #prevFocus = null;
+    #opts      = {};
+    #onKey     = null;
 
-    getIcons() {
-        return {
-            success: {
-                bg: 'var(--saas-success-icon-bg)',
-                color: 'var(--saas-success-icon)',
-                svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 6L9 17l-5-5"></path>
-                      </svg>`
-            },
-            confirm: {
-                bg: 'var(--saas-danger-icon-bg)',
-                color: 'var(--saas-danger-icon)',
-                svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                        <line x1="12" y1="9" x2="12" y2="13"></line>
-                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                      </svg>`
-            },
-             question: {
-            bg: 'var(--saas-success-icon-bg)',
-            color: 'var(--saas-success-icon)',
-            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                  </svg>`
-            },
-            warning: {
-                bg: 'var(--warning-bg)',
-                color: 'var(--warning-border)',
-                svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                        <line x1="12" y1="9" x2="12" y2="13"></line>
-                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>`
-            },
-        };
-    }
+    #icons = {
+        success: {
+            bg: '#DCFCE7', color: '#16A34A',
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>`,
+        },
+        confirm: {
+            bg: '#FEE2E2', color: '#DC2626',
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <circle cx="12" cy="17.5" r=".5" fill="currentColor"/>
+                  </svg>`,
+        },
+        warning: {
+            bg: '#FEF3C7', color: '#D97706',
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <circle cx="12" cy="17.5" r=".5" fill="currentColor"/>
+                  </svg>`,
+        },
+        question: {
+            bg: '#EFF6FF', color: '#2563EB',
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <circle cx="12" cy="17" r=".5" fill="currentColor"/>
+                  </svg>`,
+        },
+    };
 
     show(type = 'success', config = {}) {
-        const defaults = {
-            title: '',
-            text: '',
-            confirmText: 'Aceptar',
-            cancelText: 'Cancelar',
+        this.#opts = {
+            title: '', text: '',
+            confirmText: 'Aceptar', cancelText: 'Cancelar',
             closeOnOutsideClick: false,
-            onConfirm: () => {},
-            onCancel: () => {},
-            onClose: () => {}
+            onConfirm: () => {}, onCancel: () => {}, onClose: () => {},
+            ...config,
         };
 
-        this.options = { ...defaults, ...config };
-        this.previousActiveElement = document.activeElement;
-        this.buildDOM(type);
-        this.attachEvents();
-
-        document.body.classList.add('modal-open');
+        this.#prevFocus = document.activeElement;
+        this.#buildDOM(type);
+        this.#bindEvents();
+        document.body.classList.add('ms-open');
 
         requestAnimationFrame(() => {
-            this.modalNode.classList.add('is-active');
-            this.setFocus();
+            this.#veil.classList.add('is-open');
+            this.#veil.querySelector('[data-action]')?.focus();
         });
     }
 
-    buildDOM(type) {
-        if (this.modalNode) this.modalNode.remove();
-        const iconData = this.getIcons()[type];
-
-        const buttonsHTML = type === 'success'
-            ? `<button type="button" class="modal-btn modal-btn-primary" data-action="confirm">${this.options.confirmText}</button>`
-            : `<button type="button" class="modal-btn modal-btn-danger"  data-action="confirm">${this.options.confirmText}</button>
-               <button type="button" class="modal-btn modal-btn-cancel"  data-action="cancel">${this.options.cancelText}</button>`;
+    #buildDOM(type) {
+        this.#veil?.remove();
+        const ic       = this.#icons[type] ?? this.#icons.success;
+        const isSuccess = type === 'success';
 
         document.body.insertAdjacentHTML('beforeend', `
-            <div class="modal-system-overlay">
-                <div class="modal-system-card" role="dialog" aria-modal="true">
-                    <div class="modal-icon-wrapper" style="background:${iconData.bg};color:${iconData.color};">
-                        ${iconData.svg}
+            <div class="ms-veil" aria-hidden="true">
+                <div class="ms-card" role="dialog" aria-modal="true" aria-labelledby="ms-title">
+                    <div class="ms-icon" style="background:${ic.bg}; color:${ic.color};">${ic.svg}</div>
+                    <h2 class="ms-title" id="ms-title">${this.#opts.title}</h2>
+                    <p  class="ms-desc">${this.#opts.text}</p>
+                    <div class="ms-actions">
+                        ${isSuccess
+                            ? `<button class="ms-btn ms-btn-primary" data-action="confirm">${this.#opts.confirmText}</button>`
+                            : `<button class="ms-btn ms-btn-danger"  data-action="confirm">${this.#opts.confirmText}</button>
+                               <button class="ms-btn ms-btn-cancel"  data-action="cancel">${this.#opts.cancelText}</button>`
+                        }
                     </div>
-                    <h2 class="modal-title">${this.options.title}</h2>
-                    <p class="modal-desc">${this.options.text}</p>
-                    <div class="modal-actions">${buttonsHTML}</div>
                 </div>
             </div>
         `);
-        this.modalNode = document.body.lastElementChild;
+        this.#veil = document.body.lastElementChild;
     }
 
-    attachEvents() {
-        this.modalNode.querySelectorAll('[data-action]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const action = e.target.dataset.action;
+    #bindEvents() {
+        /* Acción de botones — usar currentTarget para evitar problemas con hijos SVG */
+        this.#veil.querySelectorAll('[data-action]').forEach(btn =>
+            btn.addEventListener('click', e => {
+                const action = e.currentTarget.dataset.action;
                 this.close();
                 setTimeout(() => {
-                    if (action === 'confirm') this.options.onConfirm();
-                    if (action === 'cancel')  this.options.onCancel();
+                    if (action === 'confirm') this.#opts.onConfirm();
+                    if (action === 'cancel')  this.#opts.onCancel();
                 }, 10);
+            })
+        );
+
+        /* Escape */
+        this.#onKey = e => {
+            if (e.key === 'Escape') { this.#opts.onCancel(); this.close(); }
+        };
+        document.addEventListener('keydown', this.#onKey);
+
+        /* Clic fuera */
+        if (this.#opts.closeOnOutsideClick) {
+            this.#veil.addEventListener('mousedown', e => {
+                if (e.target === this.#veil) { this.#opts.onCancel(); this.close(); }
             });
-        });
-        if (this.options.closeOnOutsideClick) {
-            this.modalNode.addEventListener('mousedown', this.handleOutsideClick);
         }
-        document.addEventListener('keydown', this.handleKeydown);
-    }
-
-    handleOutsideClick(e) {
-        if (e.target === this.modalNode) { this.options.onCancel(); this.close(); }
-    }
-
-    handleKeydown(e) {
-        if (e.key === 'Escape') { this.options.onCancel(); this.close(); }
-    }
-
-    setFocus() {
-        const btn = this.modalNode.querySelector('[data-action="confirm"]');
-        if (btn) btn.focus();
     }
 
     close() {
-        if (!this.modalNode) return;
-        const nodeToClose = this.modalNode;
-        this.modalNode = null;
-        nodeToClose.classList.remove('is-active');
+        if (!this.#veil) return;
+        const v = this.#veil;
+        this.#veil = null;
+
+        v.classList.remove('is-open');
+        document.removeEventListener('keydown', this.#onKey);
+        this.#opts.onClose();
+
         setTimeout(() => {
-            document.body.classList.remove('modal-open');
-            nodeToClose.remove();
-            if (this.previousActiveElement) this.previousActiveElement.focus();
+            v.remove();
+            document.body.classList.remove('ms-open');
+            this.#prevFocus?.focus();
         }, 250);
-        document.removeEventListener('keydown', this.handleKeydown);
-        this.options.onClose();
     }
 }
 
-const ModalSystem = new ModalSystemCore();
+window.ModalSystem = new ModalSystemCore();
 </script>

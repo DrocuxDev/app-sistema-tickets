@@ -624,4 +624,10 @@ body.sb-collapsed .main-content { margin-left: 70px; }
     .toolbar-search { width: 100%; margin-left: 0; }
     .toolbar-search .search-input { width: 100%; }
 }
+@media (max-width: 480px) {
+    .main-content { padding: 12px; padding-top: 68px; }
+    .stats-container { grid-template-columns: 1fr; }
+    .erp-table { min-width: 640px; }
+    .seg-ctrl { flex-wrap: wrap; }
+}
 </style>

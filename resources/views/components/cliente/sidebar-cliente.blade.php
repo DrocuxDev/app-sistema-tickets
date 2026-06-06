@@ -417,16 +417,14 @@
     #jhs-sidebar .sb-tooltip { display: none !important; }
 
     /* El contenido ocupa todo el ancho */
-    .dashboard-content {
+    .dashboard-content,
+    .main-content {
       margin-left: 0 !important;
-    }
-    body.sb-collapsed .dashboard-content {
-      margin-left: 0 !important;
-    }
-
-    /* Pequeño padding top para que el contenido no quede debajo del hamburger */
-    .dashboard-content {
       padding-top: 60px;
+    }
+    body.sb-collapsed .dashboard-content,
+    body.sb-collapsed .main-content {
+      margin-left: 0 !important;
     }
   }
 

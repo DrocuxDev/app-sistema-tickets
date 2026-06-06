@@ -319,20 +319,22 @@
     .nav-link { padding: 8px; }
   }
   @media (max-width: 768px) {
-    .nav-center { display: none; } /* Ocultar búsqueda en móvil */
+    .nav-center { display: none; }
     .nav-link { display: none; }
     .nav-left { gap: 0.25rem; }
     .nav-hamburger { font-size: 1.4rem; }
-    .notif-dropdown { right: -50px; width: 280px; }
-  }
-
-  @media (max-width: 768px) {
+    .notif-dropdown { right: 0; left: auto; width: min(280px, calc(100vw - 24px)); max-width: calc(100vw - 24px); }
     .dashboard-content,
     .main-content,
     .page-content,
     .container-fluid {
-      padding-top: 40px !important; /* Un poco menos en pantallas pequeñas */
+      padding-top: 40px !important;
     }
+  }
+  @media (max-width: 480px) {
+    .admin-navbar { padding: 0 12px; }
+    .nav-right { gap: 8px; }
+    .nav-user-name { display: none; }
   }
 </style>
 

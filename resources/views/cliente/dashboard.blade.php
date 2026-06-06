@@ -668,10 +668,24 @@
     }
     @media (max-width: 768px) {
         .main-content { margin-left: 0 !important; padding: 16px; padding-top: 68px; }
-        .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-        .btn-nuevo { width: 100%; text-align: center; }
-        .stats-container { flex-direction: row; gap: 8px; }
+        .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+        .page-header > div[style*="display:flex"] { width: 100%; flex-direction: column; }
+        .btn-nuevo, .btn-reporte { width: 100%; text-align: center; margin-right: 0; }
+        .stats-container { flex-direction: column; gap: 10px; }
+        .stat-card { padding: 16px; }
+        .search-section { flex-direction: column; align-items: stretch; gap: 10px; }
+        .conteo-text { white-space: normal; }
         .user-grid { grid-template-columns: 1fr; gap: 14px; }
+        .toast-notification { top: 16px; right: 16px; left: 16px; max-width: none; }
+    }
+    @media (max-width: 480px) {
+        .main-content { padding: 12px; padding-top: 68px; }
+        .page-title { font-size: 20px; }
+        .stat-icon { width: 38px; height: 38px; }
+        .stat-number { font-size: 20px; }
+        .modal-detalles-content,
+        .modal-confirmacion-content,
+        .modal-exito-content { width: 95%; }
     }
 </style>
 

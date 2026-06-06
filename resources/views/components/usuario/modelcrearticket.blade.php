@@ -131,13 +131,14 @@
     #modalCrearTicket .mc-body   { padding: 20px 18px; }
     #modalCrearTicket .mc-header { padding: 18px 20px; }
     #modalCrearTicket .mc-equip-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    #modalCrearTicket #prioridadGroup { grid-template-columns: 1fr; gap: 8px; }
 }
 
 /* ── Móvil ── */
 @media (max-width: 420px) {
     #modalCrearTicket .mc-header .mc-title { font-size: 15px; }
     #modalCrearTicket .mc-body   { padding: 16px 14px; }
-    #modalCrearTicket #prioridadGroup { grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
+    #modalCrearTicket #prioridadGroup { grid-template-columns: 1fr !important; gap: 7px; }
     #modalCrearTicket #prioridadGroup label { padding: 9px 6px; }
     #modalCrearTicket #prioridadGroup label span:first-of-type { font-size: 12px; }
     #modalCrearTicket #prioridadGroup label span:last-of-type  { font-size: 10px; }

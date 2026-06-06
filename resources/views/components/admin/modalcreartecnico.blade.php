@@ -75,7 +75,7 @@
             </div>
 
             {{-- Footer --}}
-            <div style="padding:14px 28px 24px;display:flex;gap:10px;justify-content:flex-end">
+            <div class="modal-form-footer" style="padding:14px 28px 24px;display:flex;gap:10px;justify-content:flex-end">
                 <button onclick="cerrarModalTecnico()" style="padding:10px 22px;border-radius:10px;border:2px solid #ede9fe;background:#fff;color:#6b7280;font-weight:600;cursor:pointer;font-size:.9rem;transition:.2s" onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background='#fff'">Cancelar</button>
                 <button id="btnGuardarTecnico" onclick="guardarTecnico()" style="padding:10px 26px;border-radius:10px;border:none;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;font-weight:700;cursor:pointer;font-size:.9rem;box-shadow:0 4px 12px rgba(124,58,237,.3);transition:.2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Guardar Técnico</button>
             </div>

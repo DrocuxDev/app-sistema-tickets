@@ -241,8 +241,9 @@ body.sb-collapsed .tk-main { margin-left: 70px; }
     .tk-search-wrap, .tk-date-wrap, .tk-btn-clear { width: 100%; }
 }
 @media (max-width: 420px) {
-    .tk-cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .tk-cards { grid-template-columns: 1fr; gap: 8px; }
     .tk-card  { padding: 12px; }
+    .tk-table { min-width: 520px; }
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator { opacity:.5; cursor:pointer; }

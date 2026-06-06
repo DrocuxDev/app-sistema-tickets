@@ -530,11 +530,13 @@ body.sb-collapsed .main-content { margin-left: 70px; }
 @media (max-width: 768px) {
     .main-content { margin-left: 0 !important; padding: 16px; padding-top: 68px; box-sizing: border-box; }
     .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .stats-container { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .user-grid, .ticket-grid { grid-template-columns: 1fr; gap: 14px; }
     .section-header, .back-btn-row { flex-direction: column; align-items: flex-start; gap: 10px; }
     .search-box { width: 100%; box-sizing: border-box; }
 }
 @media (max-width: 480px) {
     .main-content { padding: 12px; padding-top: 68px; }
+    .stats-container { grid-template-columns: 1fr; }
 }
 </style>

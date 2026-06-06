@@ -1,10 +1,10 @@
 {{-- ══ DASHBOARD ENTERPRISE - ADMIN ══ --}}
 {{-- Incluye modales y componentes base --}}
+@include('components.notificaciones.alertas')
 @include('components.admin.editardetalleticket')
 @include('components.admin.navbar-admin')
 @include('components.admin.modalasignartecnico')
 @include('components.admin.sidebar-admin')
-@include('components.notificaciones.alertas')
 @include('components.admin.modalcrearusuario')
 @include('components.admin.modalcrearcliente')
 @include('components.admin.modalcreartecnico')
@@ -59,8 +59,8 @@ font-family: var(--font-ui);
 .dashboard-content {
 flex: 1;
 margin-left: 260px;
-padding: 28px 36px 48px;
-padding-top: 90px;
+padding: 88px 36px 48px 36px;
+min-width: 0; /* Previene overflow en flex */
 transition: margin-left 0.35s cubic-bezier(.4,0,.2,1);
 }
 body.sb-collapsed .dashboard-content { margin-left: 70px; }
@@ -341,10 +341,14 @@ gap: 14px;
 }
 .chart-bar-label {
 width: 110px;
+min-width: 0;
 font-size: 0.78rem;
 color: var(--dash-muted);
 font-weight: 500;
 flex-shrink: 0;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
 }
 .chart-bar-track {
 flex: 1;
@@ -428,6 +432,7 @@ background: #f8fafd;
 border: 1px solid var(--dash-border);
 border-radius: var(--dash-radius-sm);
 transition: all 0.18s;
+min-width: 0;
 }
 .quick-item:hover {
 background: #eef4ff;
@@ -551,23 +556,164 @@ font-weight: 600;
 .status-value.success { color: var(--dash-success); }
 
 /* ══ RESPONSIVE ══════════════════════════════════════════════════════════ */
-@media (max-width: 1024px)  {
-.dashboard-content { margin-left: 0 !important; padding: 20px 20px 40px; padding-top: 82px; }
-.quick-item { grid-template-columns: 1fr auto; }
-.btn-view-sm { display: none; }
+
+/* ── Tablets grandes / laptops pequeños (≤1280px) ── */
+@media (max-width: 1280px) {
+  .dashboard-content {
+    padding: 88px 28px 40px 28px;
+  }
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
-@media (max-width: 768px) { 
-.dashboard-content { margin-left: 0 !important; }
-.dash-header { flex-direction: column; align-items: flex-start; }
-.kpi-grid { grid-template-columns: repeat(2, 1fr); }
-.chart-bar-label { width: 80px; font-size: 0.72rem; }
-.status-item { border-right: none; border-bottom: 1px solid var(--dash-border); }
-.status-item:last-child { border-bottom: none; }
+
+/* ── Tablets apaisadas / sidebar oculto (≤1024px) ── */
+@media (max-width: 1024px) {
+  .dashboard-content {
+    margin-left: 0 !important;
+    padding: 88px 20px 40px 20px;
+  }
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  /* quick-item: info + (prioridad + botones juntos) */
+  .quick-item {
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+  }
+  /* btn-view-sm SIEMPRE visible — no se oculta */
+  .system-status {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .status-item:nth-child(2) { border-right: none; }
+  .status-item:nth-child(1),
+  .status-item:nth-child(2) { border-bottom: 1px solid var(--dash-border); }
 }
+
+/* ── Tablets retrato (≤768px) ── */
+@media (max-width: 768px) {
+  .dashboard-content {
+    margin-left: 0 !important;
+    padding: 88px 16px 36px 16px;
+  }
+
+  /* Header */
+  .dash-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .dash-title { font-size: 1.4rem; }
+
+  /* Botones de acción: fila compacta con scroll horizontal si no caben */
+  .header-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 2px; /* evita que el scrollbar se corte */
+    -webkit-overflow-scrolling: touch;
+  }
+  .header-actions .btn-nuevo {
+    flex: 0 0 auto; /* no crecer ni encoger — tamaño natural */
+    font-size: 0.775rem;
+    padding: 8px 14px;
+    white-space: nowrap;
+  }
+
+  /* Filtros de fecha: compacto en una sola línea con scroll si es necesario */
+  .dash-period-form {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .dash-period-form .period-label { white-space: nowrap; flex-shrink: 0; }
+  .dash-period-form input[type="date"] {
+    width: auto;
+    flex-shrink: 0;
+  }
+  .dash-period-form .btn-filter {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* KPI */
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .kpi-value { font-size: 2rem; }
+
+  /* Chart */
+  .chart-bar-label { width: 80px; font-size: 0.72rem; }
+
+  /* Quick assign: todo en columna, botones en fila abajo */
+  .quick-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .quick-item > div:last-child {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  /* btn-view-sm SIEMPRE visible */
+  .btn-view-sm { display: inline-flex !important; }
+  .quick-priority { align-self: flex-start; }
+
+  /* System status: 2×2 */
+  .system-status { grid-template-columns: repeat(2, 1fr); }
+  .status-item { border-right: none !important; border-bottom: 1px solid var(--dash-border); }
+  .status-item:nth-child(odd)  { border-right: 1px solid var(--dash-border) !important; }
+  .status-item:last-child,
+  .status-item:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+
+  /* Date filters strip: tamaño natural, sin estirar */
+  .date-filters { flex-wrap: nowrap; overflow-x: auto; }
+  .date-filter-btn { flex: 0 0 auto; white-space: nowrap; }
+}
+
+/* ── Móviles (≤480px) ── */
 @media (max-width: 480px) {
-.kpi-grid { grid-template-columns: 1fr; }
-.header-actions { width: 100%; }
-.btn-nuevo { flex: 1; justify-content: center; }
+  .dashboard-content {
+    padding: 88px 12px 32px 12px;
+  }
+
+  /* Header */
+  .dash-title { font-size: 1.25rem; }
+  .dash-subtitle { font-size: 0.78rem; }
+
+  /* KPI: una columna */
+  .kpi-grid { grid-template-columns: 1fr; gap: 10px; }
+  .kpi-card { padding: 16px 16px 12px; }
+  .kpi-value { font-size: 2rem; }
+
+  /* Chart: etiqueta más corta */
+  .chart-bar-label { width: 62px; font-size: 0.68rem; }
+  .chart-bar-fill  { font-size: 0.65rem; padding: 0 6px; min-width: 24px; }
+  .chart-bar-value { width: 36px; font-size: 0.68rem; }
+
+  /* Quick assign */
+  .quick-assign-section { padding: 14px 14px; }
+  .quick-item { padding: 10px 12px; }
+  .quick-subject { font-size: 0.82rem; }
+  /* btn-view-sm visible pero solo icono — sin texto, ya era solo ícono SVG */
+  .btn-view-sm { display: inline-flex !important; }
+
+  /* System status */
+  .system-status { grid-template-columns: repeat(2, 1fr); }
+  .status-value { font-size: 1.55rem; }
+  .status-label { font-size: 0.64rem; }
+}
+
+/* ── Móviles muy pequeños (≤360px) ── */
+@media (max-width: 360px) {
+  .dashboard-content { padding-top: 88px; }
+  .dash-title { font-size: 1.15rem; }
+  .header-actions .btn-nuevo { font-size: 0.72rem; padding: 7px 11px; }
+  .kpi-value { font-size: 1.8rem; }
+  .chart-bar-label { width: 50px; font-size: 0.63rem; }
 }
 </style >
 
@@ -576,7 +722,7 @@ font-weight: 600;
 {{-- HEADER + ACCIONES --}}
  <div class="dash-header">
       <div>
-        <h1 class="dash-title" style="margin-top: 80px; position: relative; z-index: 20;">Panel de Control</h1>
+        <h1 class="dash-title" style="position: relative; z-index: 20; padding-top: 60px;">Panel de Control</h1>
         <p class="dash-subtitle">Gestión centralizada de tickets y equipo técnico</p>
       </div>
       <div class="header-actions">

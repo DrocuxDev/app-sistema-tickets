@@ -156,7 +156,7 @@
             </div>
 
             {{-- Footer --}}
-            <div style="padding:14px 28px 24px;display:flex;gap:10px;justify-content:flex-end">
+            <div class="modal-form-footer" style="padding:14px 28px 24px;display:flex;gap:10px;justify-content:flex-end">
                 <button onclick="cerrarModalUsuario()" style="padding:10px 22px;border-radius:10px;border:2px solid #d1fae5;background:#fff;color:#6b7280;font-weight:600;cursor:pointer;font-size:.9rem;transition:.2s" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='#fff'">Cancelar</button>
                 <button id="btnSiguientePaso" onclick="irPaso2()" style="padding:10px 26px;border-radius:10px;border:none;background:linear-gradient(135deg,#064e3b,#059669);color:#fff;font-weight:700;cursor:pointer;font-size:.9rem;box-shadow:0 4px 12px rgba(5,150,105,.3);transition:.2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Siguiente →</button>
                 <button id="btnGuardarUsuario" onclick="guardarUsuario()" style="display:none;padding:10px 26px;border-radius:10px;border:none;background:linear-gradient(135deg,#064e3b,#059669);color:#fff;font-weight:700;cursor:pointer;font-size:.9rem;box-shadow:0 4px 12px rgba(5,150,105,.3);transition:.2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Guardar Usuario</button>
@@ -175,6 +175,7 @@
   #modalCrearUsuario [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns:1fr !important; }
   #modalCrearUsuario [style*="padding:26px 28px"],
   #modalCrearUsuario [style*="padding:24px 28px"] { padding:16px 14px !important; }
+  #modalCrearUsuario .iti { width: 100%; max-width: 100%; }
 }
 
 /* ── PARCHE CSS PARA MOVER LA ALERTA FLOTANTE AL FRENTE ── */
