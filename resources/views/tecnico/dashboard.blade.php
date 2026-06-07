@@ -13,8 +13,8 @@
     {{-- HEADER --}}
     <div class="page-header">
         <div>
-            <h1 class="page-title">Panel de Tecnico</h1>
-            <p class="page-subtitle">Tickets pendientes por atender</p>
+            <h1 class="page-title">Panel de Técnico</h1>
+            <p class="page-subtitle">Tickets disponibles para autoasignarte</p>
         </div>
     </div>
 
@@ -30,17 +30,31 @@
     {{-- STATS --}}
     <div class="stats-container" id="stats-global">
         <div class="stat-card">
-            <div class="stat-icon">🏢</div>
+            <div class="stat-icon">🎫</div>
             <div class="stat-info">
-                <span class="stat-label">Clientes</span>
-                <span class="stat-number">{{ $clientes->count() }}</span>
+                <span class="stat-label">Sin asignar</span>
+                <span class="stat-number">{{ $resumen['total'] }}</span>
             </div>
         </div>
         <div class="stat-card" style="background:#7c3aed10;border-left:4px solid #7c3aed;">
             <div class="stat-icon" style="background:#ede9fe;color:#7c3aed;">⏳</div>
             <div class="stat-info">
-                <span class="stat-label">Total Pendientes</span>
-                <span class="stat-number">{{ $resumen['total'] }}</span>
+                <span class="stat-label">Pendientes</span>
+                <span class="stat-number">{{ $resumen['pendiente'] }}</span>
+            </div>
+        </div>
+        <div class="stat-card" style="background:#3b82f610;border-left:4px solid #3b82f6;">
+            <div class="stat-icon" style="background:#dbeafe;color:#2563eb;">📅</div>
+            <div class="stat-info">
+                <span class="stat-label">Programados</span>
+                <span class="stat-number">{{ $resumen['programado'] }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏢</div>
+            <div class="stat-info">
+                <span class="stat-label">Clientes</span>
+                <span class="stat-number">{{ $clientes->count() }}</span>
             </div>
         </div>
     </div>
@@ -131,6 +145,8 @@ const TICKETS_POR_USUARIO = @json(
     $tickets->groupBy('id_usuario')->map(fn($t) => $t->values())
 );
 
+const TOTAL_TICKETS = {{ $resumen['total'] }};
+
 let clienteActual = null;
 let usuarioActual = null;
 
@@ -171,10 +187,12 @@ function seleccionarUsuario(idUsuario, nombre) {
 
     document.getElementById('panel-usuarios').style.display = 'none';
     document.getElementById('panel-tickets').style.display  = '';
-    document.getElementById('titulo-tickets').textContent   = 'Tickets pendientes de ' + nombre;
 
-    const tickets = TICKETS_POR_USUARIO[idUsuario] || [];
-    renderTickets(tickets);
+    const ticketsList = TICKETS_POR_USUARIO[idUsuario] || [];
+    document.getElementById('titulo-tickets').textContent =
+        'Tickets sin asignar de ' + nombre + ' (' + ticketsList.length + ')';
+
+    renderTickets(ticketsList);
 }
 
 // ── Volver ────────────────────────────────────────────────────────
@@ -241,18 +259,25 @@ function renderStatsUsuarios(usuarios) {
         <div class="stat-card" style="border-left:4px solid #7c3aed"><div class="stat-icon" style="background:#ede9fe;color:#7c3aed">⏳</div><div class="stat-info"><span class="stat-label">Total pendientes</span><span class="stat-number">${totalTickets}</span></div></div>`;
 }
 
-// ── Render Tickets (solo PENDIENTE, solo Ver detalle) ─────────────
+// ── Render Tickets ─────────────────────────────────────────────
 function renderTickets(tickets) {
     const grid = document.getElementById('grid-tickets');
 
     if (!tickets.length) {
-        grid.innerHTML = '<div class="empty-state"><p>No hay tickets pendientes.</p></div>';
+        grid.innerHTML = '<div class="empty-state"><p>No hay tickets disponibles para asignar.</p></div>';
         return;
     }
 
+    const badgeEstado = (estado) => {
+        const map = {
+            'PENDIENTE':  'background:#F5F3FF;color:#7c3aed;border:1px solid #c4b5fd;',
+            'PROGRAMADO': 'background:#EFF6FF;color:#1d4ed8;border:1px solid #bfdbfe;',
+            'EN PROCESO': 'background:#FFF7ED;color:#c2410c;border:1px solid #fed7aa;',
+        };
+        return map[estado] ?? 'background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;';
+    };
+
     grid.innerHTML = tickets.map(t => {
-        const estadoStyle = t.estado_color
-            ? `background:${t.estado_color}20;color:${t.estado_color};border:1px solid ${t.estado_color}40` : '';
         const prioColor = t.prioridad_color
             ? `background:${t.prioridad_color}20;color:${t.prioridad_color};border:1px solid ${t.prioridad_color}40` : '';
         const fecha = t.created_at
@@ -265,11 +290,15 @@ function renderTickets(tickets) {
                     <span class="ticket-id">#${t.id_ticket}</span>
                     ${t.codigo_ticket ? `<span class="ticket-codigo">${t.codigo_ticket}</span>` : ''}
                 </div>
-                <span class="ticket-estado" style="${estadoStyle}">${t.estado}</span>
+                <span class="ticket-estado" style="${badgeEstado(t.estado)}">${t.estado}</span>
             </div>
             <div class="ticket-body">
                 <p class="ticket-asunto">${t.asunto || 'Sin asunto'}</p>
                 <div class="ticket-info-group">
+                    <div class="ticket-info-row">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                        <span>${t.razon_social || '—'}</span>
+                    </div>
                     <div class="ticket-info-row">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         <span>${t.usuario_nombre || '—'}</span>
@@ -288,12 +317,10 @@ function renderTickets(tickets) {
                 </div>
             </div>
             <div class="ticket-actions">
-                <button class="btn-ticket-detail"
-                        onclick="abrirDetalleTicket(${t.id_ticket})">
+                <button class="btn-ticket-detail" onclick="abrirDetalleTicket(${t.id_ticket})">
                     👁 Ver detalle
                 </button>
-                <button class="btn-ticket-autoasignar"
-                        onclick="autoAsignarTicket(${t.id_ticket}, this)">
+                <button class="btn-ticket-autoasignar" onclick="autoAsignarTicket(${t.id_ticket}, this)">
                     🔧 Autoasignar
                 </button>
             </div>

@@ -25,45 +25,41 @@ class TecnicoController extends Controller
             ->join('cliente',       'ticket.id_cliente',     '=', 'cliente.id_cliente')
             ->join('usuario as usu','ticket.id_usuario',     '=', 'usu.id_usuario')
             ->leftJoin('tecnico as tec', 'ticket.id_tecnico_asignado', '=', 'tec.id_tecnico')
-            ->where('estado_ticket.nombre_estado', 'PENDIENTE')
+            ->whereNull('ticket.id_tecnico_asignado')
+            ->whereNotIn('estado_ticket.nombre_estado', ['CERRADO', 'CANCELADO'])
             ->select(
-                'ticket.*',
+                'ticket.id_ticket',
+                'ticket.codigo_ticket',
+                'ticket.id_cliente',
+                'ticket.id_usuario',
+                'ticket.id_tecnico_asignado',
+                'ticket.asunto',
+                'ticket.problema',
+                'ticket.tipo_equipo',
+                'ticket.marca',
+                'ticket.modelo',
+                'ticket.created_at',
                 'tipo_ticket.nombre              as tipo_ticket_nombre',
                 'prioridad.nombre                as prioridad_nombre',
                 'prioridad.color_hex             as prioridad_color',
                 'estado_ticket.nombre_estado     as estado',
                 'estado_ticket.color_hex         as estado_color',
                 'cliente.razon_social',
+                'cliente.id_cliente              as id_cliente',
                 'cliente.ruc',
                 DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
-                'usu.codigo_usuario',
-                DB::raw("(COALESCE(usu.codigo_pais,'')||' '||COALESCE(usu.telefono,'')) as usuario_telefono"),
-                DB::raw("(COALESCE(tec.nombre,'')||' '||COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
-                'tec.codigo_tecnico as tecnico_codigo'
+                'usu.id_usuario                  as id_usuario',
+                'usu.codigo_usuario'
             )
             ->orderByDesc('ticket.created_at')
             ->get();
-
-        $ticketIds = $tickets->pluck('id_ticket')->toArray();
-
-        $evidencias  = DB::table('evidencia')
-            ->whereIn('id_ticket', $ticketIds)->get()->groupBy('id_ticket');
-        $comentarios = DB::table('comentario')
-            ->whereIn('id_ticket', $ticketIds)->orderBy('created_at')->get()->groupBy('id_ticket');
-        $reportes    = DB::table('reporte_tecnico')
-            ->whereIn('id_ticket', $ticketIds)->get()->groupBy('id_ticket');
-
-        $tickets->each(function ($t) use ($evidencias, $comentarios, $reportes) {
-            $t->evidencias  = $evidencias->get($t->id_ticket,  collect());
-            $t->comentarios = $comentarios->get($t->id_ticket, collect());
-            $t->reportes    = $reportes->get($t->id_ticket,    collect());
-        });
 
         $clientes = Cliente::orderBy('razon_social')->get();
 
         $resumen = [
             'total'     => $tickets->count(),
-            'pendiente' => $tickets->count(),
+            'pendiente' => $tickets->where('estado', 'PENDIENTE')->count(),
+            'programado'=> $tickets->where('estado', 'PROGRAMADO')->count(),
         ];
 
         return view('tecnico.dashboard', compact('tickets', 'resumen', 'clientes'));
