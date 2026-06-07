@@ -561,7 +561,7 @@ async function abrirDetalleTicket(id) {
         openModalConDatos(data);
 
     } catch(e) {
-        showNotification('danger', 'Error', e.message);
+        showNotification('danger', 'Error', 'Ocurrió un error inesperado.');
     }
 }
 
@@ -650,7 +650,7 @@ function cancelarTicket(id) {
     const t = tickets.find(x => x.id_ticket == id);
     
     if (!t || t.estado !== 'PROGRAMADO') {
-        alert('Solo se pueden cancelar tickets en estado PROGRAMADO.');
+        showNotification('warning', 'Atención', 'Solo se pueden cancelar tickets en estado PROGRAMADO.');
         return;
     }
     ModalSystem.show('confirm', {

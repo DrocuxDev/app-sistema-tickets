@@ -25,7 +25,7 @@
 
                         @if(session('success'))
                             <script>
-                                window.addEventListener('load', () => {
+                                document.addEventListener('DOMContentLoaded', function() {
                                     ModalSystem.show('success', {
                                         title: '¡Datos actualizados!',
                                         text: 'Los datos de la empresa se actualizaron correctamente.',

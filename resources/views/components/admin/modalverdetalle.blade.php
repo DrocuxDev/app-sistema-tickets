@@ -167,7 +167,7 @@ async function abrirDetalle(tipo, id) {
         renderCampos(cfg.campos, data);
 
     } catch(e) {
-        showNotification('danger', 'Error', e.message);
+        showNotification('danger', 'Error', 'Ocurrió un error inesperado.');
         cerrarModalDetalle();
     }
 }

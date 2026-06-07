@@ -413,15 +413,19 @@
 
 @if ($errors->any())
     <script>
-        @foreach ($errors->all() as $error)
-            showNotification('danger', 'Error', '{{ $error }}');
-        @endforeach
+        document.addEventListener('DOMContentLoaded', function () {
+            @foreach ($errors->all() as $error)
+                showNotification('danger', 'Error', {!! json_encode($error, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!});
+            @endforeach
+        });
     </script>
 @endif
 
 @if (session('success'))
     <script>
-        showNotification('success', 'Correcto', '{{ session("success") }}');
+        document.addEventListener('DOMContentLoaded', function () {
+            showNotification('success', 'Correcto', {!! json_encode(session('success'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!});
+        });
     </script>
 @endif
 

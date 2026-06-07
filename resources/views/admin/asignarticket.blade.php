@@ -623,26 +623,15 @@ function ejecutarToggle(id, nuevoEstado, accionVerbo) {
     .then(data => {
         console.log('✅ Data recibida:', data);
         if (data.ok || data.success) {
-            if (typeof showNotification !== 'undefined') {
-                showNotification('success', '¡Éxito!', `Usuario ${accionVerbo}do correctamente.`);
-            }
+            showNotification('success', '¡Éxito!', `Usuario ${accionVerbo}do correctamente.`);
             actualizarFilaUsuario(id, nuevoEstado);
         } else {
-            const msg = data.message || `No se pudo ${accionVerbo} el usuario.`;
-            if (typeof showNotification !== 'undefined') {
-                showNotification('danger', 'Error', msg);
-            } else {
-                alert(msg);
-            }
+            showNotification('danger', 'Error', data.message || `No se pudo ${accionVerbo} el usuario.`);
         }
     })
     .catch(err => {
         console.error('❌ Error en toggle:', err);
-        if (typeof showNotification !== 'undefined') {
-            showNotification('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
-        } else {
-            alert('Error de conexión: ' + err.message);
-        }
+        showNotification('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
     });
 }
 

@@ -330,21 +330,14 @@ ModalSystem.show('confirm', {
                         setTimeout(() => card.remove(), 300);
                     }
                     
-                    // Notificación de éxito
-                    if (typeof showNotification === 'function') {
-                        showNotification('success', '¡Autoasignado!', 'El ticket ahora está en tu lista.');
-                    }
+                    showNotification('success', '¡Autoasignado!', 'El ticket ahora está en tu lista.');
                 } else {
-                    if (typeof showNotification === 'function') {
-                        showNotification('danger', 'Error', data.message || 'No se pudo autoasignar.');
-                    }
+                    showNotification('danger', 'Error', data.message || 'No se pudo autoasignar.');
                     btn.disabled    = false;
                     btn.textContent = '🔧 Autoasignar';
                 }
             } catch (e) {
-                if (typeof showNotification === 'function') {
-                    showNotification('danger', 'Error de conexión', 'No se pudo conectar.');
-                }
+                showNotification('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
                 btn.disabled    = false;
                 btn.textContent = '🔧 Autoasignar';
             }
@@ -373,40 +366,40 @@ document.getElementById('bc-cliente').addEventListener('click', function() {
 function cerrarPanelEdicion() {}
 
 async function cancelarTicketTecnico(idTicket) {
-    if (!confirm('¿Deseas cancelar este ticket?')) return;
+    ModalSystem.show('confirm', {
+        title: '¿Cancelar ticket?',
+        text: '¿Deseas cancelar este ticket? Esta acción no se puede revertir fácilmente.',
+        confirmText: 'Sí, cancelar',
+        cancelText: 'No, volver',
+        onConfirm: async () => {
+            try {
+                const res  = await fetch(`/tecnico/ticket/${idTicket}/cancelar`, {
+                    method:  'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept':       'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+                const data = await res.json();
 
-    try {
-        const res  = await fetch(`/tecnico/ticket/${idTicket}/cancelar`, {
-            method:  'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept':       'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        });
-        const data = await res.json();
-
-        if (data.ok) {
-            const card = document.getElementById('ticket-card-' + idTicket);
-            if (card) {
-                card.style.transition = 'opacity .3s, transform .3s';
-                card.style.opacity    = '0';
-                card.style.transform  = 'scale(.95)';
-                setTimeout(() => card.remove(), 300);
-            }
-            if (typeof showNotification === 'function') {
-                showNotification('success', '¡Cancelado!', 'Ticket cancelado correctamente.');
-            }
-        } else {
-            if (typeof showNotification === 'function') {
-                showNotification('danger', 'Error', data.message || 'No se pudo cancelar.');
+                if (data.ok) {
+                    const card = document.getElementById('ticket-card-' + idTicket);
+                    if (card) {
+                        card.style.transition = 'opacity .3s, transform .3s';
+                        card.style.opacity    = '0';
+                        card.style.transform  = 'scale(.95)';
+                        setTimeout(() => card.remove(), 300);
+                    }
+                    showNotification('success', '¡Cancelado!', 'Ticket cancelado correctamente.');
+                } else {
+                    showNotification('danger', 'Error', data.message || 'No se pudo cancelar.');
+                }
+            } catch (e) {
+                showNotification('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
             }
         }
-    } catch (e) {
-        if (typeof showNotification === 'function') {
-            showNotification('danger', 'Error de conexión', 'No se pudo conectar.');
-        }
-    }
+    });
 }
 </script>
 

@@ -13,7 +13,7 @@
                     <script>
                         document.addEventListener('DOMContentLoaded', function () {
                             @foreach ($errors->all() as $error)
-                                showNotification('danger', 'Error', '{{ $error }}');
+                                showNotification('danger', 'Error', {!! json_encode($error, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!});
                             @endforeach
                             document.getElementById('modal-backdrop').style.display = 'flex';
                         });

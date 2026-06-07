@@ -197,11 +197,11 @@ function descargarReporteAdmin() {
     const userId   = document.getElementById('admin-select-usuario').value;
 
     if (!desde || !hasta) {
-        alert('Selecciona el rango de fechas.');
+        showNotification('warning', 'Atención', 'Selecciona el rango de fechas.');
         return;
     }
     if (adminTipoReporte === 'individual' && !userId) {
-        alert('Selecciona un usuario específico.');
+        showNotification('warning', 'Atención', 'Selecciona un usuario específico.');
         return;
     }
 

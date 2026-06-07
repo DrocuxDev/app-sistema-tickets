@@ -570,7 +570,7 @@
             tecLlenarModal(data);
 
         } catch(e) {
-            tecNotif('danger', 'Error', e.message);
+            tecNotif('danger', 'Error', 'Ocurrió un error inesperado.');
         }
     }
 
@@ -720,7 +720,7 @@
                 tecNotif('danger', 'Error', data.message || 'No se pudo guardar.');
             }
         } catch(e) {
-            tecNotif('danger', 'Error de conexión', e.message);
+            tecNotif('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
         }
     }
 
@@ -751,7 +751,7 @@
                 tecNotif('danger', 'Error', data.message || 'No se pudo guardar.');
             }
         } catch(e) {
-            tecNotif('danger', 'Error', e.message);
+            tecNotif('danger', 'Error', 'Ocurrió un error inesperado.');
         }
     }
 
@@ -804,7 +804,7 @@
                 tecNotif('danger', 'Error', data.message || 'No se pudo subir.');
             }
         } catch(e) {
-            tecNotif('danger', 'Error', e.message);
+            tecNotif('danger', 'Error', 'Ocurrió un error inesperado.');
         }
     }
 
@@ -833,7 +833,7 @@
                         tecNotif('danger', 'Error', data.message || 'No se pudo cerrar.');
                     }
                 } catch(e) {
-                    tecNotif('danger', 'Error', e.message);
+                    tecNotif('danger', 'Error', 'Ocurrió un error inesperado.');
                 }
             }
         });
@@ -865,7 +865,7 @@
                         tecNotif('danger', 'Error', data.message || 'No se pudo cancelar.');
                     }
                 })
-                .catch(e => tecNotif('danger', 'Error', e.message));
+                .catch(() => tecNotif('danger', 'Error', 'Ocurrió un error inesperado.'));
             }
         });
     }
@@ -957,12 +957,8 @@
         document.getElementById('tecLightbox').style.display = 'none';
     }
 
-    // ── Notificación simple (usa showNotification si existe) ─────────
+    // ── Notificación simple ───────────────────────────────────────────
     function tecNotif(tipo, titulo, msg) {
-        if (typeof showNotification === 'function') {
-            showNotification(tipo, titulo, msg);
-        } else {
-            alert(`[${titulo}] ${msg}`);
-        }
+        showNotification(tipo, titulo, msg);
     }
     </script>

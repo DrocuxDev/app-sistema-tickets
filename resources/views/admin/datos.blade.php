@@ -21,26 +21,11 @@
                         @if(session('success'))
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
-                                const successMsg = {!! json_encode(session('success'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
-                                
-                                function mostrarExito() {
-                                    if (typeof ModalSystem !== 'undefined' && ModalSystem.show) {
-                                        ModalSystem.show('success', {
-                                            title: '¡Perfil actualizado!',
-                                            text: successMsg,
-                                            confirmText: 'Entendido'
-                                        });
-                                    } else {
-                                        alert('Éxito: ' + successMsg);
-                                    }
-                                }
-                                
-                                // Si las funciones ya están listas, mostrar ahora; si no, esperar un poco
-                                if (typeof ModalSystem !== 'undefined' || typeof showNotification !== 'undefined') {
-                                    mostrarExito();
-                                } else {
-                                    window.addEventListener('load', mostrarExito);
-                                }
+                                ModalSystem.show('success', {
+                                    title: '¡Perfil actualizado!',
+                                    text: {!! json_encode(session('success'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!},
+                                    confirmText: 'Entendido'
+                                });
                             });
                         </script>
                         @endif
@@ -49,21 +34,7 @@
                         @if(session('error'))
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
-                                const errorMsg = {!! json_encode(session('error'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
-                                
-                                function mostrarError() {
-                                    if (typeof showNotification === 'function') {
-                                        showNotification('danger', 'Error de validación', errorMsg);
-                                    } else {
-                                        alert('Error: ' + errorMsg);
-                                    }
-                                }
-                                
-                                if (typeof showNotification === 'function') {
-                                    mostrarError();
-                                } else {
-                                    window.addEventListener('load', mostrarError);
-                                }
+                                showNotification('danger', 'Error de validación', {!! json_encode(session('error'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!});
                             });
                         </script>
                         @endif

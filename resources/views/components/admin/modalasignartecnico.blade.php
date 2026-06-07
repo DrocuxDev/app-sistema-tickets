@@ -402,25 +402,15 @@ async function confirmarAsignacion() {
 
         if (data.ok) {
             cerrarModalAsignar();
-
-            // ✅ Usa tu sistema de notificaciones (ya incluido en alertas.blade.php)
-            if (typeof showNotification === 'function') {
-                showNotification('success', '¡Técnico asignado!', 'El ticket pasó a estado PROGRAMADO.');
-            }
-
-            // ✅ Recarga para actualizar KPIs y listas del dashboard
+            showNotification('success', '¡Técnico asignado!', 'El ticket pasó a estado PROGRAMADO.');
             setTimeout(() => {
                 location.reload();
             }, 1000);
         } else {
-            if (typeof showNotification === 'function') {
-                showNotification('danger', 'Error', data.message || 'No se pudo asignar.');
-            }
+            showNotification('danger', 'Error', data.message || 'No se pudo asignar.');
         }
     } catch (e) {
-        if (typeof showNotification === 'function') {
-            showNotification('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
-        }
+        showNotification('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
     } finally {
         btn.disabled    = false;
         btn.innerHTML   = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Confirmar asignación`;

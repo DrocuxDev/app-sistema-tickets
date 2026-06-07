@@ -569,7 +569,7 @@ async function abrirModalEdicion(id) {
         tecLlenarModal(data);
 
     } catch(e) {
-        tecNotif('danger', 'Error', e.message);
+        tecNotif('danger', 'Error', 'Ocurrió un error inesperado.');
     }
 }
 
@@ -712,7 +712,7 @@ async function tecGuardarCampos() {
             tecNotif('danger', 'Error', data.message || 'No se pudo guardar.');
         }
     } catch(e) {
-        tecNotif('danger', 'Error de conexión', e.message);
+        tecNotif('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
     }
 }
 
@@ -743,7 +743,7 @@ async function tecGuardarComentario() {
             tecNotif('danger', 'Error', data.message || 'No se pudo guardar.');
         }
     } catch(e) {
-        tecNotif('danger', 'Error', e.message);
+        tecNotif('danger', 'Error', 'Ocurrió un error inesperado.');
     }
 }
 
@@ -796,7 +796,7 @@ async function tecSubirReporte() {
             tecNotif('danger', 'Error', data.message || 'No se pudo subir.');
         }
     } catch(e) {
-        tecNotif('danger', 'Error', e.message);
+        tecNotif('danger', 'Error', 'Ocurrió un error inesperado.');
     }
 }
 
@@ -825,7 +825,7 @@ async function tecCerrarTicket() {
                     showNotification('danger', 'Error', data.message || 'No se pudo cerrar.');
                 }
             } catch(e) {
-                showNotification('danger', 'Error de conexión', e.message);
+                showNotification('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
             }
         }
     });
@@ -856,7 +856,7 @@ function tecCancelarTicket() {
                     showNotification('danger', 'Error', data.message || 'No se pudo cancelar.');
                 }
             } catch(e) {
-                showNotification('danger', 'Error de conexión', e.message);
+                showNotification('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
             }
         }
     });
@@ -949,12 +949,8 @@ function tecCloseLightbox() {
     document.getElementById('tecLightbox').style.display = 'none';
 }
 
-// ── Notificación simple (usa showNotification si existe) ─────────
+// ── Notificación simple ───────────────────────────────────────────
 function tecNotif(tipo, titulo, msg) {
-    if (typeof showNotification === 'function') {
-        showNotification(tipo, titulo, msg);
-    } else {
-        alert(`[${titulo}] ${msg}`);
-    }
+    showNotification(tipo, titulo, msg);
 }
 </script>
