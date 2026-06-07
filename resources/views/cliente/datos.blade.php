@@ -324,9 +324,9 @@
         ══════════════════════════════════════════ */
         @media (max-width: 768px) {
             .main-content {
-                margin-left: 0 !important;  /* sidebar fuera de pantalla, no ocupa espacio */
+                margin-left: 0 !important;
                 padding: 20px 16px;
-                padding-top: 68px; /* espacio para el botón hamburguesa */
+                padding-top: 68px;
             }
 
             body.sb-collapsed .main-content {
@@ -352,20 +352,17 @@
             .header p {
                 font-size: 12px;
             }
-        }
 
-        /* ══════════════════════════════════════════
-        MÓVIL PEQUEÑO (≤ 480px)
-        ══════════════════════════════════════════ */
-        @media (max-width: 480px) {
-            .main-content {
-                padding: 15px 12px;
-                padding-top: 68px;
+            .form-footer {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
             }
 
             .btn-actions {
                 flex-direction: column;
                 width: 100%;
+                gap: 10px;
             }
 
             .btn-save,
@@ -373,11 +370,34 @@
                 width: 100%;
                 justify-content: center;
                 text-align: center;
+                box-sizing: border-box;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px 12px;
+                padding-top: 68px;
             }
 
             .form-footer {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .btn-actions {
+                flex-direction: column;
+                width: 100%;
+                gap: 10px;
+            }
+
+            .btn-save,
+            .btn-discard {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+                box-sizing: border-box;
             }
         }
     </style>

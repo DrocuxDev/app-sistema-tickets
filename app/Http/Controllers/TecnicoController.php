@@ -127,7 +127,22 @@ class TecnicoController extends Controller
             'cancelado'  => $tickets->where('estado', 'CANCELADO')->count(),
         ];
 
-        return view('tecnico.mistickets', compact('tickets', 'resumen'));
+        $clientes = Cliente::where('activo', 1)->orderBy('razon_social')->get();
+
+        // Pre-calcular usuarios por cliente para el modal de reporte
+        $usuariosPorCliente = [];
+        foreach ($clientes as $c) {
+            $usuariosPorCliente[$c->id_cliente] = \App\Models\Usuario::where('id_cliente', $c->id_cliente)
+                ->get()
+                ->map(fn($u) => [
+                    'id'     => $u->id_usuario,
+                    'nombre' => $u->nombre . ' ' . $u->apellido_paterno . ' (' . $u->codigo_usuario . ')',
+                ])
+                ->values()
+                ->toArray();
+        }
+
+        return view('tecnico.mistickets', compact('tickets', 'resumen', 'clientes', 'usuariosPorCliente'));
     }
 
     public function autoAsignar(Request $request, $id)
@@ -577,6 +592,119 @@ class TecnicoController extends Controller
         $usuarios = Usuario::with('cliente')->orderBy('nombre')->get();
 
         return view('tecnico.contactos', compact('clientes', 'usuarios'));
+    }
+
+    public function reportePdf(\Illuminate\Http\Request $request)
+    {
+        if (session('tipo') !== 'tecnico' || !session('id')) {
+            return redirect('/')->with('error', 'Acceso restringido.');
+        }
+
+        $idTecnico = session('id');
+        $tecnico   = Tecnico::with('cargo')->find($idTecnico);
+
+        if (!$tecnico) {
+            abort(404, 'Técnico no encontrado.');
+        }
+
+        $desde = ($request->filled('desde') ? $request->desde : now()->startOfMonth()->toDateString()) . ' 00:00:00';
+        $hasta = ($request->filled('hasta') ? $request->hasta : now()->toDateString()) . ' 23:59:59';
+
+        // ── Filtro por cliente ──
+        $clienteIds = null;
+        if ($request->filled('cliente_id')) {
+            $clienteIds = [$request->cliente_id];
+        }
+
+        // ── Filtro por usuario ──
+        $usuarioIds = null;
+        if ($request->tipo === 'individual' && $request->filled('usuario_id')) {
+            $usuarioIds = [$request->usuario_id];
+        } elseif ($clienteIds) {
+            $usuarioIds = Usuario::whereIn('id_cliente', $clienteIds)->pluck('id_usuario')->toArray();
+        }
+
+        // ── Query tickets del técnico ──
+        $query = DB::table('ticket')
+            ->join('tipo_ticket',   'ticket.id_tipo_ticket', '=', 'tipo_ticket.id_tipo_ticket')
+            ->join('prioridad',     'ticket.id_prioridad',   '=', 'prioridad.id_prioridad')
+            ->join('estado_ticket', 'ticket.id_estado',      '=', 'estado_ticket.id_estado')
+            ->join('cliente',       'ticket.id_cliente',     '=', 'cliente.id_cliente')
+            ->join('usuario as usu','ticket.id_usuario',     '=', 'usu.id_usuario')
+            ->where('ticket.id_tecnico_asignado', $idTecnico)
+            ->whereBetween('ticket.created_at', [$desde, $hasta])
+            ->select(
+                'ticket.id_ticket',
+                'ticket.codigo_ticket',
+                'ticket.asunto',
+                'ticket.problema',
+                'ticket.tipo_equipo',
+                'ticket.marca',
+                'ticket.modelo',
+                'ticket.serie_serial',
+                'ticket.fecha_programado',
+                'ticket.fecha_en_proceso',
+                'ticket.fecha_resuelto',
+                'ticket.created_at',
+                'ticket.id_cliente           as cliente_id',
+                'tipo_ticket.nombre          as tipo_ticket_nombre',
+                'prioridad.nombre            as prioridad_nombre',
+                'prioridad.color_hex         as prioridad_color',
+                'estado_ticket.nombre_estado as estado',
+                'cliente.razon_social',
+                'cliente.ruc',
+                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+                'usu.codigo_usuario',
+                'usu.correo  as usuario_correo',
+                'usu.dni     as usuario_dni'
+            )
+            ->orderBy('cliente.razon_social')
+            ->orderByDesc('ticket.created_at');
+
+        if ($usuarioIds !== null) {
+            $query->whereIn('ticket.id_usuario', $usuarioIds);
+        }
+
+        $tickets = $query->get();
+
+        // ── Stats ──
+        $stats = [
+            'total'       => $tickets->count(),
+            'cerrados'    => $tickets->where('estado', 'CERRADO')->count(),
+            'programados' => $tickets->where('estado', 'PROGRAMADO')->count(),
+            'en_proceso'  => $tickets->where('estado', 'EN PROCESO')->count(),
+            'pendientes'  => $tickets->where('estado', 'PENDIENTE')->count(),
+            'cancelados'  => $tickets->where('estado', 'CANCELADO')->count(),
+        ];
+
+        // ── Agrupado por cliente → por usuario ──
+        $porCliente = $tickets->groupBy('cliente_id')->map(function ($tc) {
+            return [
+                'razon_social' => $tc->first()->razon_social,
+                'ruc'          => $tc->first()->ruc,
+                'tickets'      => $tc->count(),
+                'cerrados'     => $tc->where('estado', 'CERRADO')->count(),
+                'programados'  => $tc->where('estado', 'PROGRAMADO')->count(),
+                'en_proceso'   => $tc->where('estado', 'EN PROCESO')->count(),
+                'pendientes'   => $tc->where('estado', 'PENDIENTE')->count(),
+                'cancelados'   => $tc->where('estado', 'CANCELADO')->count(),
+                'por_usuario'  => $tc->groupBy('usuario_nombre'),
+            ];
+        });
+
+        $porUsuario = $tickets->groupBy('usuario_nombre');
+
+        $desdeStr = $request->filled('desde') ? $request->desde : now()->startOfMonth()->toDateString();
+        $hastaStr = $request->filled('hasta') ? $request->hasta : now()->toDateString();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('tecnico.reporte-pdf', compact(
+            'tecnico', 'tickets', 'stats', 'porCliente', 'porUsuario',
+            'desdeStr', 'hastaStr'
+        ))->setPaper('a4', 'portrait');
+
+        $nombreArchivo = 'Reporte_Tecnico_' . $tecnico->codigo_tecnico . '_' . now()->format('Ymd') . '.pdf';
+
+        return $pdf->download($nombreArchivo);
     }
     
 }

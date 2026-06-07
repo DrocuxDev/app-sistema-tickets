@@ -182,14 +182,42 @@
         .main-content { margin-left: 0 !important; padding: 20px 16px; padding-top: 80px; }
         .form-grid { grid-template-columns: 1fr; }
         .input-group.full { grid-column: span 1; }
-        .form-footer { flex-direction: column; gap: 20px; align-items: flex-start; }
-        .btn-actions { width: 100%; }
-        .btn-save, .btn-discard { width: 100%; justify-content: center; }
+        .form-footer {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+        }
+        .btn-actions {
+            flex-direction: column;
+            width: 100%;
+            gap: 10px;
+        }
+        .btn-save, .btn-discard {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+            box-sizing: border-box;
+        }
     }
 
     @media (max-width: 480px) {
         .main-content { padding: 15px 12px; padding-top: 68px; }
-        .btn-actions { flex-direction: column; width: 100%; }
+        .form-footer {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+        }
+        .btn-actions {
+            flex-direction: column;
+            width: 100%;
+            gap: 10px;
+        }
+        .btn-save, .btn-discard {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+            box-sizing: border-box;
+        }
     }
 </style>
 

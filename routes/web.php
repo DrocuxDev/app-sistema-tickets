@@ -97,6 +97,7 @@ Route::prefix('tecnico')->name('tecnico.')->group(function () {
     Route::post('/ticket/{id}/reporte',       [TecnicoController::class, 'subirReporte']);
     Route::post('/ticket/{id}/cerrar',        [TecnicoController::class, 'cerrarTicket']);
     Route::post('/ticket/{id}/cancelar',      [TecnicoController::class, 'cancelarTicket']);
+    Route::get('/reporte-pdf',                [TecnicoController::class, 'reportePdf'])->name('reporte.pdf');
 });
 
 

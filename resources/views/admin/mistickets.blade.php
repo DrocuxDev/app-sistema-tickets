@@ -360,11 +360,8 @@ function mtCancelarTicket(idTicket) {
                 const data = await res.json();
 
                 if (data.ok) {
-                    // Notificación de éxito (toast)
                     showNotification('success', '¡Éxito!', 'El ticket ha sido cancelado correctamente.');
-
-                    // Actualiza la tabla instantáneamente sin recargar la página
-                    mtRender(); 
+                    setTimeout(() => location.reload(), 1200);
                 } else {
                     showNotification('danger', 'Error', data.message || 'No se pudo cancelar el ticket.');
                 }

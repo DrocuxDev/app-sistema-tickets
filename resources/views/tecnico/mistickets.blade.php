@@ -1,6 +1,7 @@
 @include('components.notificaciones.alertas')
 @include('components.tecnico.sidebar-tecnico')
 @include('components.tecnico.editardetalleticket')
+@include('components.tecnico.modalreporte')
 
 <head>
     <meta charset="UTF-8">
@@ -114,6 +115,18 @@ body.sb-collapsed .tk-main { margin-left: 70px; }
 .tk-empty { text-align:center; padding:3rem; color:#94a3b8; }
 .tk-empty svg { display:block; margin:0 auto 12px; color:#cbd5e1; }
 
+/* BOTÓN REPORTE */
+.tk-btn-reporte {
+    display:flex; align-items:center; gap:8px;
+    background:linear-gradient(135deg,#c53030,#9b2c2c);
+    color:#fff; border:none; border-radius:12px;
+    padding:10px 20px; font-size:13px; font-weight:600;
+    cursor:pointer; font-family:'Inter',sans-serif;
+    box-shadow:0 4px 14px rgba(197,48,48,.35);
+    transition:opacity .15s, transform .15s;
+}
+.tk-btn-reporte:hover { opacity:.88; transform:translateY(-1px); }
+
 /* RESPONSIVE */
 @media (min-width:769px) and (max-width:1024px) {
     .tk-main{margin-left:0;padding-top:68px;}
@@ -147,6 +160,17 @@ body.sb-collapsed .tk-main { margin-left: 70px; }
         <div>
             <h1>Panel de Tecnico</h1>
             <p>Tickets asignados a ti</p>
+        </div>
+        <div>
+            <button class="tk-btn-reporte" onclick="tecOpenModalReporte()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                Descargar Reporte
+            </button>
         </div>
     </div>
 
