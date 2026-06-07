@@ -13,26 +13,63 @@ class TicketController extends Controller
 {
     public function store(Request $request)
 {
-    $idUsuario = session('id');
+    $idSesion  = session('id');
+    $tipoSesion = session('tipo'); // 'usuario' o 'cliente'
 
     // ── Validar sesión ──
-    if (!$idUsuario) {
+    if (!$idSesion || !in_array($tipoSesion, ['usuario', 'cliente'])) {
         return response()->json([
             'ok' => false,
             'message' => 'No autorizado.'
         ], 403);
     }
 
-    // ── Buscar usuario ──
-    $usuario = DB::table('usuario')
-        ->where('id_usuario', $idUsuario)
-        ->first();
+    // ── Buscar el usuario según el tipo de sesión ──
+    if ($tipoSesion === 'usuario') {
+        // Persona interna de una empresa (tabla usuario)
+        $usuario = DB::table('usuario')
+            ->where('id_usuario', $idSesion)
+            ->first();
 
-    if (!$usuario) {
-        return response()->json([
-            'ok' => false,
-            'message' => 'Usuario no encontrado.'
-        ], 404);
+        if (!$usuario) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Usuario no encontrado.'
+            ], 404);
+        }
+
+        $idUsuarioTicket = $usuario->id_usuario;
+        $idClienteTicket = $usuario->id_cliente;
+
+    } else {
+        // Cliente empresa (tabla cliente) — crea ticket a nombre propio
+        $cliente = DB::table('cliente')
+            ->where('id_cliente', $idSesion)
+            ->first();
+
+        if (!$cliente) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Cliente no encontrado.'
+            ], 404);
+        }
+
+        // Para tickets del cliente necesitamos un usuario vinculado a esa empresa.
+        // Buscamos el primer usuario activo de ese cliente para registrar el ticket.
+        $usuario = DB::table('usuario')
+            ->where('id_cliente', $idSesion)
+            ->where('activo', 1)
+            ->first();
+
+        if (!$usuario) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'No se encontró un usuario activo para esta empresa.'
+            ], 404);
+        }
+
+        $idUsuarioTicket = $usuario->id_usuario;
+        $idClienteTicket = $idSesion;
     }
 
     // ── Validación ──
@@ -87,7 +124,7 @@ if ($validator->fails()) {
         . strtoupper($usuario->codigo_usuario);
 
     // ── Si no enviaron asunto, generar uno automático ──
-    $asunto = trim($request->asunto);
+    $asunto = trim($request->asunto ?? '');
 
     if (!$asunto) {
         $asunto = $tipoTicket->nombre;
@@ -96,10 +133,10 @@ if ($validator->fails()) {
     // ── Crear ticket ──
     $ticket = Ticket::create([
         'codigo_ticket'  => $codigo,
-        'id_cliente'     => $usuario->id_cliente,
-        'id_usuario'     => $idUsuario,
+        'id_cliente'     => $idClienteTicket,
+        'id_usuario'     => $idUsuarioTicket,
         'id_tipo_ticket' => $request->id_tipo_ticket,
-        'id_prioridad'   => $request->id_prioridad, 
+        'id_prioridad'   => $request->id_prioridad,
         'id_estado'      => 1, // Pendiente
 
         // Opcionales

@@ -15,7 +15,6 @@ class Ticket extends Model
         'id_cliente',
         'id_usuario',
         'id_tecnico_asignado',
-        'id_creador',
         'id_tipo_ticket',
         'id_prioridad',
         'id_estado',

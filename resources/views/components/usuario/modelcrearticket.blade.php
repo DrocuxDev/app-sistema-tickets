@@ -414,10 +414,6 @@ document.addEventListener('DOMContentLoaded', function () {
             showNotification('warning', 'Campo requerido', 'La descripción del problema es obligatoria.');
             return;
         }
-        if (archivos.length === 0) {
-            showNotification('warning', 'Campo requerido', 'Debes adjuntar al menos una evidencia.');
-            return;
-        }
         if (archivos.length > 5) {
             showNotification('warning', 'Límite excedido', 'Máximo 5 archivos de evidencia permitidos.');
             return;
@@ -452,6 +448,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const res = await fetch('{{ route("usuario.ticket.store") }}', {
                 method: 'POST',
+                headers: { 'Accept': 'application/json' },
                 body: formData
             });
 

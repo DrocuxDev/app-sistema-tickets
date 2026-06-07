@@ -114,7 +114,7 @@ Route::prefix('usuario')->name('usuario.')->group(function () {
     Route::get('/dashboard', [UsuarioController::class, 'dashboard'])->name('dashboard');
     Route::get('/datos',     [UsuarioController::class, 'datos'])->name('datos');
     Route::get('/tickets',   [UsuarioController::class, 'tickets'])->name('tickets');
-    Route::get('/mail',      [UsuarioController::class, 'mail'])->name('mail');
+    Route::get('/mail',      [UsuarioController::class, 'mailIndex'])->name('mail');
     Route::post('/logout',   [UsuarioController::class, 'logout'])->name('logout');
     Route::post('/perfil/update', [UsuarioController::class, 'update'])->name('update');
     Route::post('/ticket/store', [TicketController::class, 'store'])->name('ticket.store');

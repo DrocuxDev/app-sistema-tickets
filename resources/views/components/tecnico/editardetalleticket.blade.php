@@ -832,6 +832,7 @@
         try {
             const res  = await fetch(`/tecnico/ticket/${id}/reporte`, {
                 method: 'POST',
+                headers: { 'Accept': 'application/json' },
                 body:   formData
             });
             const data = await res.json();
