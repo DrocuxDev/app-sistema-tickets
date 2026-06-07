@@ -411,9 +411,15 @@ body.sb-collapsed .main-content {
     fill: white;
 }
 
-.btn-save:hover {
+.btn-save:hover:not(:disabled) {
     background: #0f5ea3;
     transform: translateY(-1px);
+}
+
+.btn-save:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {

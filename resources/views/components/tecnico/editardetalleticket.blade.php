@@ -115,7 +115,7 @@
                     <textarea id="tecInpProblema" class="tec-textarea" placeholder="Describe el problema aquí..." rows="4"></textarea>
                 </div>
                 <div style="margin-top:12px;display:flex;justify-content:flex-end;">
-                    <button class="tec-btn-save-fields" onclick="tecGuardarCampos()">
+                    <button class="tec-btn-save-fields" id="tecBtnGuardarCampos" onclick="tecGuardarCampos()" disabled>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                         Guardar cambios
                     </button>
@@ -468,7 +468,8 @@
         cursor: pointer; display: flex; align-items: center; gap: 7px;
         box-shadow: 0 4px 12px rgba(26,110,216,.3); transition: opacity .15s;
     }
-    .tec-btn-save-fields:hover { opacity: .88; }
+    .tec-btn-save-fields:hover:not(:disabled) { opacity: .88; }
+    .tec-btn-save-fields:disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
 
     .tec-btn-comment {
         background: linear-gradient(135deg, #0e7490, #0ea5e9);
@@ -556,6 +557,36 @@
     // ── Estado global del modal técnico ─────────────────────────────
     window._tecTicketId   = null;
     window._tecTienReporte = false;
+    window._tecCamposOriginales = {};
+
+    const _tecCamposEditables = [
+        'tecInpTipoEquipo', 'tecInpMarca', 'tecInpModelo',
+        'tecInpSerial', 'tecInpAsunto', 'tecInpProblema'
+    ];
+
+    function tecCapturarOriginalesCampos() {
+        window._tecCamposOriginales = {};
+        _tecCamposEditables.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) window._tecCamposOriginales[id] = el.value.trim();
+        });
+    }
+
+    function tecVerificarCambiosCampos() {
+        const btn = document.getElementById('tecBtnGuardarCampos');
+        if (!btn) return;
+
+        const hayCambio = _tecCamposEditables.some(id => {
+            const el = document.getElementById(id);
+            if (!el || el.disabled) return false;
+            return el.value.trim() !== (window._tecCamposOriginales[id] ?? '');
+        });
+
+        btn.disabled = !hayCambio;
+        btn.style.opacity = hayCambio ? '1' : '0.45';
+        btn.style.cursor = hayCambio ? 'pointer' : 'not-allowed';
+        btn.style.pointerEvents = hayCambio ? 'auto' : 'none';
+    }
 
     // ── Abrir modal técnico ──────────────────────────────────────────
     async function abrirDetalleTicket(id) {
@@ -619,9 +650,13 @@
         document.getElementById('tecInpProblema').value   = t.problema       ?? '';
 
         // Desactivar edición si ticket ya cerrado/cancelado
-        ['tecInpTipoEquipo','tecInpMarca','tecInpModelo','tecInpSerial','tecInpAsunto','tecInpProblema'].forEach(id => {
-            document.getElementById(id).disabled = esFinal;
+        _tecCamposEditables.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = esFinal;
         });
+
+        tecCapturarOriginalesCampos();
+        tecVerificarCambiosCampos();
 
         // Evidencias cliente
         tecRenderEvidencias('tecEvidencia', t.evidencias ?? []);
@@ -693,6 +728,9 @@
 
     // ── Guardar cambios equipo + solicitud ───────────────────────────
     async function tecGuardarCampos() {
+        const btn = document.getElementById('tecBtnGuardarCampos');
+        if (btn?.disabled) return;
+
         const id = window._tecTicketId;
         const body = {
             tipo_equipo:  document.getElementById('tecInpTipoEquipo').value.trim(),
@@ -961,4 +999,9 @@
     function tecNotif(tipo, titulo, msg) {
         showNotification(tipo, titulo, msg);
     }
+
+    _tecCamposEditables.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', tecVerificarCambiosCampos);
+    });
     </script>

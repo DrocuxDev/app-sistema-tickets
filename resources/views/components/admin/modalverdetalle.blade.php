@@ -37,7 +37,7 @@
             {{-- Footer --}}
             <div id="dt_footer" class="modal-form-footer" style="padding:14px 28px 24px;display:flex;gap:10px;justify-content:flex-end">
                 <button onclick="cerrarModalDetalle()" style="padding:10px 22px;border-radius:10px;border:2px solid #e5e7eb;background:#fff;color:#6b7280;font-weight:600;cursor:pointer;font-size:.9rem" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='#fff'">Cancelar</button>
-                <button id="btnGuardarDetalle" onclick="guardarDetalle()" style="padding:10px 26px;border-radius:10px;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:.9rem;transition:.2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Guardar Cambios</button>
+                <button id="btnGuardarDetalle" onclick="guardarDetalle()" disabled style="padding:10px 26px;border-radius:10px;border:none;color:#fff;font-weight:700;cursor:not-allowed;font-size:.9rem;transition:.2s;opacity:.45;pointer-events:none" onmouseover="if(!this.disabled)this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">Guardar Cambios</button>
             </div>
         </div>
     </div>
@@ -60,6 +60,7 @@
 <script>
 let _dtTipo = null;
 let _dtId   = null;
+let _dtOriginales = {};
 
 // ── Configuración por tipo ────────────────────────────────────────
 const _dtConfig = {
@@ -131,7 +132,12 @@ async function abrirDetalle(tipo, id) {
     document.getElementById('dt_header_icon').textContent      = cfg.icon;
     document.getElementById('dt_header_titulo').textContent    = cfg.titulo;
     document.getElementById('dt_header_sub').textContent       = 'Cargando…';
-    document.getElementById('btnGuardarDetalle').style.background = cfg.btnColor;
+    const btnGuardar = document.getElementById('btnGuardarDetalle');
+    btnGuardar.style.background = cfg.btnColor;
+    btnGuardar.disabled = true;
+    btnGuardar.style.opacity = '0.45';
+    btnGuardar.style.cursor = 'not-allowed';
+    btnGuardar.style.pointerEvents = 'none';
 
     // Mostrar modal con spinner
     document.getElementById('dt_campos').innerHTML = `
@@ -176,12 +182,14 @@ async function abrirDetalle(tipo, id) {
 function renderCampos(campos, data) {
     const container = document.getElementById('dt_campos');
     container.innerHTML = '';
+    _dtOriginales = {};
 
     campos.forEach(campo => {
         const valor = data[campo.key] ?? '';
         const full  = campo.full ? 'grid-column:1/-1;' : '';
 
         if (campo.editable) {
+            _dtOriginales[campo.id] = String(valor).trim();
             container.insertAdjacentHTML('beforeend', `
                 <div style="${full}">
                     <label style="font-size:.75rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">
@@ -190,7 +198,8 @@ function renderCampos(campos, data) {
                     <input id="${campo.id}" type="text" value="${valor}"
                            style="width:100%;padding:10px 13px;border:2px solid #e5e7eb;border-radius:10px;font-size:.88rem;outline:none;transition:.2s;box-sizing:border-box;background:#f9fafb;color:#111827"
                            onfocus="this.style.borderColor='#6366f1';this.style.background='#fff'"
-                           onblur="this.style.borderColor='#e5e7eb';this.style.background='#f9fafb'">
+                           onblur="this.style.borderColor='#e5e7eb';this.style.background='#f9fafb'"
+                           oninput="verificarCambiosDetalle()">
                 </div>
             `);
         } else {
@@ -206,12 +215,33 @@ function renderCampos(campos, data) {
             `);
         }
     });
+
+    verificarCambiosDetalle();
+}
+
+function verificarCambiosDetalle() {
+    const btn = document.getElementById('btnGuardarDetalle');
+    const cfg = _dtConfig[_dtTipo];
+    if (!btn || !cfg) return;
+
+    const hayCambio = cfg.campos.filter(c => c.editable).some(campo => {
+        const el = document.getElementById(campo.id);
+        if (!el) return false;
+        return el.value.trim() !== (_dtOriginales[campo.id] ?? '');
+    });
+
+    btn.disabled = !hayCambio;
+    btn.style.opacity = hayCambio ? '1' : '0.45';
+    btn.style.cursor = hayCambio ? 'pointer' : 'not-allowed';
+    btn.style.pointerEvents = hayCambio ? 'auto' : 'none';
 }
 
 // ── Guardar cambios ───────────────────────────────────────────────
 async function guardarDetalle() {
     const btn = document.getElementById('btnGuardarDetalle');
     const cfg = _dtConfig[_dtTipo];
+
+    if (btn.disabled) return;
 
     // Recolectar solo campos editables
     const datos = {};
@@ -269,9 +299,9 @@ async function guardarDetalle() {
     } catch(e) {
         showNotification('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
     } finally {
-        btn.disabled        = false;
-        btn.textContent     = 'Guardar Cambios';
+        btn.textContent = 'Guardar Cambios';
         btn.style.background = cfg.btnColor;
+        verificarCambiosDetalle();
     }
 }
 
@@ -279,5 +309,6 @@ function cerrarModalDetalle() {
     document.getElementById('modalVerDetalle').style.display = 'none';
     _dtTipo = null;
     _dtId   = null;
+    _dtOriginales = {};
 }
 </script>

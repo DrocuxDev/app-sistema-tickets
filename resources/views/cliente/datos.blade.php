@@ -10,7 +10,7 @@
                 </div>
 
                 <div class="profile-container">
-                    <form class="glass-form" method="POST" action="{{ route('cliente.update') }}">
+                    <form class="glass-form" id="perfil-form" method="POST" action="{{ route('cliente.update') }}">
                         @csrf
 
                         @if($errors->any())
@@ -76,7 +76,7 @@
                             </div>
                             <div class="btn-actions">
                                 <a href="{{ route('cliente.datos') }}" class="btn-discard">Descartar</a>
-                                <button type="submit" class="btn-save" id="btnGuardar">
+                                <button type="submit" class="btn-save" id="btn-guardar" disabled>
                                     <svg viewBox="0 0 20 20">
                                         <path d="M15.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L7 12.6l8.3-8.3a1 1 0 011.4 0z"/>
                                     </svg>
@@ -294,9 +294,15 @@
             fill: white;
         }
 
-        .btn-save:hover {
+        .btn-save:hover:not(:disabled) {
             background: #0f5ea3;
             transform: translateY(-1px);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         /* ══════════════════════════════════════════
@@ -375,3 +381,33 @@
             }
         }
     </style>
+
+    <script>
+        (function () {
+            const form    = document.getElementById('perfil-form');
+            const btnSave = document.getElementById('btn-guardar');
+            if (!form || !btnSave) return;
+
+            const originales = {};
+            form.querySelectorAll('input:not([readonly]):not([type="hidden"])').forEach(input => {
+                originales[input.name] = input.value;
+            });
+
+            function verificarCambios() {
+                const hayCambio = Array.from(form.querySelectorAll('input:not([readonly]):not([type="hidden"])')).some(input => {
+                    return input.value !== originales[input.name];
+                });
+
+                btnSave.disabled = !hayCambio;
+                btnSave.style.opacity       = hayCambio ? '1'   : '0.45';
+                btnSave.style.cursor        = hayCambio ? 'pointer' : 'not-allowed';
+                btnSave.style.pointerEvents = hayCambio ? 'auto' : 'none';
+            }
+
+            form.querySelectorAll('input:not([readonly]):not([type="hidden"])').forEach(input => {
+                input.addEventListener('input', verificarCambios);
+            });
+
+            verificarCambios();
+        })();
+    </script>

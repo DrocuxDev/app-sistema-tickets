@@ -170,7 +170,8 @@
     .btn-discard:hover { background: #f0f6ff; color: #0a3d6b; }
     
     .btn-save { padding: 10px 24px; border-radius: 8px; font-size: 13px; background: #1a7fd4; color: white; border: none; display: flex; align-items: center; gap: 7px; cursor: pointer; font-weight: 500; font-family: inherit; transition: 0.2s; }
-    .btn-save:hover { background: #0f5ea3; transform: translateY(-1px); }
+    .btn-save:hover:not(:disabled) { background: #0f5ea3; transform: translateY(-1px); }
+    .btn-save:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
     .btn-save svg { width: 13px; height: 13px; fill: white; }
 
     /* Responsivo */
@@ -199,6 +200,7 @@
         const btnSave = document.getElementById('btn-guardar');
         const inputTelefono = document.getElementById('telefono');
         const inputCodigoPais = document.getElementById('codigo_pais');
+        if (!form || !btnSave) return;
 
         let iti = null;
         if (inputTelefono && window.intlTelInput) {
@@ -228,8 +230,9 @@
             });
 
             btnSave.disabled = !hayCambio;
-            btnSave.style.opacity  = hayCambio ? '1'   : '0.45';
-            btnSave.style.cursor   = hayCambio ? 'pointer' : 'not-allowed';
+            btnSave.style.opacity       = hayCambio ? '1'   : '0.45';
+            btnSave.style.cursor        = hayCambio ? 'pointer' : 'not-allowed';
+            btnSave.style.pointerEvents = hayCambio ? 'auto' : 'none';
         }
 
         form.querySelectorAll('input:not([readonly]):not([type="hidden"])').forEach(input => {
