@@ -63,12 +63,12 @@ class NavbarService
                 ['route' => 'admin.clientes',      'icon' => 'fa-building',         'title' => 'Clientes'],
             ],
             'searchModules' => [
-                ['nombre' => 'Dashboard',       'ruta' => route('admin.dashboard'),     'icono' => 'fa-gauge-high',       'desc' => 'Panel principal'],
-                ['nombre' => 'Mis Tickets',     'ruta' => route('admin.mistickets'),    'icono' => 'fa-ticket',           'desc' => 'Tickets asignados'],
-                ['nombre' => 'Mis Datos',       'ruta' => route('admin.datos'),         'icono' => 'fa-user-pen',         'desc' => 'Editar perfil'],
+                ['nombre' => 'Dashboard',         'ruta' => route('admin.dashboard'),     'icono' => 'fa-gauge-high',      'desc' => 'Panel principal'],
+                ['nombre' => 'Mis Tickets',       'ruta' => route('admin.mistickets'),    'icono' => 'fa-ticket',          'desc' => 'Tickets asignados'],
+                ['nombre' => 'Mis Datos',         'ruta' => route('admin.datos'),         'icono' => 'fa-user-pen',        'desc' => 'Editar perfil'],
                 ['nombre' => 'Tickets Generales', 'ruta' => route('admin.asignarticket'), 'icono' => 'fa-clipboard-check', 'desc' => 'Gestionar tickets'],
-                ['nombre' => 'Clientes',        'ruta' => route('admin.clientes'),      'icono' => 'fa-building',         'desc' => 'Listado clientes'],
-                ['nombre' => 'Contactos',       'ruta' => route('admin.contactos'),     'icono' => 'fa-envelope',         'desc' => 'Mensajería'],
+                ['nombre' => 'Clientes',          'ruta' => route('admin.clientes'),      'icono' => 'fa-building',        'desc' => 'Listado clientes'],
+                ['nombre' => 'Contactos',         'ruta' => route('admin.contactos'),     'icono' => 'fa-envelope',        'desc' => 'Mensajería'],
             ],
             'notifTitle'      => 'Tickets Pendientes',
             'notifSeeAll'     => route('admin.asignarticket'),
@@ -100,8 +100,8 @@ class NavbarService
             'quickLinks' => [
                 ['route' => 'cliente.dashboard', 'icon' => 'fa-gauge-high', 'title' => 'Dashboard'],
                 ['route' => 'cliente.tickets',   'icon' => 'fa-ticket',     'title' => 'Mis Tickets'],
-                ['route' => 'cliente.contactos',   'icon' => 'fa-envelope',   'title' => 'Contactos'],
-                ['route' => 'cliente.datos',       'icon' => 'fa-user',       'title' => 'Mis Datos'],
+                ['route' => 'cliente.contactos', 'icon' => 'fa-envelope',   'title' => 'Contactos'],
+                ['route' => 'cliente.datos',     'icon' => 'fa-user',       'title' => 'Mis Datos'],
             ],
             'searchModules' => [
                 ['nombre' => 'Dashboard',   'ruta' => route('cliente.dashboard'), 'icono' => 'fa-gauge-high', 'desc' => 'Panel principal'],
@@ -122,34 +122,35 @@ class NavbarService
     {
         $idTecnico = session('id');
 
+        // Nuevos tickets + asignaciones
         $items = Notificacion::where('id_tecnico', $idTecnico)
             ->where('leido', false)
-            ->where('tipo', 'asignacion')
+            ->whereIn('tipo', ['nuevo_ticket', 'asignacion'])
             ->with('ticket')
             ->orderByDesc('created_at')
-            ->limit(5)
+            ->limit(8)
             ->get();
 
         $count = Notificacion::where('id_tecnico', $idTecnico)
             ->where('leido', false)
-            ->where('tipo', 'asignacion')
+            ->whereIn('tipo', ['nuevo_ticket', 'asignacion'])
             ->count();
 
         return [
             'quickLinks' => [
-                ['route' => 'tecnico.datos',       'icon' => 'fa-user',     'title' => 'Mis Datos'],
-                ['route' => 'tecnico.mistickets',  'icon' => 'fa-ticket',   'title' => 'Mis Tickets'],
-                ['route' => 'tecnico.contactos',   'icon' => 'fa-envelope', 'title' => 'Contactos'],
+                ['route' => 'tecnico.datos',      'icon' => 'fa-user',     'title' => 'Mis Datos'],
+                ['route' => 'tecnico.mistickets', 'icon' => 'fa-ticket',   'title' => 'Mis Tickets'],
+                ['route' => 'tecnico.contactos',  'icon' => 'fa-envelope', 'title' => 'Contactos'],
             ],
             'searchModules' => [
                 ['nombre' => 'Mis Datos',   'ruta' => route('tecnico.datos'),      'icono' => 'fa-user',     'desc' => 'Editar perfil'],
                 ['nombre' => 'Mis Tickets', 'ruta' => route('tecnico.mistickets'), 'icono' => 'fa-ticket',   'desc' => 'Tickets asignados'],
                 ['nombre' => 'Contactos',   'ruta' => route('tecnico.contactos'),  'icono' => 'fa-envelope', 'desc' => 'Mensajería'],
             ],
-            'notifTitle'      => 'Tickets asignados',
+            'notifTitle'      => 'Tickets nuevos y asignados',
             'notifSeeAll'     => route('tecnico.mistickets'),
             'notifSeeAllText' => 'Ver mis tickets →',
-            'notifications'   => self::mapDbNotifications($items, 'fa-clipboard-check', 'success'),
+            'notifications'   => self::mapTecnicoNotifications($items),
             'notifCount'      => $count,
             'notifClickRoute' => 'tecnico',
         ];
@@ -190,6 +191,28 @@ class NavbarService
         ];
     }
 
+    // Notificaciones del técnico — ícono diferente por tipo
+    private static function mapTecnicoNotifications(Collection $items): Collection
+    {
+        return $items->map(function (Notificacion $n) {
+            $ticket    = $n->ticket;
+            $isNuevo   = $n->tipo === 'nuevo_ticket';
+
+            return [
+                'id'         => $n->id_notificacion,
+                'ticket_id'  => $n->id_ticket,
+                'icon'       => $isNuevo ? 'fa-bell' : 'fa-clipboard-check',
+                'icon_class' => $isNuevo ? 'warning' : 'success',
+                'text'       => $n->mensaje,
+                'meta'       => array_filter([
+                    $ticket?->codigo_ticket,
+                    $n->created_at?->diffForHumans(),
+                ]),
+                'href'       => null,
+            ];
+        });
+    }
+
     private static function mapDbNotifications(Collection $items, string $icon, string $iconClass): Collection
     {
         return $items->map(function (Notificacion $n) use ($icon, $iconClass) {
@@ -199,17 +222,17 @@ class NavbarService
                 : null;
 
             return [
-                'id'          => $n->id_notificacion,
-                'ticket_id'   => $n->id_ticket,
-                'icon'        => $icon,
-                'icon_class'  => $iconClass,
-                'text'        => $n->mensaje,
-                'meta'        => array_filter([
+                'id'         => $n->id_notificacion,
+                'ticket_id'  => $n->id_ticket,
+                'icon'       => $icon,
+                'icon_class' => $iconClass,
+                'text'       => $n->mensaje,
+                'meta'       => array_filter([
                     $ticket?->codigo_ticket,
                     $estado,
                     $n->created_at?->diffForHumans(),
                 ]),
-                'href'        => null,
+                'href'       => null,
             ];
         });
     }

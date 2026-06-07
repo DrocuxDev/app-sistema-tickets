@@ -11,12 +11,24 @@ class NotificacionService
     {
         $nombre = trim(($usuario->nombre ?? '') . ' ' . ($usuario->apellido_paterno ?? ''));
 
+        // Notificar al cliente
         Notificacion::create([
             'id_cliente' => $ticket->id_cliente,
             'id_ticket'  => $ticket->id_ticket,
             'tipo'       => 'nuevo_ticket',
             'mensaje'    => "{$nombre} creó el ticket {$ticket->codigo_ticket}",
         ]);
+
+        // Notificar a todos los técnicos activos
+        $tecnicos = DB::table('tecnico')->where('activo', 1)->pluck('id_tecnico');
+        foreach ($tecnicos as $idTecnico) {
+            Notificacion::create([
+                'id_tecnico' => $idTecnico,
+                'id_ticket'  => $ticket->id_ticket,
+                'tipo'       => 'nuevo_ticket',
+                'mensaje'    => "Nuevo ticket de {$nombre}: {$ticket->codigo_ticket}",
+            ]);
+        }
     }
 
     public static function cambioEstadoUsuario(int $ticketId, int $nuevoEstadoId): void
@@ -78,5 +90,11 @@ class NotificacionService
         }
 
         return (bool) $query->update(['leido' => true]);
+    }
+
+    public static function nuevoTicketTecnicos(object $ticket, object $usuario): void
+    {
+        // Alias por compatibilidad — llama al método principal
+        self::nuevoTicketCliente($ticket, $usuario);
     }
 }
