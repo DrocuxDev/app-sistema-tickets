@@ -17,6 +17,13 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
+    private function tecnicoEsAdminProtegido(int $id): bool
+    {
+        $tecnico = Tecnico::with('cargo')->find($id);
+
+        return $tecnico && $tecnico->esAdmin();
+    }
+
     public function dashboard()
     {
         if (session('tipo') !== 'admin' || !session('id')) {
@@ -179,6 +186,13 @@ class AdminController extends Controller
 
     public function cambiarEstadoTecnico(Request $request, $id)
     {
+        if (!$request->estado && $this->tecnicoEsAdminProtegido((int) $id)) {
+            return response()->json([
+                'ok'      => false,
+                'message' => 'No se puede desactivar la cuenta del administrador principal.',
+            ], 403);
+        }
+
         DB::table('tecnico')->where('id_tecnico', $id)->update([
             'activo' => $request->estado, 
             'updated_at' => now()
@@ -691,9 +705,18 @@ class AdminController extends Controller
         $llaves = ['cliente'=>'id_cliente','usuario'=>'id_usuario','tecnico'=>'id_tecnico'];
         
         if (!isset($tablas[$tipo])) return response()->json(['ok'=>false], 400);
+
+        $activo = (int) $request->activo;
+
+        if ($tipo === 'tecnico' && !$activo && $this->tecnicoEsAdminProtegido((int) $id)) {
+            return response()->json([
+                'ok'      => false,
+                'message' => 'No se puede desactivar la cuenta del administrador principal.',
+            ], 403);
+        }
         
         DB::table($tablas[$tipo])->where($llaves[$tipo], $id)
-            ->update(['activo' => $request->activo, 'updated_at'=>now()]);
+            ->update(['activo' => $activo, 'updated_at'=>now()]);
         
         return response()->json(['ok'=>true]);
     }
@@ -1118,8 +1141,8 @@ public function clientes()
         $ticket->reportes    = $reportes->get($ticket->id_ticket, collect());
     });
 
-    // Técnicos disponibles
-    $tecnicos = Tecnico::orderBy('nombre')->get();
+    // Técnicos disponibles (con cargo para identificar administradores protegidos)
+    $tecnicos = Tecnico::with('cargo')->orderBy('nombre')->get();
     
     // Usuarios
     $usuarios_lista = Usuario::orderBy('nombre')->get();

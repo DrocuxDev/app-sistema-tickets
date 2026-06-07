@@ -463,6 +463,19 @@
   color: var(--erp-success);
   background: var(--erp-success-bg);
 }
+.btn-action-sm.btn-protegido {
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  background: #f8fafc;
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.85;
+}
+.type-badge.tb-a {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fcd34d;
+}
 
 /* ── Empty state ────────────────────────────────────────────────────── */
 #erp-empty-row { display: none; }
@@ -837,14 +850,19 @@
 
         {{-- ── TÉCNICOS ───────────────────────────────────────────────── --}}
         @foreach($tecnicos as $t)
-        <tr data-type="tecnico" data-id="{{ $t->id_tecnico }}" data-status="{{ $t->activo ? 'activo' : 'inactivo' }}">
+        @php $esAdminProtegido = $t->esAdmin(); @endphp
+        <tr data-type="tecnico" data-id="{{ $t->id_tecnico }}" data-status="{{ $t->activo ? 'activo' : 'inactivo' }}" data-protegido="{{ $esAdminProtegido ? '1' : '0' }}">
           <td class="cell-id">#{{ $t->id_tecnico }}</td>
           <td>
-            <span class="type-badge tb-t">
+            <span class="type-badge {{ $esAdminProtegido ? 'tb-a' : 'tb-t' }}">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                @if($esAdminProtegido)
+                <path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/>
+                @else
                 <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+                @endif
               </svg>
-              Técnico
+              {{ $esAdminProtegido ? 'Administrador' : 'Técnico' }}
             </span>
           </td>
           <td class="cell-name">{{ Str::limit($t->nombre.' '.$t->apellido_paterno.' '.$t->apellido_materno, 40) }}</td>
@@ -867,6 +885,15 @@
                 </svg>
                 Detalle
               </button>
+              @if($esAdminProtegido)
+              <span class="btn-action-sm btn-protegido" title="La cuenta del administrador no puede ser desactivada">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+                Protegido
+              </span>
+              @else
               <button
                 class="btn-action-sm {{ $t->activo ? 'btn-deactivate' : 'btn-activate' }}"
                 onclick="toggleEstado('tecnico', {{ $t->id_tecnico }}, {{ $t->activo ? 0 : 1 }})"
@@ -877,6 +904,7 @@
                 </svg>
                 {{ $t->activo ? 'Dar baja' : 'Activar' }}
               </button>
+              @endif
             </div>
           </td>
         </tr>
@@ -1028,6 +1056,12 @@ function verDetalleTecnico(id) { abrirDetalle('tecnico',  id); }
    TOGGLE ESTADO — AJAX real (Activar / Suspender / Dar Baja)
    ═══════════════════════════════════════════════════════════════════ */
 async function toggleEstado(tipo, id, nuevoEstado) {
+  const fila = document.querySelector(`tr[data-type="${tipo}"][data-id="${id}"]`);
+  if (fila?.dataset.protegido === '1' && !nuevoEstado) {
+    showNotification('warning', 'Acción no permitida', 'La cuenta del administrador no puede ser desactivada.');
+    return;
+  }
+
   const url    = `/admin/${tipo}/${id}/toggle`;
   const accion = nuevoEstado ? 'activar' : 'desactivar';
 
