@@ -9,7 +9,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TecnicoController;
 use App\Http\Controllers\UsuarioController;
-use App\Http\Controllers\Cliente\UsuarioController as ClienteUsuarioController; // ← NUEVO
+use App\Http\Controllers\Cliente\UsuarioController as ClienteUsuarioController;
+use App\Http\Controllers\NotificacionController;
 
 // ===================== RUTAS PÚBLICAS =====================
 Route::get('/', function () {
@@ -19,6 +20,7 @@ Route::get('/', function () {
 Route::post('/register', [RegisterController::class, 'store'])->name('register');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/notificaciones/{id}/leer', [NotificacionController::class, 'marcarLeida'])->name('notificaciones.leer');
 
 
 // ===================== 1. CLIENTE (Empresas) =====================

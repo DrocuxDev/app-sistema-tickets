@@ -81,6 +81,22 @@
                                required 
                                placeholder="usuario@institucion.com">
                     </div>
+
+                    <div class="form-group full">
+                        <label>Contraseña de acceso <span class="label-hint">(mín. 6 caracteres)</span></label>
+                        <div class="pass-field-wrap">
+                            <input type="password" name="contrasena" id="inp-contrasena"
+                                   value="{{ old('contrasena') }}"
+                                   required minlength="6" autocomplete="new-password"
+                                   placeholder="Ingresa la contraseña">
+                            <button type="button" class="modal-toggle-pass" onclick="togglePassField('inp-contrasena','inp-contrasena-eye')" aria-label="Mostrar contraseña">
+                                <svg id="inp-contrasena-eye" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="codigo-preview">
@@ -396,6 +412,10 @@
         if (!correo) errores.push('El correo institucional es obligatorio.');
         else if (!regexEmail.test(correo)) errores.push('Ingrese un correo electrónico válido.');
 
+        const contrasena = document.getElementById('inp-contrasena').value;
+        if (!contrasena) errores.push('La contraseña es obligatoria.');
+        else if (contrasena.length < 6) errores.push('La contraseña debe tener al menos 6 caracteres.');
+
         if (errores.length > 0) {
             errores.forEach(error => showNotification('danger', 'Error', error));
             return;
@@ -498,10 +518,12 @@
 
     function closeModalBtn() {
         document.getElementById('modal-backdrop').style.display = 'none';
+        resetPassField('inp-contrasena', 'inp-contrasena-eye');
     }
     
     function openModal() {
         document.getElementById('modal-backdrop').style.display = 'flex';
+        resetPassField('inp-contrasena', 'inp-contrasena-eye');
         generarCodigo();
     }
 

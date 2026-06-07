@@ -14,6 +14,7 @@ use App\Models\Tecnico;
 use App\Models\Usuario;
 use App\Models\Cliente;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\NotificacionService;
 
 class AdminController extends Controller
 {
@@ -104,11 +105,7 @@ class AdminController extends Controller
                             ->filter(fn($t) => $t->fecha_resuelto && \Carbon\Carbon::parse($t->fecha_resuelto)->isToday())
                             ->count(),
 
-            'programado' => \App\Models\Ticket::where('id_estado', function($query) {
-                        $query->select('id_estado')
-                            ->from('estado_ticket')
-                            ->where('nombre_estado', 'PROGRAMADO');
-                    })->count(),
+            'programado' => $tickets->where('estado', 'PROGRAMADO')->count(),
         ];
 
         // ── Técnicos: Libres vs Ocupados ──
@@ -206,7 +203,7 @@ class AdminController extends Controller
             'razon_social' => 'required|string|max:200',
             'ruc'          => 'required|string|size:11|unique:cliente,ruc',
             'correo'       => 'required|email|max:150|unique:cliente,correo',
-            'contrasena'   => 'required|string',
+            'contrasena'   => 'required|string|min:6',
             'sedes'        => 'nullable|string|max:200',
             'rubro'        => 'required|string|max:100',
         ], [
@@ -220,6 +217,7 @@ class AdminController extends Controller
             'correo.max'            => 'El correo electrónico no debe exceder los 150 caracteres.',
             'correo.unique'         => 'Este correo electrónico ya está registrado.',
             'contrasena.required'   => 'La contraseña es obligatoria.',
+            'contrasena.min'        => 'La contraseña debe tener al menos 6 caracteres.',
             'sedes.max'             => 'El campo sedes no debe exceder los 200 caracteres.',
             'rubro.required'        => 'El rubro de la empresa es obligatorio.',
             'rubro.max'             => 'El campo rubro no debe exceder los 100 caracteres.',
@@ -417,12 +415,12 @@ class AdminController extends Controller
 
     try {
         DB::table('tecnico')->insert([
-            'codigo_tecnico'   => $request->codigo_tecnico,
-            'nombre'           => $request->nombre,
-            'apellido_paterno' => $request->apellido_paterno,
-            'apellido_materno' => $request->apellido_materno,
-            'dni'              => $request->dni,
-            'correo'           => $request->correo,
+            'codigo_tecnico'   => strtoupper(trim($request->codigo_tecnico)),
+            'nombre'           => ucfirst(strtolower(trim($request->nombre))),
+            'apellido_paterno' => ucfirst(strtolower(trim($request->apellido_paterno))),
+            'apellido_materno' => ucfirst(strtolower(trim($request->apellido_materno))),
+            'dni'              => trim($request->dni),
+            'correo'           => strtolower(trim($request->correo)),
             'contraseña'       => Hash::make($request->contrasena),
             'id_cargo'         => 2,
             'activo'           => 1,
@@ -430,7 +428,28 @@ class AdminController extends Controller
             'updated_at'       => now(),
         ]);
 
-        return response()->json(['ok' => true, 'message' => 'Técnico registrado con éxito.']);
+        $tecnicoObj = (object) [
+            'nombre'           => ucfirst(strtolower(trim($request->nombre))),
+            'apellido_paterno' => ucfirst(strtolower(trim($request->apellido_paterno))),
+            'correo'           => strtolower(trim($request->correo)),
+            'codigo_tecnico'   => strtoupper(trim($request->codigo_tecnico)),
+            'tipo'             => 'tecnico',
+        ];
+
+        $emailSent = false;
+        try {
+            \Illuminate\Support\Facades\Mail::to($tecnicoObj->correo)
+                ->send(new \App\Mail\CredencialesUsuario($tecnicoObj, $request->contrasena));
+            $emailSent = true;
+        } catch (\Exception $mailEx) {
+            \Log::warning('No se pudo enviar el correo al técnico: ' . $mailEx->getMessage());
+        }
+
+        return response()->json([
+            'ok'         => true,
+            'message'    => 'Técnico registrado con éxito.',
+            'email_sent' => $emailSent,
+        ]);
 
     } catch (\Exception $e) {
         return response()->json(['ok' => false, 'message' => $e->getMessage()], 500);
@@ -470,6 +489,12 @@ class AdminController extends Controller
         }
 
         DB::table('ticket')->where('id_ticket', $id)->update($update);
+
+        NotificacionService::asignacionTecnico((int) $id, (int) $request->id_tecnico);
+
+        if (isset($update['id_estado'])) {
+            NotificacionService::cambioEstadoUsuario((int) $id, (int) $update['id_estado']);
+        }
 
         $tecnico = DB::table('tecnico')->where('id_tecnico', $request->id_tecnico)->first();
 
@@ -846,6 +871,8 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCancelado);
+
         return response()->json(['ok' => true]);
     }
 
@@ -897,6 +924,10 @@ class AdminController extends Controller
         }
      
         DB::table('ticket')->where('id_ticket', $id)->update($update);
+
+        if (isset($update['id_estado'])) {
+            NotificacionService::cambioEstadoUsuario((int) $id, (int) $update['id_estado']);
+        }
      
         return response()->json(['ok' => true]);
     }
@@ -948,6 +979,8 @@ class AdminController extends Controller
                 'fecha_en_proceso' => now(),
                 'updated_at'       => now(),
             ]);
+
+            NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso);
         }
      
         return response()->json(['ok' => true]);
@@ -1031,6 +1064,8 @@ class AdminController extends Controller
                     'fecha_en_proceso' => now(),
                     'updated_at'       => now(),
                 ]);
+
+                NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso);
             }
 
             return response()->json(['ok' => true]);
@@ -1075,6 +1110,8 @@ class AdminController extends Controller
             'fecha_resuelto' => now(),
             'updated_at'     => now(),
         ]);
+
+        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCerrado);
      
         DB::table('reporte_tecnico')
             ->where('id_ticket', $id)

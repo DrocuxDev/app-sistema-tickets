@@ -184,6 +184,15 @@
                         <div class="em-cred-val">{{ $usuario->correo }}</div>
                     </div>
                 </div>
+                @if(!empty($usuario->codigo_tecnico))
+                <div class="em-cred-row">
+                    <div class="em-cred-icon">🔧</div>
+                    <div>
+                        <div class="em-cred-label">Código de técnico</div>
+                        <div class="em-cred-val">{{ $usuario->codigo_tecnico }}</div>
+                    </div>
+                </div>
+                @endif
                 <div class="em-cred-row">
                     <div class="em-cred-icon">🔑</div>
                     <div>
@@ -199,7 +208,7 @@
             </div>
 
             <div class="em-btn-wrap">
-                <a href="{{ url('/login') }}" class="em-btn">Iniciar sesión →</a>
+                <a href="{{ url('/') }}" class="em-btn">Iniciar sesión →</a>
             </div>
         </div>
 

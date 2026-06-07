@@ -16,7 +16,7 @@
             </div>
 
             {{-- Body --}}
-            <div style="padding:26px 28px 10px;font-family:'Segoe UI',sans-serif">
+            <div class="modal-form-scroll" style="padding:26px 28px 10px;font-family:'Segoe UI',sans-serif">
 
                 {{-- Nombre + Apellido Paterno --}}
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
@@ -72,6 +72,26 @@
                            onblur="this.style.borderColor='#ede9fe';this.style.background='#faf8ff'">
                 </div>
 
+                {{-- Contraseña --}}
+                <div style="margin-bottom:6px">
+                    <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">
+                        Contraseña de acceso <span style="color:#7c3aed">*</span>
+                        <span style="font-size:.7rem;color:#6b7280;font-weight:400"> — mín. 6 caracteres</span>
+                    </label>
+                    <div class="pass-field-wrap">
+                        <input id="tec_contrasena" type="password" placeholder="Ingresa la contraseña" minlength="6" autocomplete="new-password"
+                               style="padding:10px 13px;border:2px solid #ede9fe;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;background:#faf8ff;color:#1e1b4b"
+                               onfocus="this.style.borderColor='#7c3aed';this.style.background='#fff'"
+                               onblur="this.style.borderColor='#ede9fe';this.style.background='#faf8ff'">
+                        <button type="button" class="modal-toggle-pass" onclick="togglePassField('tec_contrasena','tec_contrasena_eye')" aria-label="Mostrar contraseña">
+                            <svg id="tec_contrasena_eye" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
             {{-- Footer --}}
@@ -85,6 +105,9 @@
 
 <style>
 @keyframes tSlideIn { from{transform:translateY(-20px) scale(.97);opacity:0} to{transform:none;opacity:1} }
+#modalCrearTecnico > div > div { max-height:92vh; display:flex; flex-direction:column; }
+#modalCrearTecnico .modal-form-scroll { overflow-y:auto; flex:1; min-height:0; -webkit-overflow-scrolling:touch; }
+#modalCrearTecnico .modal-form-footer { flex-shrink:0; }
 
 /* Responsive modal */
 @media (max-width: 540px) {
@@ -112,6 +135,7 @@ function abrirModalTecnico() {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
+    resetPassField('tec_contrasena', 'tec_contrasena_eye');
     document.getElementById('tec_codigo_preview').textContent = '———';
     const btn = document.getElementById('btnGuardarTecnico');
     btn.disabled         = false;
@@ -167,7 +191,8 @@ async function guardarTecnico() {
     const ap  = document.getElementById('tec_apellido_paterno').value.trim();
     const am  = document.getElementById('tec_apellido_materno').value.trim();
     const dni = document.getElementById('tec_dni').value.trim();
-    const correo = document.getElementById('tec_correo').value.trim();
+    const correo     = document.getElementById('tec_correo').value.trim();
+    const contrasena = document.getElementById('tec_contrasena').value;
 
     // ── Validaciones ──────────────────────────────────────────────────────
     const errores = [];
@@ -178,6 +203,8 @@ async function guardarTecnico() {
     else if (dni.length !== 8) errores.push('El DNI debe tener 8 dígitos.');
     if (!correo) errores.push('El correo del técnico es obligatorio.');
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) errores.push('El correo no tiene un formato válido.');
+    if (!contrasena) errores.push('La contraseña es obligatoria.');
+    else if (contrasena.length < 6) errores.push('La contraseña debe tener al menos 6 caracteres.');
 
     if (errores.length > 0) {
         errores.forEach(e => showNotification('danger', 'Error', e));
@@ -198,7 +225,7 @@ async function guardarTecnico() {
         apellido_materno: am,
         dni,
         correo,
-        contrasena:       dni,
+        contrasena,
         codigo_tecnico:   codigo
     };
 
@@ -231,15 +258,17 @@ async function guardarTecnico() {
 
         if (data.ok) {
             cerrarModalTecnico();
+            const emailOk = data.email_sent !== false;
             setTimeout(() => {
                 ModalSystem.show('success', {
                     title: '¡Técnico registrado!',
                     text:  `
                         <div style="text-align:center;">
-                            <div style="font-size:48px;margin-bottom:12px;">📧</div>
+                            <div style="font-size:48px;margin-bottom:12px;">${emailOk ? '📧' : '⚠️'}</div>
                             <p style="font-size:14px;color:#374151;margin-bottom:8px;">
                                 El técnico <strong>${n} ${ap}</strong> fue registrado con el código <strong style="color:#6d28d9;">${codigo}</strong>.
                             </p>
+                            ${emailOk ? `
                             <p style="font-size:13px;color:#6b7280;">
                                 Se enviaron las credenciales de acceso a:
                             </p>
@@ -248,7 +277,10 @@ async function guardarTecnico() {
                             </div>
                             <p style="font-size:12px;color:#9ca3af;margin-top:10px;">
                                 Pídele al técnico que revise su bandeja de entrada o spam.
-                            </p>
+                            </p>` : `
+                            <p style="font-size:13px;color:#b45309;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:12px;margin-top:10px;">
+                                El técnico se guardó correctamente, pero no se pudo enviar el correo. Comparte las credenciales manualmente.
+                            </p>`}
                         </div>`,
                     confirmText: 'Entendido',
                     onConfirm:   () => location.reload()

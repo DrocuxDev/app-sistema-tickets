@@ -167,6 +167,7 @@ public function storeUsuario(Request $request)
             'max:15',
             'regex:/^[0-9]+$/'
         ],
+        'contrasena' => 'required|string|min:6',
     ], [
         // 2. Modificamos y añadimos los mensajes personalizados en español
         'nombre.required'        => 'El nombre es obligatorio.',
@@ -190,6 +191,8 @@ public function storeUsuario(Request $request)
         'telefono.min'           => 'El teléfono debe tener al menos 7 dígitos.',
         'telefono.max'           => 'El teléfono no puede tener más de 15 dígitos.',
         'telefono.regex'         => 'El teléfono solo debe contener números.',
+        'contrasena.required'    => 'La contraseña es obligatoria.',
+        'contrasena.min'         => 'La contraseña debe tener al menos 6 caracteres.',
     ]);
 
     // ── Helper limpiar ────────────────────────────────────────────────
@@ -235,7 +238,7 @@ public function storeUsuario(Request $request)
         'codigo_pais'      => $request->codigo_pais,
         'telefono'         => $request->telefono,
         'correo'           => $correoGenerado,
-        'contraseña'       => Hash::make($request->dni),
+        'contraseña'       => Hash::make($request->contrasena),
         'activo'           => 1,
     ]);
 

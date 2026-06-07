@@ -1,4 +1,5 @@
 @include('components.notificaciones.alertas')
+@include('components.tecnico.navbar-tecnico')
 @include('components.tecnico.sidebar-tecnico')
 @include('components.tecnico.editardetalleticket')
 @include('components.tecnico.modalreporte')

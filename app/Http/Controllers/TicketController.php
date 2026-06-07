@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Ticket;
+use App\Services\NotificacionService;
 
 class TicketController extends Controller
 {
@@ -139,7 +140,8 @@ if ($validator->fails()) {
         }
     }
 
-    // ── Respuesta JSON ──
+    NotificacionService::nuevoTicketCliente($ticket, $usuario);
+
     return response()->json([
         'ok'      => true,
         'message' => 'Ticket creado correctamente.',

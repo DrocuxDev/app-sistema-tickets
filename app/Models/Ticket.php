@@ -8,6 +8,7 @@ class Ticket extends Model
 {
     protected $table = 'ticket';
     protected $primaryKey = 'id_ticket';
+    public $timestamps = true;
 
     protected $fillable = [
         'codigo_ticket',

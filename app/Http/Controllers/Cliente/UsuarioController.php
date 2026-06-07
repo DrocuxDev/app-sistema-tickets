@@ -57,6 +57,7 @@ class UsuarioController extends Controller
             'telefono' => 'required|string|max:20',
             'codigo_usuario' => 'nullable|string|max:20',
             'codigo_pais' => 'nullable|string|max:10',
+            'contrasena' => 'required|string|min:6',
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'apellido_paterno.required' => 'El apellido paterno es obligatorio.',
@@ -67,6 +68,8 @@ class UsuarioController extends Controller
             'correo.email' => 'Ingrese un correo válido.',
             'correo.unique' => 'Este correo ya está registrado.',
             'telefono.required' => 'El teléfono es obligatorio.',
+            'contrasena.required' => 'La contraseña es obligatoria.',
+            'contrasena.min' => 'La contraseña debe tener al menos 6 caracteres.',
         ]);
 
         if ($validator->fails()) {
@@ -98,13 +101,13 @@ class UsuarioController extends Controller
                 'telefono' => $request->telefono,
                 'codigo_pais' => $request->codigo_pais ?? '+51',
                 'codigo_usuario' => $codigoUsuario,
-                'contraseña' => Hash::make($request->dni),
+                'contraseña' => Hash::make($request->contrasena),
                 'activo' => 1,
             ]);
 
             // ENVIAR CORREO CON LAS CREDENCIALES
             try {
-                Mail::to($usuario->correo)->send(new CredencialesUsuario($usuario, $request->dni));
+                Mail::to($usuario->correo)->send(new CredencialesUsuario($usuario, $request->contrasena));
             } catch (\Exception $mailError) {
                 \Log::error('Error al enviar correo: ' . $mailError->getMessage());
             }

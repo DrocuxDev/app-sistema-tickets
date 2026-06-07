@@ -8,7 +8,7 @@ use App\Models\Tecnico;
 use App\Models\Usuario;
 use App\Models\Cliente;
 use Illuminate\Support\Facades\Validator;
-
+use App\Services\NotificacionService;
 
 class TecnicoController extends Controller
 {
@@ -180,6 +180,8 @@ class TecnicoController extends Controller
             'fecha_programado'    => now(),
             'updated_at'          => now(),
         ]);
+
+        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoProgramado);
 
         return response()->json(['ok' => true]);
     }
@@ -385,6 +387,10 @@ class TecnicoController extends Controller
 
         DB::table('ticket')->where('id_ticket', $id)->update($update);
 
+        if (isset($update['id_estado'])) {
+            NotificacionService::cambioEstadoUsuario((int) $id, (int) $update['id_estado']);
+        }
+
         return response()->json(['ok' => true]);
     }
 
@@ -435,6 +441,8 @@ class TecnicoController extends Controller
                 'fecha_en_proceso' => now(),
                 'updated_at'       => now(),
             ]);
+
+            NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso);
         }
 
         return response()->json(['ok' => true]);
@@ -503,6 +511,8 @@ class TecnicoController extends Controller
                     'fecha_en_proceso' => now(),
                     'updated_at'       => now(),
                 ]);
+
+                NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso);
             }
 
             return response()->json(['ok' => true]);
@@ -542,6 +552,8 @@ class TecnicoController extends Controller
             'updated_at'     => now(),
         ]);
 
+        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCerrado);
+
         return response()->json(['ok' => true]);
     }
 
@@ -578,6 +590,8 @@ class TecnicoController extends Controller
             'id_estado'  => $estadoCancelado,
             'updated_at' => now(),
         ]);
+
+        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCancelado);
 
         return response()->json(['ok' => true]);
     }

@@ -2,7 +2,7 @@
 {{-- Requiere que el controlador pase $clientes a la vista --}}
 <div id="modalCrearUsuario" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(5,15,10,0.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
     <div style="width:100%;max-width:560px;margin:16px;animation:uSlideIn .3s cubic-bezier(.16,1,.3,1)">
-        <div style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.35)">
+        <div class="modal-usuario-card" style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.35)">
 
             {{-- Header --}}
             <div style="background:linear-gradient(135deg,#064e3b,#059669);padding:22px 28px;display:flex;align-items:center;justify-content:space-between">
@@ -23,7 +23,7 @@
             </div>
 
             {{-- PASO 1: Seleccionar cliente --}}
-            <div id="usu_paso1" style="padding:26px 28px;font-family:'Segoe UI',sans-serif">
+            <div id="usu_paso1" class="modal-form-scroll" style="padding:26px 28px;font-family:'Segoe UI',sans-serif">
                 <div style="font-size:.85rem;color:#374151;font-weight:600;margin-bottom:12px">¿A qué cliente pertenece este usuario?</div>
 
                 {{-- Búsqueda --}}
@@ -61,7 +61,7 @@
             </div>
 
             {{-- PASO 2: Datos usuario (oculto inicialmente) --}}
-            <div id="usu_paso2" style="display:none;padding:24px 28px 10px;font-family:'Segoe UI',sans-serif">
+            <div id="usu_paso2" class="modal-form-scroll" style="display:none;padding:24px 28px 10px;font-family:'Segoe UI',sans-serif">
 
                 {{-- Badge cliente seleccionado --}}
                 <div id="usu_badge_cliente" style="display:flex;align-items:center;gap:10px;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:10px;padding:10px 14px;margin-bottom:18px">
@@ -148,10 +148,29 @@
                            onblur="this.style.borderColor='#d1fae5';this.style.background='#f0fdf4'">
                 </div>
 
+                {{-- Contraseña --}}
+                <div style="margin-bottom:6px">
+                    <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">
+                        Contraseña de acceso <span style="color:#059669">*</span>
+                        <span style="font-size:.7rem;color:#6b7280;font-weight:400"> — mín. 6 caracteres</span>
+                    </label>
+                    <div class="pass-field-wrap">
+                        <input id="usu_contrasena" type="password" placeholder="Ingresa la contraseña" minlength="6" autocomplete="new-password"
+                               style="padding:10px 13px;border:2px solid #d1fae5;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;background:#f0fdf4;color:#111827"
+                               onfocus="this.style.borderColor='#059669';this.style.background='#fff'"
+                               onblur="this.style.borderColor='#d1fae5';this.style.background='#f0fdf4'">
+                        <button type="button" class="modal-toggle-pass" onclick="togglePassField('usu_contrasena','usu_contrasena_eye')" aria-label="Mostrar contraseña">
+                            <svg id="usu_contrasena_eye" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
                 {{-- Previews ocultos usados solo por JS --}}
                 <div id="usu_codigo_preview" style="display:none">———</div>
                 <div id="usu_correo_preview" style="display:none">———</div>
-                <div id="usu_pass_preview"   style="display:none">———</div>
 
             </div>
 
@@ -168,6 +187,9 @@
 
 <style>
 @keyframes uSlideIn { from{transform:translateY(-20px) scale(.97);opacity:0} to{transform:none;opacity:1} }
+#modalCrearUsuario .modal-usuario-card { max-height:92vh; display:flex; flex-direction:column; }
+#modalCrearUsuario .modal-form-scroll { overflow-y:auto; flex:1; min-height:0; -webkit-overflow-scrolling:touch; }
+#modalCrearUsuario .modal-form-footer { flex-shrink:0; }
 .usu-cli-item.selected { border-color:#059669 !important; background:#f0fdf4 !important; }
 @media (max-width:540px) {
   #modalCrearUsuario > div { margin:8px !important; }
@@ -259,8 +281,10 @@ function abrirModalUsuario() {
         document.getElementById('usu_codigo_pais').value = '+51';
     }
 
+    resetPassField('usu_contrasena', 'usu_contrasena_eye');
+
     // Limpiar previews
-    ['usu_codigo_preview','usu_correo_preview','usu_pass_preview'].forEach(id => {
+    ['usu_codigo_preview','usu_correo_preview'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = '———';
     });
@@ -345,7 +369,7 @@ function generarDatosUsuario() {
     const dni = document.getElementById('usu_dni').value.trim();
 
     if (!n || !ap || !am || dni.length < 3) {
-        ['usu_codigo_preview','usu_correo_preview','usu_pass_preview'].forEach(id =>
+        ['usu_codigo_preview','usu_correo_preview'].forEach(id =>
             document.getElementById(id).textContent = '———');
         return;
     }
@@ -359,7 +383,6 @@ function generarDatosUsuario() {
 
     document.getElementById('usu_codigo_preview').textContent = codigo;
     document.getElementById('usu_correo_preview').textContent = correo;
-    document.getElementById('usu_pass_preview').textContent   = dni;
 }
 
 async function guardarUsuario() {
@@ -370,7 +393,8 @@ async function guardarUsuario() {
     const dni    = document.getElementById('usu_dni').value.trim();
     const tel    = document.getElementById('usu_telefono').value.trim();
     const cp     = document.getElementById('usu_codigo_pais').value.trim();
-    const correo = document.getElementById('usu_correo_real').value.trim();
+    const correo     = document.getElementById('usu_correo_real').value.trim();
+    const contrasena = document.getElementById('usu_contrasena').value;
 
     const errores = [];
     if (!n)                           errores.push('El nombre es obligatorio.');
@@ -384,6 +408,8 @@ async function guardarUsuario() {
     if (!tel)                         errores.push('El teléfono es obligatorio.');
     if (!correo)                      errores.push('El correo del usuario es obligatorio.');
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) errores.push('El correo no tiene un formato válido.');
+    if (!contrasena) errores.push('La contraseña es obligatoria.');
+    else if (contrasena.length < 6) errores.push('La contraseña debe tener al menos 6 caracteres.');
 
     if (errores.length > 0) {
         errores.forEach(e => showNotification('danger', 'Error', e));
@@ -407,7 +433,7 @@ async function guardarUsuario() {
         codigo_pais:      cp,
         telefono:         tel,
         correo,
-        contrasena:       dni
+        contrasena
     };
 
     btn.disabled    = true;

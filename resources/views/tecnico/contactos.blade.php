@@ -1,5 +1,6 @@
 <div class="dashboard-layout">
     @include('components.notificaciones.alertas')
+    @include('components.tecnico.navbar-tecnico')
     @include('components.tecnico.sidebar-tecnico')
 
     <main class="main-content">

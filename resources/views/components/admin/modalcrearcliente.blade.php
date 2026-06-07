@@ -16,7 +16,7 @@
             </div>
 
             {{-- Body --}}
-            <div style="padding:26px 28px 10px;font-family:'Segoe UI',sans-serif">
+            <div class="modal-form-scroll" style="padding:26px 28px 10px;font-family:'Segoe UI',sans-serif">
 
                 {{-- Razón Social + RUC --}}
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
@@ -57,7 +57,7 @@
                 </div>
 
                 {{-- Correo real --}}
-                <div style="margin-bottom:6px">
+                <div style="margin-bottom:16px">
                     <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">
                         Correo del cliente <span style="color:#ef4444">*</span>
                         <span style="font-size:.7rem;color:#6b7280;font-weight:400"> — recibirá las credenciales aquí</span>
@@ -66,6 +66,26 @@
                            style="width:100%;padding:10px 13px;border:2px solid #e5e7eb;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#f9fafb;color:#111827"
                            onfocus="this.style.borderColor='#1a73e8';this.style.background='#fff'"
                            onblur="this.style.borderColor='#e5e7eb';this.style.background='#f9fafb'">
+                </div>
+
+                {{-- Contraseña --}}
+                <div style="margin-bottom:6px">
+                    <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">
+                        Contraseña de acceso <span style="color:#ef4444">*</span>
+                        <span style="font-size:.7rem;color:#6b7280;font-weight:400"> — mín. 6 caracteres</span>
+                    </label>
+                    <div class="pass-field-wrap">
+                        <input id="cli_contrasena" type="password" placeholder="Ingresa la contraseña" minlength="6" autocomplete="new-password"
+                               style="padding:10px 13px;border:2px solid #e5e7eb;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;background:#f9fafb;color:#111827"
+                               onfocus="this.style.borderColor='#1a73e8';this.style.background='#fff'"
+                               onblur="this.style.borderColor='#e5e7eb';this.style.background='#f9fafb'">
+                        <button type="button" class="modal-toggle-pass" onclick="togglePassField('cli_contrasena','cli_contrasena_eye')" aria-label="Mostrar contraseña">
+                            <svg id="cli_contrasena_eye" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -80,6 +100,9 @@
 
 <style>
 @keyframes acSlideIn { from{transform:translateY(-20px) scale(.97);opacity:0} to{transform:none;opacity:1} }
+#modalCrearCliente > div > div { max-height:92vh; display:flex; flex-direction:column; }
+#modalCrearCliente .modal-form-scroll { overflow-y:auto; flex:1; min-height:0; -webkit-overflow-scrolling:touch; }
+#modalCrearCliente .modal-form-footer { flex-shrink:0; }
 @media (max-width:540px) {
   #modalCrearCliente > div { margin:8px !important; }
   #modalCrearCliente [style*="grid-template-columns:1fr 1fr"],
@@ -97,6 +120,7 @@ function abrirModalCliente() {
     document.getElementById('cli_sedes').value        = '';
     document.getElementById('cli_rubro').value        = '';
     document.getElementById('cli_correo').value       = '';
+    resetPassField('cli_contrasena', 'cli_contrasena_eye');
     const btn = document.getElementById('btnGuardarCliente');
     btn.disabled         = false;
     btn.textContent      = 'Guardar Cliente';
@@ -113,7 +137,8 @@ async function guardarCliente() {
     const btn    = document.getElementById('btnGuardarCliente');
     const rs     = document.getElementById('cli_razon_social').value.trim();
     const ruc    = document.getElementById('cli_ruc').value.trim();
-    const correo = document.getElementById('cli_correo').value.trim();
+    const correo    = document.getElementById('cli_correo').value.trim();
+    const contrasena = document.getElementById('cli_contrasena').value;
 
     const errores = [];
     if (!rs)                    errores.push('La razón social es obligatoria.');
@@ -121,6 +146,8 @@ async function guardarCliente() {
     else if (ruc.length !== 11) errores.push('El RUC debe tener exactamente 11 dígitos.');
     if (!correo)                errores.push('El correo del cliente es obligatorio.');
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) errores.push('El correo no tiene un formato válido.');
+    if (!contrasena)            errores.push('La contraseña es obligatoria.');
+    else if (contrasena.length < 6) errores.push('La contraseña debe tener al menos 6 caracteres.');
 
     if (errores.length > 0) {
         errores.forEach(e => showNotification('danger', 'Error', e));
@@ -133,7 +160,7 @@ async function guardarCliente() {
         sedes:      document.getElementById('cli_sedes').value.trim(),
         rubro:      document.getElementById('cli_rubro').value.trim(),
         correo,
-        contrasena: ruc,
+        contrasena,
     };
 
     btn.disabled    = true;

@@ -1,4 +1,5 @@
 @include('components.notificaciones.alertas')
+@include('components.usuario.navbar-usuario')
 @include('components.usuario.sidebar-usuario')
 @include('components.usuario.modelcrearticket')
 @include('components.usuario.detalleticket')

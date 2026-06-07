@@ -1,4 +1,5 @@
 @include('components.notificaciones.alertas')
+@include('components.cliente.navbar-cliente')
 @include('components.cliente.sidebar-cliente')
 @include('components.cliente.nuevousuario')
 @include('components.cliente.modalreporte')

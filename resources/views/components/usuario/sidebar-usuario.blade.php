@@ -20,6 +20,11 @@
     --sb-transition: 0.35s cubic-bezier(.4,0,.2,1);
   }
 
+  .admin-navbar { z-index: 300; }
+  #sb-overlay { z-index: 190; }
+  #jhs-sidebar { z-index: 200; }
+  #sb-hamburger, .sb-toggle { display: none !important; }
+
   /* ── Toast ─────────────────────────────────────────────────── */
   .sb-toast {
     position: fixed;
@@ -44,7 +49,7 @@
     inset: 0;
     background: rgba(6, 14, 28, 0.72);
     backdrop-filter: blur(2px);
-    z-index: 199;
+    z-index: 190;
     opacity: 0;
     transition: opacity var(--sb-transition);
   }
@@ -75,9 +80,9 @@
   /* ── Aside ─────────────────────────────────────────────────── */
   #jhs-sidebar {
     position: fixed;
-    top: 0; left: 0;
+    top: 60px; left: 0;
     width: var(--sb-w);
-    height: 100vh;
+    height: calc(100vh - 60px);
     background: linear-gradient(180deg, #122444 0%, #162d52 55%, #0f1e38 100%);
     display: flex;
     flex-direction: column;
@@ -361,52 +366,31 @@
   #jhs-sidebar.collapsed .sb-logout-btn .sb-nav-text { opacity: 0; width: 0; pointer-events: none; }
 
   /* ── Margen para el contenido derecho ───────────────────────── */
-  .dashboard-layout {
-    display: flex;
-    min-height: 100vh;
-  }
-  .dashboard-content {
+  .dashboard-layout { display: flex; min-height: 100vh; }
+  .dashboard-content,
+  .main-content,
+  .tk-main,
+  .mt-main {
     margin-left: var(--sb-w);
     flex: 1;
     transition: margin-left var(--sb-transition);
+    min-width: 0;
   }
-  body.sb-collapsed .dashboard-content {
+  body.sb-collapsed .dashboard-content,
+  body.sb-collapsed .main-content,
+  body.sb-collapsed .tk-main,
+  body.sb-collapsed .mt-main {
     margin-left: var(--sb-c);
   }
 
-  /* ══════════════════════════════════════════════════════════════
-     RESPONSIVE — móvil (≤ 768px)
-     El sidebar se convierte en drawer deslizante desde la izquierda
-     ══════════════════════════════════════════════════════════════ */
   @media (max-width: 768px) {
-
-    /* Ocultar botón toggle de desktop */
-    .sb-toggle { display: none !important; }
-
-    /* Mostrar botón hamburguesa */
-    #sb-hamburger { display: flex; }
-
-    /* Sidebar fuera de pantalla por defecto */
-    #jhs-sidebar {
-      width: var(--sb-w) !important; /* siempre expandido en móvil */
-      transform: translateX(-100%);
-      /* Aseguramos que nunca esté colapsado en móvil */
-    }
-
-    /* Cuando está abierto */
-    #jhs-sidebar.sb-open {
-      transform: translateX(0);
-    }
-
-    /* En móvil nunca aplicar estado colapsado */
-    #jhs-sidebar.collapsed {
-      width: var(--sb-w) !important;
-      transform: translateX(-100%);
-    }
-    #jhs-sidebar.collapsed.sb-open {
-      transform: translateX(0);
-    }
-    /* Restaurar elementos ocultos por el colapso */
+    #sb-hamburger, .sb-toggle { display: none !important; }
+    #jhs-sidebar { width: var(--sb-w) !important; transform: translateX(-100%); top: 0 !important; height: 100vh !important; z-index: 200; }
+    #jhs-sidebar.sb-open { transform: translateX(0); }
+    #jhs-sidebar.collapsed { width: var(--sb-w) !important; transform: translateX(-100%); }
+    #jhs-sidebar.collapsed.sb-open { transform: translateX(0); }
+    #sb-overlay { display: none; z-index: 190; }
+    #sb-overlay.visible { display: block; }
     #jhs-sidebar .sb-header { height: auto !important; padding: 26px 20px 20px !important; opacity: 1 !important; pointer-events: auto !important; }
     #jhs-sidebar .sb-profile { padding: 14px !important; margin: 16px 12px !important; justify-content: flex-start !important; background: rgba(255,255,255,0.06) !important; border-color: rgba(255,255,255,0.10) !important; }
     #jhs-sidebar .sb-profile-info { opacity: 1 !important; width: auto !important; pointer-events: auto !important; }
@@ -415,99 +399,28 @@
     #jhs-sidebar .sb-logout-btn .sb-nav-text { opacity: 1 !important; width: auto !important; pointer-events: auto !important; }
     #jhs-sidebar .sb-badge { opacity: 1 !important; }
     #jhs-sidebar .sb-tooltip { display: none !important; }
+  }
 
-    /* El contenido ocupa todo el ancho */
-    .dashboard-content,
-    .main-content {
-      margin-left: 0 !important;
-      padding-top: 60px;
+  @media (min-width: 769px) and (max-width: 1024px) {
+    #sb-hamburger, .sb-toggle { display: none !important; }
+    #jhs-sidebar { width: var(--sb-w) !important; transform: translateX(-100%); top: 0 !important; height: 100vh !important; z-index: 200; }
+    #jhs-sidebar.sb-open { transform: translateX(0); }
+    #jhs-sidebar.collapsed { width: var(--sb-w) !important; transform: translateX(-100%); }
+    #jhs-sidebar.collapsed.sb-open { transform: translateX(0); }
+    #jhs-sidebar .sb-header, #jhs-sidebar .sb-profile, #jhs-sidebar .sb-profile-info, #jhs-sidebar .sb-nav-text, #jhs-sidebar .sb-label {
+      opacity: 1 !important; width: auto !important; pointer-events: auto !important;
     }
-    body.sb-collapsed .dashboard-content,
-    body.sb-collapsed .main-content {
-      margin-left: 0 !important;
-    }
+    #sb-overlay { display: none; z-index: 190; }
+    #sb-overlay.visible { display: block; }
   }
-
-  /* ── Tablet (769px – 1024px): sidebar colapsado por defecto ── */
-@media (min-width: 769px) and (max-width: 1024px) {
-
-  /* Ocultar toggle de escritorio */
-  .sb-toggle { display: none !important; }
-
-  /* Mostrar hamburguesa */
-  #sb-hamburger { display: flex !important; }
-
-  /* Sidebar tipo drawer (oculto) */
-  #jhs-sidebar {
-    width: var(--sb-w) !important;
-    transform: translateX(-100%);
-  }
-
-  /* Cuando se abre */
-  #jhs-sidebar.sb-open {
-    transform: translateX(0);
-  }
-
-  /* Evitar colapsado en tablet */
-  #jhs-sidebar.collapsed {
-    width: var(--sb-w) !important;
-    transform: translateX(-100%);
-  }
-
-  #jhs-sidebar.collapsed.sb-open {
-    transform: translateX(0);
-  }
-
-  /* Mostrar contenido normal */
-  #jhs-sidebar .sb-header,
-  #jhs-sidebar .sb-profile,
-  #jhs-sidebar .sb-profile-info,
-  #jhs-sidebar .sb-nav-text,
-  #jhs-sidebar .sb-label {
-    opacity: 1 !important;
-    width: auto !important;
-    pointer-events: auto !important;
-  }
-
-  /* Contenido full ancho */
-  .dashboard-content,
-  .main-content {
-    margin-left: 0 !important;
-    padding-top: 60px;
-  }
-
-  body.sb-collapsed .dashboard-content,
-  body.sb-collapsed .main-content {
-    margin-left: 0 !important;
-  }
-
-  /* Overlay activo */
-  #sb-overlay {
-    display: none;
-  }
-
-  #sb-overlay.visible {
-    display: block;
-  }
-}
 </style>
 
 
 {{-- ── Overlay (solo móvil) ────────────────────────────────────── --}}
 <div id="sb-overlay"></div>
 
-{{-- ── Botón hamburguesa (solo móvil) ─────────────────────────── --}}
-<button id="sb-hamburger" title="Abrir menú" aria-label="Abrir menú">
-  <i class="fa-solid fa-bars"></i>
-</button>
-
 {{-- ── Sidebar ─────────────────────────────────────────────────── --}}
 <aside id="jhs-sidebar">
-
-  <button class="sb-toggle" id="sb-toggle" title="Colapsar/Expandir">
-    <i class="fa-solid fa-chevron-left"></i>
-  </button>
-
   <div class="sb-header">
     <div>
       <div class="sb-brand-name">JHARDSYSTEX</div>
@@ -570,63 +483,35 @@
 </aside>
 
 <script>
-  (function () {
-    const sidebar    = document.getElementById('jhs-sidebar');
-    const toggle     = document.getElementById('sb-toggle');
-    const hamburger  = document.getElementById('sb-hamburger');
-    const overlay    = document.getElementById('sb-overlay');
+(function () {
+  const sidebar = document.getElementById('jhs-sidebar');
+  const overlay = document.getElementById('sb-overlay');
+  const isMobile = () => window.innerWidth <= 1024;
 
-    /* ── Detectar si estamos en móvil ── */
-    const isMobile = () => window.innerWidth <= 768;
-
-    /* ── Toggle DESKTOP: colapsar/expandir ── */
-    toggle.addEventListener('click', () => {
-      if (isMobile()) return; // en móvil no hace nada el toggle de desktop
-      sidebar.classList.toggle('collapsed');
-      document.body.classList.toggle('sb-collapsed');
-    });
-
-    /* ── Hamburger MÓVIL: abrir drawer ── */
-    function openDrawer() {
-      sidebar.classList.add('sb-open');
-      overlay.classList.add('visible');
-      hamburger.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-      document.body.style.overflow = 'hidden'; // evitar scroll fondo
-    }
-
-    function closeDrawer() {
+  if (overlay) {
+    overlay.addEventListener('click', function() {
       sidebar.classList.remove('sb-open');
       overlay.classList.remove('visible');
-      hamburger.innerHTML = '<i class="fa-solid fa-bars"></i>';
       document.body.style.overflow = '';
-    }
-
-    hamburger.addEventListener('click', () => {
-      if (sidebar.classList.contains('sb-open')) {
-        closeDrawer();
-      } else {
-        openDrawer();
-      }
     });
+  }
 
-    /* Cerrar al tocar el overlay */
-    overlay.addEventListener('click', closeDrawer);
-
-    /* Cerrar drawer si se hace clic en un nav-item en móvil */
-    sidebar.querySelectorAll('.sb-nav-item').forEach(function(item) {
-      item.addEventListener('click', function() {
-        if (isMobile()) closeDrawer();
-      });
-    });
-
-    /* Al redimensionar ventana: limpiar estado móvil si pasamos a desktop */
-    window.addEventListener('resize', function() {
-      if (!isMobile()) {
-        closeDrawer();
+  sidebar.querySelectorAll('.sb-nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      if (isMobile() && sidebar.classList.contains('sb-open')) {
+        sidebar.classList.remove('sb-open');
+        if (overlay) overlay.classList.remove('visible');
         document.body.style.overflow = '';
       }
     });
+  });
 
-    
-  })();
+  window.addEventListener('resize', function() {
+    if (!isMobile()) {
+      sidebar.classList.remove('sb-open');
+      if (overlay) overlay.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+  });
+})();
 </script>
