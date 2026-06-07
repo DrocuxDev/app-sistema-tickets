@@ -2,6 +2,8 @@
     @include('components.notificaciones.alertas')
     @include('components.usuario.sidebar-usuario')
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 
     <main class="main-content">
         <div class="content-wrapper">
@@ -89,8 +91,8 @@
                         <div class="input-group-phone">
                             <label>Teléfono</label>
                             <div class="phone-container">
-                                <input type="text" name="codigo_pais" value="{{ $usuario->codigo_pais }}" style="width: 60px; text-align: center;" placeholder="+51" required>
-                                <input type="text" name="telefono" value="{{ old('telefono', $usuario->telefono) }}" style="flex: 1;" required>
+                                <input type="hidden" id="codigo_pais" name="codigo_pais" value="{{ old('codigo_pais', $usuario->codigo_pais ?? '+51') }}">
+                                <input type="text" id="telefono" name="telefono" value="{{ old('telefono', $usuario->telefono) }}" maxlength="15" required>
                             </div>
                         </div>
                     </div>
@@ -142,8 +144,22 @@
     .input-readonly { background: #f5f9fe !important; color: #8aaac8 !important; cursor: not-allowed; }
 
     /* Estilo para teléfono */
-    .phone-container { display: flex; gap: 8px; }
-    .phone-container input { padding: 11px 14px; border: 1px solid #d0e6f7; border-radius: 9px; font-size: 13.5px; }
+    .input-group-phone { display: flex; flex-direction: column; gap: 6px; }
+    .input-group-phone label { font-size: 11.5px; font-weight: 600; color: #3a6a9a; text-transform: uppercase; }
+    .phone-container { width: 100%; }
+    .iti { width: 100%; }
+    .phone-container input {
+        padding: 11px 14px;
+        padding-left: 90px !important;
+        border: 1px solid #d0e6f7;
+        border-radius: 9px;
+        font-size: 13.5px;
+        width: 100% !important;
+        box-sizing: border-box;
+        outline: none;
+        transition: 0.2s;
+    }
+    .phone-container input:focus { border-color: #1a7fd4; box-shadow: 0 0 0 3px rgba(26, 127, 212, 0.1); }
 
     .form-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 28px; padding-top: 22px; border-top: 1px solid #e8f2fb; }
     .footer-hint { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #7aabcc; }
@@ -181,16 +197,33 @@
     (function () {
         const form    = document.getElementById('perfil-form');
         const btnSave = document.getElementById('btn-guardar');
+        const inputTelefono = document.getElementById('telefono');
+        const inputCodigoPais = document.getElementById('codigo_pais');
 
-        // Captura los valores originales al cargar la página
+        let iti = null;
+        if (inputTelefono && window.intlTelInput) {
+            iti = window.intlTelInput(inputTelefono, {
+                initialCountry: 'pe',
+                separateDialCode: true,
+                preferredCountries: ['pe', 'cl', 'co', 'ar'],
+                utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js',
+            });
+        }
+
         const originales = {};
-        form.querySelectorAll('input:not([readonly])').forEach(input => {
+        form.querySelectorAll('input:not([readonly]):not([type="hidden"])').forEach(input => {
             originales[input.name] = input.value;
         });
 
-        // Detecta si algo cambió
+        function limpiarSoloNumeros(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            verificarCambios();
+        }
+
+        if (inputTelefono) inputTelefono.addEventListener('input', limpiarSoloNumeros);
+
         function verificarCambios() {
-            const hayCambio = Array.from(form.querySelectorAll('input:not([readonly])')).some(input => {
+            const hayCambio = Array.from(form.querySelectorAll('input:not([readonly]):not([type="hidden"])')).some(input => {
                 return input.value !== originales[input.name];
             });
 
@@ -199,11 +232,16 @@
             btnSave.style.cursor   = hayCambio ? 'pointer' : 'not-allowed';
         }
 
-        form.querySelectorAll('input:not([readonly])').forEach(input => {
+        form.querySelectorAll('input:not([readonly]):not([type="hidden"])').forEach(input => {
             input.addEventListener('input', verificarCambios);
         });
 
-        // Llamada inicial para aplicar estado deshabilitado
+        form.addEventListener('submit', function () {
+            if (iti) {
+                inputCodigoPais.value = '+' + iti.getSelectedCountryData().dialCode;
+            }
+        });
+
         verificarCambios();
     })();
 </script>

@@ -59,18 +59,18 @@
                     </div>
 
                     <div class="form-group full">
-                        <label>Teléfono móvil <span class="label-hint">(9 dígitos)</span></label>
+                        <label>Teléfono móvil <span class="label-hint">(7–15 dígitos)</span></label>
                         <input type="tel" id="phone" name="telefono" required
                                placeholder="Ej: 987654321"
-                               maxlength="9"
-                               minlength="9"
-                               pattern="[0-9]{9}"
-                               title="El teléfono debe tener 9 dígitos numéricos"
+                               maxlength="15"
+                               minlength="7"
+                               pattern="[0-9]{7,15}"
+                               title="El teléfono debe tener entre 7 y 15 dígitos numéricos"
                                value="{{ old('telefono') }}"
                                oninput="validarTelefono(this)">
                         <input type="hidden" name="codigo_pais" id="codigo_pais">
                         <small id="telefono-hint" style="font-size: 10px; display: none; color: #e53e3e; margin-top: 4px;">
-                            ⚠️ El teléfono debe tener 9 dígitos
+                            ⚠️ El teléfono debe tener entre 7 y 15 dígitos
                         </small>
                     </div>
 
@@ -150,7 +150,7 @@
     .form-group input.invalid { border-color: #e53e3e; background: #fff5f5; }
     .form-group input.valid { border-color: #38a169; background: #f0fff4; }
     .iti            { width: 100%; }
-    #phone          { padding-left: 52px !important; width: 100%; box-sizing: border-box; }
+    #phone          { padding-left: 90px !important; width: 100%; box-sizing: border-box; }
     .codigo-preview { background: linear-gradient(135deg, #13294b 0%, #1a3a6b 100%); border-radius: 12px; padding: 16px 20px; margin-top: 20px; color: white; }
     .cp-text        { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
     .cp-label       { font-size: 11px; text-transform: uppercase; opacity: 0.7; letter-spacing: 1px; }
@@ -324,17 +324,17 @@
         }
     }
 
-    // ── Validar Teléfono (solo números, 9 dígitos) ────────────────────────────
+    // ── Validar Teléfono (solo números, 7–15 dígitos) ─────────────────────────
     function validarTelefono(input) {
         const valor = input.value;
-        const regex = /^\d{0,9}$/;
+        const regex = /^\d{0,15}$/;
         const hint = document.getElementById('telefono-hint');
         
         if (!regex.test(valor)) {
             input.value = valor.slice(0, -1);
         }
         
-        if (input.value.length === 9) {
+        if (input.value.length >= 7 && input.value.length <= 15) {
             input.classList.remove('invalid');
             input.classList.add('valid');
             if (hint) hint.style.display = 'none';
@@ -359,7 +359,8 @@
     // ── Teléfono ──────────────────────────────────────────────────────────────
     const phoneInput = window.intlTelInput(document.querySelector("#phone"), {
         initialCountry: "pe",
-        preferredCountries: ["pe", "cl", "co"],
+        separateDialCode: true,
+        preferredCountries: ["pe", "cl", "co", "ar"],
         utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
     });
 
@@ -390,7 +391,7 @@
         else if (!/^\d{8}$/.test(dni)) errores.push('El DNI debe tener exactamente 8 dígitos numéricos.');
         
         if (!telefono) errores.push('El teléfono es obligatorio.');
-        else if (!/^\d{9}$/.test(telefono)) errores.push('El teléfono debe tener exactamente 9 dígitos numéricos.');
+        else if (!/^\d{7,15}$/.test(telefono)) errores.push('El teléfono debe tener entre 7 y 15 dígitos numéricos.');
         
         if (!correo) errores.push('El correo institucional es obligatorio.');
         else if (!regexEmail.test(correo)) errores.push('Ingrese un correo electrónico válido.');

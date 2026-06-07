@@ -128,7 +128,7 @@
                         placeholder="Ej: 987654321"
                         maxlength="15"
                         oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                        style="padding-left:52px !important;width:100%;padding:10px 13px;border:2px solid #d1fae5;border-radius:10px;font-size:.9rem;outline:none;box-sizing:border-box;background:#f0fdf4;color:#111827"
+                        style="padding-left:90px !important;width:100%;padding:10px 13px;border:2px solid #d1fae5;border-radius:10px;font-size:.9rem;outline:none;box-sizing:border-box;background:#f0fdf4;color:#111827"
                         onfocus="this.style.borderColor='#059669';this.style.background='#fff'"
                         onblur="this.style.borderColor='#d1fae5';this.style.background='#f0fdf4'"
                     >
@@ -211,7 +211,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (telEl) {
         _usuPhoneInput = window.intlTelInput(telEl, {
             initialCountry: "pe",
-            preferredCountries: ["pe", "cl", "co"],
+            separateDialCode: true,
+            preferredCountries: ["pe", "cl", "co", "ar"],
             utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
         });
 

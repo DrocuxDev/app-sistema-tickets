@@ -550,6 +550,8 @@ class AdminController extends Controller
             'apellido_paterno'   => ['required', 'string', 'max:100', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\'-]+$/'],
             'apellido_materno'   => ['nullable', 'string', 'max:100', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\'-]+$/'],
             'correo'             => 'required|email|max:100',
+            'telefono'           => 'required|digits_between:7,15',
+            'codigo_pais'        => ['required', 'regex:/^\+?\d{1,4}$/', 'max:10'],
         ], [
             'nombre.regex'                => 'El nombre solo debe contener letras y espacios.',
             'apellido_paterno.regex'      => 'El apellido paterno solo debe contener letras y espacios.',
@@ -557,6 +559,10 @@ class AdminController extends Controller
             'nombre.max'                  => 'El nombre no puede superar los 100 caracteres.',
             'apellido_paterno.max'        => 'El apellido paterno no puede superar los 100 caracteres.',
             'apellido_materno.max'        => 'El apellido materno no puede superar los 100 caracteres.',
+            'telefono.required'           => 'El teléfono es obligatorio.',
+            'telefono.digits_between'     => 'El teléfono debe tener entre 7 y 15 dígitos numéricos.',
+            'codigo_pais.required'        => 'El código de país es obligatorio.',
+            'codigo_pais.regex'           => 'El código de país debe tener formato válido (ej: +51).',
         ]);
 
         // ✅ Si falla: NO usamos ->withInput() para que el formulario NO guarde los datos inválidos
@@ -569,6 +575,8 @@ class AdminController extends Controller
         $tecnico->apellido_paterno = ucfirst(strtolower($request->apellido_paterno));
         $tecnico->apellido_materno = ucfirst(strtolower($request->apellido_materno ?? ''));
         $tecnico->correo           = strtolower($request->correo);
+        $tecnico->codigo_pais      = $request->codigo_pais ?? '+51';
+        $tecnico->telefono         = $request->telefono;
         
         $tecnico->save();
         session(['nombre' => $tecnico->nombre]);
