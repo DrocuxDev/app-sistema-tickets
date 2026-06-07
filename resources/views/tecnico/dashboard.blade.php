@@ -1,5 +1,5 @@
-@include('components.tecnico.sidebar-tecnico')
 @include('components.notificaciones.alertas')
+@include('components.tecnico.sidebar-tecnico')
 @include('components.admin.detalleticket')
 <head>
     <meta charset="UTF-8">

@@ -1,6 +1,6 @@
 <div class="dashboard-layout">
-    @include('components.usuario.sidebar-usuario')
     @include('components.notificaciones.alertas')
+    @include('components.usuario.sidebar-usuario')
 
 
     <main class="main-content">

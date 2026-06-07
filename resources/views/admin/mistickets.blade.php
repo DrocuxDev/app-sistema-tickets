@@ -1,6 +1,6 @@
+@include('components.notificaciones.alertas')
 @include('components.admin.navbar-admin')
 @include('components.admin.sidebar-admin')
-@include('components.notificaciones.alertas')
 @include('components.admin.editardetalleticket')
 @include('components.admin.detalleticket')
 <head>

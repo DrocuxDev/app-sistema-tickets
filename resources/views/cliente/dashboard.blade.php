@@ -1,6 +1,6 @@
+@include('components.notificaciones.alertas')
 @include('components.cliente.sidebar-cliente')
 @include('components.cliente.nuevousuario')
-@include('components.notificaciones.alertas')
 @include('components.cliente.modalreporte')
 
 <div class="main-content">
@@ -152,38 +152,6 @@
         <div class="modal-detalles-footer">
             <button class="btn-cerrar" onclick="cerrarModalDetalles()">
                 <i class="fas fa-times"></i> Cerrar
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- NOTIFICACIÓN PROFESIONAL (POSICIÓN ORIGINAL - ARRIBA DERECHA) -->
-<div id="notificacion-toast" class="toast-notification" style="display: none;">
-    <div class="toast-icon" id="toast-icon">
-        <i class="fas fa-check-circle"></i>
-    </div>
-    <div class="toast-content">
-        <strong id="toast-title">Éxito</strong>
-        <p id="toast-message">Operación realizada</p>
-    </div>
-</div>
-
-<!-- MODAL DE CONFIRMACIÓN PROFESIONAL -->
-<div id="modal-confirmacion" class="modal-confirmacion" style="display: none;">
-    <div class="modal-confirmacion-content">
-        <div class="modal-confirmacion-header" id="confirm-icon">
-            <i class="fas fa-question-circle"></i>
-        </div>
-        <div class="modal-confirmacion-body">
-            <h3 id="confirm-titulo">Confirmar acción</h3>
-            <p id="confirm-mensaje">¿Estás seguro de realizar esta acción?</p>
-        </div>
-        <div class="modal-confirmacion-footer">
-            <button class="btn-cancelar" onclick="cerrarModalConfirmacion()">
-                <i class="fas fa-times"></i> Cancelar
-            </button>
-            <button class="btn-confirmar" id="btn-confirmar-accion">
-                <i class="fas fa-check"></i> Confirmar
             </button>
         </div>
     </div>
@@ -694,8 +662,6 @@
     let mostrados = 0;
     let filtroActual = 'todos';
     let usuariosData = @json($usuarios);
-    let confirmCallback = null;
-
     function cardsVisibles() {
         const q = document.getElementById('inputBusqueda').value.toLowerCase();
         return Array.from(document.querySelectorAll('.user-card-wrapper')).filter(card => {
@@ -796,71 +762,14 @@
         document.getElementById('modal-detalles').style.display = 'none';
     }
 
-    function mostrarModalConfirmacion(options) {
-        const modal = document.getElementById('modal-confirmacion');
-        const iconContainer = document.getElementById('confirm-icon');
-        const titulo = document.getElementById('confirm-titulo');
-        const mensaje = document.getElementById('confirm-mensaje');
-        const confirmBtn = document.getElementById('btn-confirmar-accion');
-        
-        iconContainer.className = 'modal-confirmacion-header';
-        if (options.icono === 'warning') {
-            iconContainer.classList.add('warning');
-            iconContainer.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
-        } else {
-            iconContainer.classList.add('success');
-            iconContainer.innerHTML = '<i class="fas fa-check-circle"></i>';
-        }
-        
-        titulo.textContent = options.titulo;
-        mensaje.textContent = options.mensaje;
-        confirmCallback = options.onConfirm;
-        
-        modal.style.display = 'flex';
-        
-        const newConfirmBtn = confirmBtn.cloneNode(true);
-        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-        newConfirmBtn.addEventListener('click', () => {
-            if (confirmCallback) confirmCallback();
-            cerrarModalConfirmacion();
-        });
-    }
-
-    function cerrarModalConfirmacion() {
-        document.getElementById('modal-confirmacion').style.display = 'none';
-        confirmCallback = null;
-    }
-
-    function showNotification(type, title, message) {
-        const toast = document.getElementById('notificacion-toast');
-        const icon = document.getElementById('toast-icon');
-        const titleEl = document.getElementById('toast-title');
-        const messageEl = document.getElementById('toast-message');
-        
-        if (type === 'success') {
-            icon.innerHTML = '<i class="fas fa-check-circle"></i>';
-            icon.className = 'toast-icon success';
-            toast.style.borderLeftColor = '#38a169';
-        } else {
-            icon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
-            icon.className = 'toast-icon error';
-            toast.style.borderLeftColor = '#e53e3e';
-        }
-        
-        titleEl.textContent = title;
-        messageEl.textContent = message;
-        toast.style.display = 'flex';
-        
-        setTimeout(() => {
-            toast.style.display = 'none';
-        }, 3000);
-    }
-
     function toggleActivo(id, activo) {
-        mostrarModalConfirmacion({
-            titulo: activo ? 'Desactivar usuario' : 'Activar usuario',
-            mensaje: activo ? '¿Estás seguro de que deseas desactivar este usuario?' : '¿Estás seguro de que deseas activar este usuario?',
-            icono: 'warning',
+        ModalSystem.show('question', {
+            title: activo ? 'Desactivar usuario' : 'Activar usuario',
+            text: activo
+                ? '¿Estás seguro de que deseas desactivar este usuario?'
+                : '¿Estás seguro de que deseas activar este usuario?',
+            confirmText: activo ? 'Sí, desactivar' : 'Sí, activar',
+            cancelText: 'Cancelar',
             onConfirm: () => {
                 fetch('/cliente/usuarios/' + id + '/toggle', {
                     method: 'POST',
@@ -875,7 +784,7 @@
                     setTimeout(() => location.reload(), 1500);
                 })
                 .catch(error => {
-                    showNotification('error', 'Error', 'Ocurrió un error al procesar la solicitud');
+                    showNotification('danger', 'Error', 'Ocurrió un error al procesar la solicitud');
                 });
             }
         });
@@ -906,10 +815,6 @@
 
     document.getElementById('modal-detalles')?.addEventListener('click', function(e) {
         if (e.target === this) cerrarModalDetalles();
-    });
-    
-    document.getElementById('modal-confirmacion')?.addEventListener('click', function(e) {
-        if (e.target === this) cerrarModalConfirmacion();
     });
 
     document.getElementById('modal-exito')?.addEventListener('click', function(e) {

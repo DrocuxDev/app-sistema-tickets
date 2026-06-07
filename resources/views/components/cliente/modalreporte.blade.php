@@ -153,11 +153,11 @@ function descargarReporte() {
     const userId = document.getElementById('select-usuario').value;
 
     if (!desde || !hasta) {
-        showNotification('error', 'Error', 'Selecciona el rango de fechas.');
+        showNotification('danger', 'Error', 'Selecciona el rango de fechas.');
         return;
     }
     if (tipoReporte === 'individual' && !userId) {
-        showNotification('error', 'Error', 'Selecciona un usuario.');
+        showNotification('danger', 'Error', 'Selecciona un usuario.');
         return;
     }
 

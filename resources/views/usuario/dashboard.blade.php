@@ -1,7 +1,7 @@
+@include('components.notificaciones.alertas')
 @include('components.usuario.sidebar-usuario')
 @include('components.usuario.modelcrearticket')
 @include('components.usuario.detalleticket')
-@include('components.notificaciones.alertas')
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 

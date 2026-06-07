@@ -1,7 +1,6 @@
 <div class="dashboard-layout">
-    {{-- Sidebar del técnico --}}
-    @include('components.tecnico.sidebar-tecnico')
     @include('components.notificaciones.alertas')
+    @include('components.tecnico.sidebar-tecnico')
 
     {{-- CSS y JS de la librería de banderas (Cargados de forma segura) --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>

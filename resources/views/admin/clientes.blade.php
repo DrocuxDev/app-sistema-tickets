@@ -1,8 +1,8 @@
 {{-- ══ GESTIÓN DE PERSONAS (CLIENTES / USUARIOS / TÉCNICOS) ══ --}}
+@include('components.notificaciones.alertas')
 @include('components.admin.detalleticket')
 @include('components.admin.navbar-admin')
 @include('components.admin.sidebar-admin')
-@include('components.notificaciones.alertas')
 @include('components.admin.modalcrearusuario')
 @include('components.admin.modalcrearcliente')
 @include('components.admin.modalcreartecnico')

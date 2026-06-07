@@ -1,3 +1,4 @@
+@include('components.notificaciones.alertas')
 @include('components.cliente.sidebar-cliente')
 @include('components.usuario.detalleticket')
 @include('components.responsive-global')

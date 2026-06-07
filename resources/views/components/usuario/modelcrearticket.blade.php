@@ -148,7 +148,6 @@
     #modalCrearTicket .mc-btn-submit { width: 100%; text-align: center; }
 }
 </style>
-@include('components.notificaciones.alertas')
 
 {{-- ══ MODAL ══ --}}
 <div id="modalCrearTicket" style="display:none;position:fixed;inset:0;background:rgba(10,37,80,.55);backdrop-filter:blur(4px);z-index:2000;align-items:center;justify-content:center;padding:16px;">

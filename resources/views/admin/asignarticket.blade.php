@@ -1,8 +1,8 @@
+@include('components.notificaciones.alertas')
 @include('components.admin.navbar-admin')
 @include('components.admin.sidebar-admin')
 @include('components.admin.modalcreartecnico')
 @include('components.admin.modalcrearcliente')
-@include('components.notificaciones.alertas')
 @include('components.admin.detalleticket')
 @include('components.admin.modalasignartecnico')
 {{-- ══ GOOGLE FONTS ══ --}}
