@@ -515,16 +515,14 @@
                 </div>
 
                 {{-- Recordarme / Olvidé --}}
-                {{-- 
                 <div class="row-meta anim-fade-up-3">
-                    <label class="remember-label">
-                        <div class="remember-box"></div>
-                        <input type="checkbox" name="remember" style="display:none">
+                    <label class="remember-label" id="remember-label">
+                        <div class="remember-box" id="remember-box"></div>
+                        <input type="checkbox" name="remember" id="remember-check" style="display:none">
                         <span>Recordarme</span>
                     </label>
-                    <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+                    <a href="#" class="forgot-link" onclick="abrirModalOlvide(event)">¿Olvidaste tu contraseña?</a>
                 </div>
-                --}}
 
                 {{-- Submit --}}
                 <div class="anim-fade-up-4">
@@ -739,6 +737,190 @@ const SLIDES = [
     render();
     resetTimer();
 })();
+</script>
+
+{{-- ═══════════════════════════════════════════════════════════
+     MODAL — OLVIDASTE TU CONTRASEÑA
+═══════════════════════════════════════════════════════════ --}}
+<div id="modal-olvide" style="display:none;position:fixed;inset:0;background:rgba(5,12,25,.82);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:linear-gradient(160deg,#0d1f3c,#122444);border:1px solid rgba(43,127,255,.25);border-radius:20px;width:100%;max-width:400px;box-shadow:0 24px 60px rgba(0,0,0,.6);animation:fadeUp .3s ease;">
+        {{-- Header --}}
+        <div style="padding:22px 24px 0;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:#e8edf5;">Recuperar contraseña</div>
+                <div style="font-size:12px;color:#7a92b4;margin-top:3px;">Te enviaremos un enlace a tu correo</div>
+            </div>
+            <button onclick="cerrarModalOlvide()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#7a92b4;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.2s;" onmouseover="this.style.background='rgba(239,68,68,.2)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">✕</button>
+        </div>
+
+        {{-- Body --}}
+        <div style="padding:20px 24px 24px;">
+            <div id="olvide-msg" style="display:none;margin-bottom:14px;padding:10px 14px;border-radius:10px;font-size:13px;"></div>
+
+            <label style="display:block;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7a92b4;margin-bottom:7px;font-family:'DM Sans',sans-serif;">
+                Correo electrónico
+            </label>
+            <div style="position:relative;margin-bottom:18px;">
+                <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#4a6280;display:flex;pointer-events:none;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                </span>
+                <input id="olvide-email" type="email" placeholder="usuario@empresa.com"
+                    style="width:100%;padding:13px 14px 13px 42px;border-radius:10px;border:1.5px solid rgba(43,127,255,.35);background:rgba(18,36,68,.65);color:#e8edf5;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;box-sizing:border-box;transition:border-color .25s;"
+                    onfocus="this.style.borderColor='#2b7fff'" onblur="this.style.borderColor='rgba(43,127,255,.35)'"
+                    onkeydown="if(event.key==='Enter')enviarRecuperacion()">
+            </div>
+
+            <button onclick="enviarRecuperacion()" id="btn-olvide" style="width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,#2b7fff,#0055e0);color:#fff;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'Syne',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 24px rgba(43,127,255,.3);transition:.2s;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                Enviar enlace
+            </button>
+
+            <p style="text-align:center;margin-top:14px;font-size:12px;color:#4a6280;">
+                ¿Recordaste tu contraseña?
+                <a href="#" onclick="cerrarModalOlvide();return false;" style="color:#2b7fff;text-decoration:none;">Volver al login</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Checkbox personalizado */
+.remember-box {
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 5px !important;
+    border: 1.5px solid rgba(43,127,255,.5) !important;
+    background: rgba(43,127,255,.08) !important;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.remember-box.checked {
+    background: #2b7fff !important;
+    border-color: #2b7fff !important;
+}
+.remember-box.checked::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg) translateY(-1px);
+    display: block;
+}
+</style>
+
+<script>
+/* ─── Recordarme ──────────────────────────────────────────── */
+(function() {
+    const box     = document.getElementById('remember-box');
+    const check   = document.getElementById('remember-check');
+    const input   = document.getElementById('correo');
+    const label   = document.getElementById('remember-label');
+
+    // Restaurar correo guardado
+    const saved = localStorage.getItem('jhs_remember_email');
+    if (saved) {
+        input.value = saved;
+        box.classList.add('checked');
+        check.checked = true;
+    }
+
+    // Toggle visual
+    label.addEventListener('click', function(e) {
+        e.preventDefault();
+        const isChecked = box.classList.toggle('checked');
+        check.checked = isChecked;
+    });
+
+    // Al enviar el form, guardar o limpiar
+    document.getElementById('login-form').addEventListener('submit', function() {
+        if (check.checked) {
+            localStorage.setItem('jhs_remember_email', input.value);
+        } else {
+            localStorage.removeItem('jhs_remember_email');
+        }
+    });
+})();
+
+/* ─── Modal Olvidé contraseña ─────────────────────────────── */
+function abrirModalOlvide(e) {
+    e.preventDefault();
+    // Pre-llenar con el correo ya escrito
+    const correoLogin = document.getElementById('correo').value;
+    if (correoLogin) document.getElementById('olvide-email').value = correoLogin;
+    document.getElementById('olvide-msg').style.display = 'none';
+    document.getElementById('modal-olvide').style.display = 'flex';
+    setTimeout(() => document.getElementById('olvide-email').focus(), 100);
+}
+
+function cerrarModalOlvide() {
+    document.getElementById('modal-olvide').style.display = 'none';
+}
+
+async function enviarRecuperacion() {
+    const btn   = document.getElementById('btn-olvide');
+    const email = document.getElementById('olvide-email').value.trim();
+    const msg   = document.getElementById('olvide-msg');
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        msg.style.display = 'block';
+        msg.style.background = 'rgba(239,68,68,.15)';
+        msg.style.border = '1px solid rgba(239,68,68,.4)';
+        msg.style.color = '#f87171';
+        msg.textContent = 'Ingresa un correo electrónico válido.';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = `<svg style="animation:spin 1s linear infinite;width:16px;height:16px" fill="none" viewBox="0 0 24 24"><circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path style="opacity:.8" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Enviando...`;
+
+    try {
+        const res  = await fetch('{{ route("password.email") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+
+        msg.style.display = 'block';
+        if (res.ok || data.status) {
+            msg.style.background = 'rgba(34,197,138,.15)';
+            msg.style.border = '1px solid rgba(34,197,138,.4)';
+            msg.style.color = '#22d68a';
+            msg.textContent = '✅ Si el correo está registrado, recibirás un enlace en breve. Revisa tu bandeja de entrada.';
+            btn.innerHTML = '✅ Enlace enviado';
+        } else {
+            msg.style.background = 'rgba(239,68,68,.15)';
+            msg.style.border = '1px solid rgba(239,68,68,.4)';
+            msg.style.color = '#f87171';
+            msg.textContent = data.message || 'No se encontró una cuenta con ese correo.';
+            btn.disabled = false;
+            btn.innerHTML = `<svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> Enviar enlace`;
+        }
+    } catch(err) {
+        msg.style.display = 'block';
+        msg.style.background = 'rgba(239,68,68,.15)';
+        msg.style.border = '1px solid rgba(239,68,68,.4)';
+        msg.style.color = '#f87171';
+        msg.textContent = 'Error de conexión. Intenta de nuevo.';
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> Enviar enlace`;
+    }
+}
+
+// Cerrar modal al hacer click fuera
+document.getElementById('modal-olvide').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModalOlvide();
+});
 </script>
 
 </body>
