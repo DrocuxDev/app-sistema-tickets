@@ -3,6 +3,7 @@
 @include('components.cliente.sidebar-cliente')
 @include('components.cliente.nuevousuario')
 @include('components.cliente.modalreporte')
+@include('components.cliente.modalverticket')
 
 <div class="main-content">
     <div class="container-fluid">

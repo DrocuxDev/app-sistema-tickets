@@ -2,6 +2,7 @@
     @include('components.notificaciones.alertas')
     @include('components.cliente.navbar-cliente')
     @include('components.cliente.sidebar-cliente')
+    @include('components.cliente.modalverticket')
 
     <main class="main-content">
         <div class="content-wrapper">

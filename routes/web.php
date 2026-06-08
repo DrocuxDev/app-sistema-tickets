@@ -36,6 +36,7 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
     Route::get('/dashboard',     [ClienteController::class, 'dashboard'])->name('dashboard');
     Route::get('/mistickets',    [ClienteController::class, 'tickets'])->name('tickets');
     Route::post('/ticket',       [TicketController::class, 'store'])->name('ticket.store');
+    Route::get('/ticket/{id}/detalle', [ClienteController::class, 'ticketDetalle'])->name('ticket.detalle');
     Route::get('/contactos',     [ClienteController::class, 'contactos'])->name('contactos');
     Route::get('/reporte-pdf', [ClienteController::class, 'reportePdf'])->name('reporte.pdf');
 

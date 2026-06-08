@@ -2,6 +2,7 @@
 @include('components.cliente.navbar-cliente')
 @include('components.cliente.sidebar-cliente')
 @include('components.usuario.detalleticket')
+@include('components.cliente.modalverticket')
 @include('components.responsive-global')
 
 <style>

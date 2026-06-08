@@ -345,6 +345,57 @@ public function storeUsuario(Request $request)
 
     return view('cliente.contactos', compact('cliente', 'usuarios'));
 }
+    public function ticketDetalle(int $id)
+    {
+        if (session('tipo') !== 'cliente' || !session('id')) {
+            return response()->json(['ok' => false, 'message' => 'No autorizado.'], 403);
+        }
+
+        $idCliente  = session('id');
+        $usuarioIds = DB::table('usuario')
+            ->where('id_cliente', $idCliente)
+            ->pluck('id_usuario')
+            ->toArray();
+
+        $ticket = DB::table('ticket')
+            ->join('tipo_ticket',   'ticket.id_tipo_ticket', '=', 'tipo_ticket.id_tipo_ticket')
+            ->join('prioridad',     'ticket.id_prioridad',   '=', 'prioridad.id_prioridad')
+            ->join('estado_ticket', 'ticket.id_estado',      '=', 'estado_ticket.id_estado')
+            ->join('cliente',       'ticket.id_cliente',     '=', 'cliente.id_cliente')
+            ->join('usuario as usu','ticket.id_usuario',     '=', 'usu.id_usuario')
+            ->leftJoin('tecnico as tec', 'ticket.id_tecnico_asignado', '=', 'tec.id_tecnico')
+            ->select(
+                'ticket.*',
+                'tipo_ticket.nombre             as tipo_ticket_nombre',
+                'prioridad.nombre               as prioridad_nombre',
+                'prioridad.color_hex            as prioridad_color',
+                'estado_ticket.nombre_estado    as estado',
+                'cliente.razon_social',
+                'cliente.ruc',
+                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+                'usu.codigo_usuario',
+                DB::raw("(COALESCE(usu.codigo_pais,'')||' '||COALESCE(usu.telefono,'')) as usuario_telefono"),
+                DB::raw("(COALESCE(tec.nombre,'')||' '||COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
+                'tec.codigo_tecnico as tecnico_codigo'
+            )
+            ->where('ticket.id_ticket', $id)
+            ->whereIn('ticket.id_usuario', $usuarioIds)
+            ->first();
+
+        if (!$ticket) {
+            return response()->json(['ok' => false, 'message' => 'Ticket no encontrado.'], 404);
+        }
+
+        $ticket->evidencias  = DB::table('evidencia')
+            ->where('id_ticket', $id)->get()->values();
+        $ticket->comentarios = DB::table('comentario')
+            ->where('id_ticket', $id)->orderBy('created_at')->get()->values();
+        $ticket->reportes    = DB::table('reporte_tecnico')
+            ->where('id_ticket', $id)->get()->values();
+
+        return response()->json(['ok' => true, 'ticket' => $ticket]);
+    }
+
     public function reportePdf(Request $request)
 {
     $cliente    = Cliente::find(session('id'));
