@@ -40,12 +40,12 @@ class ClienteController extends Controller
             'estado_ticket.nombre_estado     as estado',
             'cliente.razon_social',
             'cliente.ruc',  
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
                 'usu.id_usuario                  as usuario_id',
                 'usu.codigo_usuario',
                 'usu.dni                         as usuario_dni',
-                DB::raw("(COALESCE(usu.codigo_pais,'')||' '||COALESCE(usu.telefono,'')) as usuario_telefono"),
-                DB::raw("(COALESCE(tec.nombre,'')||' '||COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
+                DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
+                DB::raw("CONCAT(COALESCE(tec.nombre,''),' ',COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
                 'tec.codigo_tecnico as tecnico_codigo'
             )
             ->whereIn('ticket.id_usuario', $usuarioIds)
@@ -292,12 +292,12 @@ public function storeUsuario(Request $request)
             'estado_ticket.nombre_estado     as estado',
             'cliente.razon_social',
             'cliente.ruc',                   
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
                 'usu.id_usuario                  as usuario_id',
                 'usu.codigo_usuario',
                 'usu.dni                         as usuario_dni',
-                DB::raw("(COALESCE(usu.codigo_pais,'')||' '||COALESCE(usu.telefono,'')) as usuario_telefono"),
-                DB::raw("(COALESCE(tec.nombre,'')||' '||COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
+                DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
+                DB::raw("CONCAT(COALESCE(tec.nombre,''),' ',COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
                 'tec.codigo_tecnico as tecnico_codigo'
             )
             ->whereIn('ticket.id_usuario', $usuarioIds)
@@ -372,10 +372,10 @@ public function storeUsuario(Request $request)
                 'estado_ticket.nombre_estado    as estado',
                 'cliente.razon_social',
                 'cliente.ruc',
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
                 'usu.codigo_usuario',
-                DB::raw("(COALESCE(usu.codigo_pais,'')||' '||COALESCE(usu.telefono,'')) as usuario_telefono"),
-                DB::raw("(COALESCE(tec.nombre,'')||' '||COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
+                DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
+                DB::raw("CONCAT(COALESCE(tec.nombre,''),' ',COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
                 'tec.codigo_tecnico as tecnico_codigo'
             )
             ->where('ticket.id_ticket', $id)
@@ -440,11 +440,11 @@ public function storeUsuario(Request $request)
             'prioridad.nombre             as prioridad_nombre',
             'prioridad.color_hex          as prioridad_color',
             'estado_ticket.nombre_estado  as estado',
-            DB::raw("(usu.nombre||' '||usu.apellido_paterno) as usuario_nombre"),
+            DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno) as usuario_nombre"),
             'usu.codigo_usuario',
             'usu.correo                   as usuario_correo',
             'usu.dni                      as usuario_dni',
-            DB::raw("COALESCE(tec.nombre||' '||tec.apellido_paterno, 'Sin asignar') as tecnico_nombre")
+            DB::raw("COALESCE(CONCAT(tec.nombre,' ',tec.apellido_paterno), 'Sin asignar') as tecnico_nombre")
         )
         ->whereIn('ticket.id_usuario', $usuarioIds)
         ->whereBetween('ticket.created_at', [$desde, $hasta])

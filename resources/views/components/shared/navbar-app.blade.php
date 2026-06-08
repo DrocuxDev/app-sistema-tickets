@@ -361,6 +361,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // ── Quitar notificación del dropdown al cerrar un modal ──────────
+  window.navbarQuitarNotificacion = function(notifId) {
+    if (!notifId) return;
+
+    // Quitar el item del dropdown
+    const item = document.querySelector(`.notif-item[data-notif-id="${notifId}"]`);
+    if (item) item.remove();
+
+    // Actualizar badge
+    const badge   = document.querySelector('.notif-badge');
+    const btnBell = document.getElementById('notifBtn');
+    const lista   = document.querySelectorAll('.notif-item[data-ticket-id]');
+
+    if (badge) {
+      const actual = Math.max(0, (parseInt(badge.textContent) || 1) - 1);
+      if (actual <= 0) {
+        badge.remove();
+        if (btnBell) btnBell.classList.remove('has-pending');
+
+        // Mostrar estado vacío si no quedan notificaciones
+        const list = document.querySelector('.notif-list');
+        if (list && lista.length === 0) {
+          list.innerHTML = `
+            <div class="notif-empty">
+              <i class="fa-solid fa-circle-check" style="font-size:2rem;margin-bottom:8px;"></i>
+              <p>¡Todo al día! No hay notificaciones nuevas.</p>
+            </div>`;
+        }
+      } else {
+        badge.textContent = actual;
+      }
+    }
+  };
+
   document.querySelectorAll('.notif-item[data-ticket-id]').forEach(item => {
     item.addEventListener('click', async function(e) {
       e.preventDefault();
@@ -385,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       if (typeof abrirDetalleTicket === 'function' && ticketId) {
-        abrirDetalleTicket(ticketId);
+        abrirDetalleTicket(ticketId, notifId);
         return;
       }
 

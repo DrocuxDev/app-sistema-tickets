@@ -481,4 +481,16 @@ input[type="date"]::-webkit-calendar-picker-indicator { opacity:.5; cursor:point
     }
 
     renderTable();
+
+    // Permite abrir el modal por id_ticket (usado desde notificaciones del navbar)
+    window.abrirDetalleTicket = function(idTicket, notifId) {
+        const idx = tickets.findIndex(t => String(t.id_ticket) === String(idTicket));
+        if (idx !== -1) {
+            // Guardar el notifId para que closeModal() pueda actualizar el navbar
+            window._notifIdPendiente = notifId || null;
+            openModal(idx);
+        } else {
+            showNotification('warning', 'Ticket no encontrado', 'No se encontró el ticket en tu lista.');
+        }
+    };
 </script>

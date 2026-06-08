@@ -445,11 +445,16 @@ function renderDisponibles() {
             </div>
         </div>
     </div>
-    <div class="tk-tcard-foot">
+    <div class="tk-tcard-foot" style="display:flex;">
+        <button class="tk-btn-ver" onclick="abrirDetalleTicket(${t.id_ticket})"
+            style="flex:1;border-right:1px solid #eef2f7;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"/></svg>
+            Ver detalle
+        </button>
         <button class="tk-btn-ver tk-btn-autoasignar" onclick="autoAsignarDesdeDisponibles(${t.id_ticket}, this)"
-            style="color:#7c3aed;gap:6px;">
+            style="flex:1;color:#7c3aed;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-            Autoasignarme este ticket
+            Autoasignar
         </button>
     </div>
 </div>`;
@@ -457,48 +462,43 @@ function renderDisponibles() {
 }
 
 async function autoAsignarDesdeDisponibles(idTicket, btn) {
-    if (!confirm('¿Deseas autoasignarte este ticket?')) return;
+    ModalSystem.show('confirm', {
+        title: '¿Autoasignar ticket?',
+        text: '¿Deseas autoasignarte este ticket? Se moverá a tu lista de "Mis Tickets".',
+        confirmText: 'Sí, autoasignar',
+        cancelText: 'Cancelar',
+        onConfirm: async () => {
+            btn.disabled = true;
+            btn.textContent = 'Asignando…';
 
-    btn.disabled = true;
-    btn.textContent = 'Asignando…';
-
-    try {
-        const res  = await fetch(`/tecnico/ticket/${idTicket}/autoasignar`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        });
-        const data = await res.json();
-
-        if (data.ok) {
-            const card = document.getElementById('disp-card-' + idTicket);
-            if (card) {
-                card.style.transition = 'opacity .3s, transform .3s';
-                card.style.opacity = '0';
-                card.style.transform = 'scale(.95)';
-                setTimeout(() => {
-                    card.remove();
-                    // Actualizar badge de disponibles
-                    const badge = document.getElementById('badge-disponibles');
-                    if (badge) {
-                        const actual = parseInt(badge.textContent) - 1;
-                        badge.textContent = actual;
-                        if (actual <= 0) badge.style.display = 'none';
+            try {
+                const res  = await fetch(`/tecnico/ticket/${idTicket}/autoasignar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
-                }, 300);
+                });
+                const data = await res.json();
+
+                if (data.ok) {
+                    ModalSystem.show('success', {
+                        title: '¡Ticket autoasignado!',
+                        text: 'El ticket se agregó a tus "Mis Tickets".',
+                        confirmText: 'Ver mis tickets',
+                        onConfirm: () => location.reload()
+                    });
+                } else {
+                    showNotification('danger', 'Error', data.message || 'No se pudo autoasignar.');
+                    btn.disabled = false;
+                    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Autoasignar`;
+                }
+            } catch(e) {
+                showNotification('danger', 'Error', 'No se pudo conectar.');
+                btn.disabled = false;
             }
-            showNotification('success', '¡Autoasignado!', 'El ticket se agregó a tus "Mis Tickets". Recarga para verlo.');
-        } else {
-            showNotification('danger', 'Error', data.message || 'No se pudo autoasignar.');
-            btn.disabled = false;
-            btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Autoasignarme este ticket`;
         }
-    } catch(e) {
-        showNotification('danger', 'Error', 'No se pudo conectar.');
-        btn.disabled = false;
-    }
+    });
 }
 </script>

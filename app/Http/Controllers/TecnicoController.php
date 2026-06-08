@@ -47,7 +47,7 @@ class TecnicoController extends Controller
                 'cliente.razon_social',
                 'cliente.id_cliente              as id_cliente',
                 'cliente.ruc',
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
                 'usu.id_usuario                  as id_usuario',
                 'usu.codigo_usuario'
             )
@@ -91,10 +91,10 @@ class TecnicoController extends Controller
                 'cliente.razon_social',
                 'cliente.ruc',
                 'ticket.fecha_programado',
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
                 'usu.codigo_usuario',
-                DB::raw("(COALESCE(usu.codigo_pais,'')||' '||COALESCE(usu.telefono,'')) as usuario_telefono"),
-                DB::raw("(tec.nombre||' '||tec.apellido_paterno) as tecnico_nombre"),
+                DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
+                DB::raw("CONCAT(tec.nombre,' ',tec.apellido_paterno) as tecnico_nombre"),
                 'tec.codigo_tecnico as tecnico_codigo'
             )
             ->orderByDesc('ticket.created_at')
@@ -146,7 +146,7 @@ class TecnicoController extends Controller
                 'prioridad.color_hex             as prioridad_color',
                 'estado_ticket.nombre_estado     as estado',
                 'cliente.razon_social',
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno) as usuario_nombre")
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno) as usuario_nombre")
             )
             ->orderByDesc('ticket.created_at')
             ->get();
@@ -252,10 +252,10 @@ class TecnicoController extends Controller
                 'estado_ticket.nombre_estado     as estado',
                 'estado_ticket.color_hex         as estado_color',
                 'cliente.razon_social', 'cliente.ruc',
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
                 'usu.codigo_usuario',
-                DB::raw("(COALESCE(usu.codigo_pais,'')||' '||COALESCE(usu.telefono,'')) as usuario_telefono"),
-                DB::raw("(COALESCE(tec.nombre,'')||' '||COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
+                DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
+                DB::raw("CONCAT(COALESCE(tec.nombre,''),' ',COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
                 'tec.codigo_tecnico as tecnico_codigo'
             )
             ->first();
@@ -689,7 +689,7 @@ class TecnicoController extends Controller
                 'estado_ticket.nombre_estado as estado',
                 'cliente.razon_social',
                 'cliente.ruc',
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
                 'usu.codigo_usuario',
                 'usu.correo  as usuario_correo',
                 'usu.dni     as usuario_dni'

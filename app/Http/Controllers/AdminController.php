@@ -51,9 +51,9 @@ class AdminController extends Controller
                 'estado_ticket.nombre_estado     as estado',
                 'cliente.razon_social',
                 'cliente.ruc',
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
                 'usu.codigo_usuario',
-                DB::raw("(COALESCE(usu.codigo_pais,'')||' '||COALESCE(usu.telefono,'')) as usuario_telefono"),
+                DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
                 DB::raw("(COALESCE(tec.nombre,'')||' '||COALESCE(tec.apellido_paterno,'')||' '||COALESCE(tec.apellido_materno,'')) as tecnico_nombre"),
                 'tec.codigo_tecnico              as tecnico_codigo'
             )
@@ -140,7 +140,7 @@ class AdminController extends Controller
                 'prioridad.nombre as prioridad',
                 'prioridad.color_hex',
                 'cliente.razon_social',
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre")
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre")
             )
             ->get();
 
@@ -531,10 +531,10 @@ class AdminController extends Controller
                 'estado_ticket.color_hex         as estado_color',
                 'cliente.razon_social',
                 'cliente.ruc',
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
                 'usu.codigo_usuario',
-                DB::raw("(COALESCE(usu.codigo_pais,'')||' '||COALESCE(usu.telefono,'')) as usuario_telefono"),
-                DB::raw("(tec.nombre||' '||tec.apellido_paterno) as tecnico_nombre"),
+                DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
+                DB::raw("CONCAT(tec.nombre,' ',tec.apellido_paterno) as tecnico_nombre"),
                 'tec.codigo_tecnico'
             )
             ->orderByDesc('ticket.created_at')
@@ -655,8 +655,8 @@ class AdminController extends Controller
                 'estado_ticket.nombre_estado as estado',
                 'estado_ticket.color_hex as estado_color',
                 'cliente.razon_social',
-                DB::raw("(usu.nombre||' '||usu.apellido_paterno) as usuario_nombre"),
-                DB::raw("(COALESCE(tec.nombre,'')||' '||COALESCE(tec.apellido_paterno,'')) as tecnico_nombre")
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno) as usuario_nombre"),
+                DB::raw("CONCAT(COALESCE(tec.nombre,''),' ',COALESCE(tec.apellido_paterno,'')) as tecnico_nombre")
             )
             ->orderByDesc('ticket.created_at')
             ->get();
@@ -1158,9 +1158,9 @@ public function clientes()
             'estado_ticket.nombre_estado     as estado',
             'cliente.razon_social',
             'cliente.ruc',
-            DB::raw("(usu.nombre||' '||usu.apellido_paterno||' '||usu.apellido_materno) as usuario_nombre"),
+            DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
             'usu.codigo_usuario',
-            DB::raw("(COALESCE(usu.codigo_pais,'')||' '||COALESCE(usu.telefono,'')) as usuario_telefono"),
+            DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
             DB::raw("(COALESCE(tec.nombre,'')||' '||COALESCE(tec.apellido_paterno,'')||' '||COALESCE(tec.apellido_materno,'')) as tecnico_nombre"),
             'tec.codigo_tecnico              as tecnico_codigo'
         )
@@ -1260,11 +1260,11 @@ public function clientes()
             'cliente.razon_social',
             'cliente.ruc',
             'cliente.id_cliente           as cliente_id',
-            DB::raw("(usu.nombre||' '||usu.apellido_paterno) as usuario_nombre"),
+            DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno) as usuario_nombre"),
             'usu.codigo_usuario',
             'usu.correo                   as usuario_correo',
             'usu.dni                      as usuario_dni',
-            DB::raw("COALESCE(tec.nombre||' '||tec.apellido_paterno, 'Sin asignar') as tecnico_nombre")
+            DB::raw("COALESCE(CONCAT(tec.nombre,' ',tec.apellido_paterno), 'Sin asignar') as tecnico_nombre")
         )
         ->whereIn('ticket.id_usuario', $usuarioIds)
         ->whereBetween('ticket.created_at', [$desde, $hasta])

@@ -1,7 +1,7 @@
 @include('components.notificaciones.alertas')
 @include('components.tecnico.navbar-tecnico')
 @include('components.tecnico.sidebar-tecnico')
-@include('components.admin.detalleticket')
+@include('components.tecnico.editardetalleticket')
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -349,16 +349,12 @@ ModalSystem.show('confirm', {
                 const data = await res.json();
 
                 if (data.ok) {
-                    // Animación de eliminación
-                    const card = document.getElementById('ticket-card-' + idTicket);
-                    if (card) {
-                        card.style.transition = 'opacity .3s, transform .3s';
-                        card.style.opacity    = '0';
-                        card.style.transform  = 'scale(.95)';
-                        setTimeout(() => card.remove(), 300);
-                    }
-                    
-                    showNotification('success', '¡Autoasignado!', 'El ticket ahora está en tu lista.');
+                    ModalSystem.show('success', {
+                        title: '¡Ticket autoasignado!',
+                        text: 'El ticket se agregó a tus "Mis Tickets".',
+                        confirmText: 'Ver mis tickets',
+                        onConfirm: () => location.href = '{{ route("tecnico.mistickets") }}'
+                    });
                 } else {
                     showNotification('danger', 'Error', data.message || 'No se pudo autoasignar.');
                     btn.disabled    = false;

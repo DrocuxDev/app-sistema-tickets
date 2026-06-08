@@ -676,6 +676,14 @@ function openModal(idx) {
 // ── Close ──
 function closeModal() {
     document.getElementById('modalOverlay').style.display = 'none';
+
+    // Si este modal fue abierto desde una notificación, actualizar el navbar
+    if (window._notifIdPendiente) {
+        if (typeof navbarQuitarNotificacion === 'function') {
+            navbarQuitarNotificacion(window._notifIdPendiente);
+        }
+        window._notifIdPendiente = null;
+    }
 }
 
 document.addEventListener('keydown', e => {
