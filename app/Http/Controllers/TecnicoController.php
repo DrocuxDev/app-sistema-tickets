@@ -125,6 +125,32 @@ class TecnicoController extends Controller
 
         $clientes = Cliente::where('activo', 1)->orderBy('razon_social')->get();
 
+        // Tickets disponibles para autoasignar (sin técnico, no cerrados/cancelados)
+        $ticketsDisponibles = DB::table('ticket')
+            ->join('tipo_ticket',   'ticket.id_tipo_ticket', '=', 'tipo_ticket.id_tipo_ticket')
+            ->join('prioridad',     'ticket.id_prioridad',   '=', 'prioridad.id_prioridad')
+            ->join('estado_ticket', 'ticket.id_estado',      '=', 'estado_ticket.id_estado')
+            ->join('cliente',       'ticket.id_cliente',     '=', 'cliente.id_cliente')
+            ->join('usuario as usu','ticket.id_usuario',     '=', 'usu.id_usuario')
+            ->whereNull('ticket.id_tecnico_asignado')
+            ->whereNotIn('estado_ticket.nombre_estado', ['CERRADO', 'CANCELADO'])
+            ->select(
+                'ticket.id_ticket',
+                'ticket.codigo_ticket',
+                'ticket.asunto',
+                'ticket.tipo_equipo',
+                'ticket.marca',
+                'ticket.created_at',
+                'tipo_ticket.nombre              as tipo_ticket_nombre',
+                'prioridad.nombre                as prioridad_nombre',
+                'prioridad.color_hex             as prioridad_color',
+                'estado_ticket.nombre_estado     as estado',
+                'cliente.razon_social',
+                DB::raw("(usu.nombre||' '||usu.apellido_paterno) as usuario_nombre")
+            )
+            ->orderByDesc('ticket.created_at')
+            ->get();
+
         // Pre-calcular usuarios por cliente para el modal de reporte
         $usuariosPorCliente = [];
         foreach ($clientes as $c) {
@@ -138,7 +164,7 @@ class TecnicoController extends Controller
                 ->toArray();
         }
 
-        return view('tecnico.mistickets', compact('tickets', 'resumen', 'clientes', 'usuariosPorCliente'));
+        return view('tecnico.mistickets', compact('tickets', 'resumen', 'clientes', 'usuariosPorCliente', 'ticketsDisponibles'));
     }
 
     public function autoAsignar(Request $request, $id)
