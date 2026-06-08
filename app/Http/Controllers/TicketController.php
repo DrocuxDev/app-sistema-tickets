@@ -90,8 +90,8 @@ class TicketController extends Controller
     'modelo'         => 'nullable|string|max:100',
     'serie_serial'   => 'nullable|string|max:100',
 
-    // Evidencia opcional
-    'evidencia'      => 'nullable|array|max:5',
+    // Evidencia obligatoria (al menos 1, máx. 5)
+    'evidencia'      => 'required|array|min:1|max:5',
     'evidencia.*'    => 'file|mimes:jpg,jpeg,png,pdf,mp4,mov,doc,docx|max:20480',
 ], [
     'id_tipo_ticket.required' => 'El tipo de ticket es obligatorio.',
@@ -100,6 +100,8 @@ class TicketController extends Controller
     'id_prioridad.exists'     => 'La prioridad no es válida.',
     'problema.required'       => 'La descripción del problema es obligatoria.',
     'asunto.max'              => 'El asunto no puede superar los 255 caracteres.',
+    'evidencia.required'      => 'Debes adjuntar al menos un archivo de evidencia.',
+    'evidencia.min'           => 'Debes adjuntar al menos un archivo de evidencia.',
     'evidencia.max'           => 'No puedes subir más de 5 archivos.',
     'evidencia.*.mimes'       => 'Solo se permiten archivos JPG, PNG, PDF, MP4, MOV, DOC o DOCX.',
     'evidencia.*.max'         => 'Cada archivo no puede superar los 20 MB.',

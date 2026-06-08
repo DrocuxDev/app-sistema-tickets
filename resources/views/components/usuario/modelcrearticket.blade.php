@@ -232,7 +232,7 @@
             {{-- Evidencia --}}
             <div class="mc-field">
                 <label class="mc-label">
-                    Evidencia <span class="hint">(foto, video o PDF — máx. 5 archivos, 20MB c/u)</span>
+                    Evidencia <span class="req">*</span> <span class="hint">(foto, video o PDF — máx. 5 archivos, 20MB c/u)</span>
                 </label>
                 <div id="dropZone" onclick="document.getElementById('t_evidencia').click()"
                     ondragover="event.preventDefault();this.style.borderColor='#1a6ed8';this.style.background='#eef5ff';"
@@ -418,6 +418,10 @@ document.addEventListener('DOMContentLoaded', function () {
             showNotification('warning', 'Límite excedido', 'Máximo 5 archivos de evidencia permitidos.');
             return;
         }
+        if (archivos.length === 0) {
+            showNotification('warning', 'Campo requerido', 'Debes adjuntar al menos un archivo de evidencia.');
+            return;
+        }
 
         const btn = document.getElementById('btnEnviarTicket');
         btn.disabled = true;
@@ -459,18 +463,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 ModalSystem.show('success', {
                     title: '¡Ticket creado!',
                     text: data.message || 'El ticket fue registrado correctamente.',
-                    confirmText: 'Entendido'
+                    confirmText: 'Entendido',
+                    onConfirm: () => location.reload()
                 });
-
-                const observer = new MutationObserver(() => {
-                    const modal = document.querySelector('.modal-system-overlay');
-                    if (!modal) {
-                        observer.disconnect();
-                        location.reload();
-                    }
-                });
-
-                observer.observe(document.body, { childList: true, subtree: true });
             } else {
                 showNotification('danger', 'Error', data.message || 'No se pudo crear el ticket.');
             }
