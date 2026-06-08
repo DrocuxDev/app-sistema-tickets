@@ -540,7 +540,7 @@ function renderReporte(reportes) {
 <script>
     
 // ── Abrir detalle ticket desde admin ─────────────────────────────
-async function abrirDetalleTicket(id) {
+async function abrirDetalleTicket(id, notifId = null) {
     try {
         const res  = await fetch(`/admin/ticket/${id}/detalle`, {
             headers: { 'Accept': 'application/json' }
@@ -559,6 +559,11 @@ async function abrirDetalleTicket(id) {
 
         // Llamar al openModal del modal base pasando los datos
         openModalConDatos(data);
+
+        // Quitar notificación del navbar si viene desde allí
+        if (notifId && typeof window.navbarQuitarNotificacion === 'function') {
+            window.navbarQuitarNotificacion(notifId);
+        }
 
     } catch(e) {
         showNotification('danger', 'Error', 'Ocurrió un error inesperado.');

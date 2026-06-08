@@ -420,7 +420,7 @@ function vtkRenderArchivos(boxId, lista) {
 }
 
 // ── Abrir modal con fetch ───────────────────────────────
-window.abrirDetalleTicket = async function(ticketId) {
+window.abrirDetalleTicket = async function(ticketId, notifId = null) {
     if (!ticketId) return;
 
     const overlay = document.getElementById('vtk-overlay');
@@ -446,6 +446,11 @@ window.abrirDetalleTicket = async function(ticketId) {
         }
 
         vtk_render(data.ticket);
+
+        // Quitar notificación del navbar si viene desde allí
+        if (notifId && typeof window.navbarQuitarNotificacion === 'function') {
+            window.navbarQuitarNotificacion(notifId);
+        }
 
     } catch(e) {
         overlay.style.display = 'none';

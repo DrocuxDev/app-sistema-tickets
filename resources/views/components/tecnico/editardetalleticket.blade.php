@@ -589,7 +589,7 @@
     }
 
     // ── Abrir modal técnico ──────────────────────────────────────────
-    async function abrirDetalleTicket(id) {
+    async function abrirDetalleTicket(id, notifId = null) {
         try {
             const res  = await fetch(`/tecnico/ticket/${id}/detalle`, {
                 headers: { 'Accept': 'application/json' }
@@ -599,6 +599,11 @@
 
             window._tecTicketId = id;
             tecLlenarModal(data);
+
+            // Quitar notificación del navbar si viene desde allí
+            if (notifId && typeof window.navbarQuitarNotificacion === 'function') {
+                window.navbarQuitarNotificacion(notifId);
+            }
 
         } catch(e) {
             tecNotif('danger', 'Error', 'Ocurrió un error inesperado.');

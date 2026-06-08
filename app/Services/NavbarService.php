@@ -40,7 +40,6 @@ class NavbarService
     {
         $pending = Ticket::whereNull('id_tecnico_asignado')
             ->orderByDesc('created_at')
-            ->limit(5)
             ->get();
 
         $count = Ticket::whereNull('id_tecnico_asignado')->count();
@@ -83,17 +82,35 @@ class NavbarService
     {
         $idCliente = session('id');
 
+        // IDs de estados finales (CERRADO / CANCELADO)
+        $estadosFinales = DB::table('estado_ticket')
+            ->where('es_final', true)
+            ->pluck('id_estado');
+
+        // Auto-limpiar notificaciones de tickets ya finalizados para no acumular basura
+        $notifObsoletas = Notificacion::where('id_cliente', $idCliente)
+            ->where('leido', false)
+            ->where('tipo', 'nuevo_ticket')
+            ->whereHas('ticket', fn ($q) => $q->whereIn('id_estado', $estadosFinales))
+            ->pluck('id_notificacion');
+
+        if ($notifObsoletas->isNotEmpty()) {
+            Notificacion::whereIn('id_notificacion', $notifObsoletas)
+                ->update(['leido' => true]);
+        }
+
         $items = Notificacion::where('id_cliente', $idCliente)
             ->where('leido', false)
             ->where('tipo', 'nuevo_ticket')
+            ->whereHas('ticket', fn ($q) => $q->whereNotIn('id_estado', $estadosFinales))
             ->with('ticket')
             ->orderByDesc('created_at')
-            ->limit(5)
             ->get();
 
         $count = Notificacion::where('id_cliente', $idCliente)
             ->where('leido', false)
             ->where('tipo', 'nuevo_ticket')
+            ->whereHas('ticket', fn ($q) => $q->whereNotIn('id_estado', $estadosFinales))
             ->count();
 
         return [
@@ -122,18 +139,36 @@ class NavbarService
     {
         $idTecnico = session('id');
 
-        // Nuevos tickets + asignaciones
+        // IDs de estados finales (CERRADO / CANCELADO)
+        $estadosFinales = DB::table('estado_ticket')
+            ->where('es_final', true)
+            ->pluck('id_estado');
+
+        // Auto-limpiar notificaciones de tickets ya finalizados
+        $notifObsoletas = Notificacion::where('id_tecnico', $idTecnico)
+            ->where('leido', false)
+            ->whereIn('tipo', ['nuevo_ticket', 'asignacion'])
+            ->whereHas('ticket', fn ($q) => $q->whereIn('id_estado', $estadosFinales))
+            ->pluck('id_notificacion');
+
+        if ($notifObsoletas->isNotEmpty()) {
+            Notificacion::whereIn('id_notificacion', $notifObsoletas)
+                ->update(['leido' => true]);
+        }
+
+        // Nuevos tickets + asignaciones (solo de tickets activos)
         $items = Notificacion::where('id_tecnico', $idTecnico)
             ->where('leido', false)
             ->whereIn('tipo', ['nuevo_ticket', 'asignacion'])
+            ->whereHas('ticket', fn ($q) => $q->whereNotIn('id_estado', $estadosFinales))
             ->with('ticket')
             ->orderByDesc('created_at')
-            ->limit(8)
             ->get();
 
         $count = Notificacion::where('id_tecnico', $idTecnico)
             ->where('leido', false)
             ->whereIn('tipo', ['nuevo_ticket', 'asignacion'])
+            ->whereHas('ticket', fn ($q) => $q->whereNotIn('id_estado', $estadosFinales))
             ->count();
 
         return [
@@ -165,7 +200,6 @@ class NavbarService
             ->where('tipo', 'cambio_estado')
             ->with('ticket')
             ->orderByDesc('created_at')
-            ->limit(5)
             ->get();
 
         $count = Notificacion::where('id_usuario', $idUsuario)
