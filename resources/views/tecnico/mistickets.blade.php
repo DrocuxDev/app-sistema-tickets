@@ -116,6 +116,14 @@ body.sb-collapsed .tk-main { margin-left: 70px; }
 .tk-empty { text-align:center; padding:3rem; color:#94a3b8; }
 .tk-empty svg { display:block; margin:0 auto 12px; color:#cbd5e1; }
 
+/* Pill especial disponibles */
+.tk-pill-new { position:relative; }
+.tk-pill-new.active { background:#7c3aed; border-color:#7c3aed; color:#fff; }
+.tk-pill-new:hover:not(.active) { background:#f5f3ff; }
+
+/* Botón autoasignar */
+.tk-btn-autoasignar:hover { background:#f5f3ff !important; }
+
 /* BOTÓN REPORTE */
 .tk-btn-reporte {
     display:flex; align-items:center; gap:8px;
@@ -217,23 +225,49 @@ body.sb-collapsed .tk-main { margin-left: 70px; }
     {{-- TOOLBAR --}}
     <div class="tk-toolbar">
         <div class="tk-pills" id="tk-pills">
-            <button class="tk-pill active" onclick="mtFiltrar('todos',this)">Todos</button>
-            <button class="tk-pill" onclick="mtFiltrar('PROGRAMADO',this)">Programado</button>
-            <button class="tk-pill" onclick="mtFiltrar('EN PROCESO',this)">En Proceso</button>
-            <button class="tk-pill" onclick="mtFiltrar('CERRADO',this)">Cerrado</button>
-            <button class="tk-pill" onclick="mtFiltrar('CANCELADO',this)">Cancelado</button>
-        </div>
-        <div class="tk-search">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="mt-buscar" placeholder="Buscar por asunto, cliente..." oninput="mtBuscar()">
+            <button class="tk-pill active" onclick="cambiarVista('mis',this)">Mis Tickets</button>
+            <button class="tk-pill tk-pill-new" onclick="cambiarVista('disponibles',this)" id="pill-disponibles">
+                Disponibles
+                <span id="badge-disponibles" style="background:#dc2626;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:4px;">{{ $ticketsDisponibles->count() }}</span>
+            </button>
         </div>
     </div>
 
-    {{-- GRID --}}
-    <div class="tk-grid" id="mt-grid"></div>
-    <div class="tk-empty" id="mt-empty" style="display:none;">
-        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-        <p>No hay tickets para mostrar.</p>
+    {{-- FILTROS MIS TICKETS --}}
+    <div id="seccion-mis" style="display:block;">
+        <div class="tk-toolbar" style="margin-top:0;">
+            <div class="tk-pills" id="tk-pills-estado">
+                <button class="tk-pill active" onclick="mtFiltrar('todos',this)">Todos</button>
+                <button class="tk-pill" onclick="mtFiltrar('PROGRAMADO',this)">Programado</button>
+                <button class="tk-pill" onclick="mtFiltrar('EN PROCESO',this)">En Proceso</button>
+                <button class="tk-pill" onclick="mtFiltrar('CERRADO',this)">Cerrado</button>
+                <button class="tk-pill" onclick="mtFiltrar('CANCELADO',this)">Cancelado</button>
+            </div>
+            <div class="tk-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="mt-buscar" placeholder="Buscar por asunto, cliente..." oninput="mtBuscar()">
+            </div>
+        </div>
+        <div class="tk-grid" id="mt-grid"></div>
+        <div class="tk-empty" id="mt-empty" style="display:none;">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <p>No hay tickets para mostrar.</p>
+        </div>
+    </div>
+
+    {{-- SECCIÓN DISPONIBLES --}}
+    <div id="seccion-disponibles" style="display:none;">
+        <div class="tk-toolbar" style="margin-top:0;">
+            <div class="tk-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="disp-buscar" placeholder="Buscar por asunto, cliente, código..." oninput="filtrarDisponibles()">
+            </div>
+        </div>
+        <div class="tk-grid" id="disp-grid"></div>
+        <div class="tk-empty" id="disp-empty" style="display:none;">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/></svg>
+            <p>No hay tickets disponibles para asignar.</p>
+        </div>
     </div>
 
 </div>
@@ -320,7 +354,7 @@ function mtRender() {
 
 function mtFiltrar(estado, btn) {
     mtFiltroActual = estado;
-    document.querySelectorAll('.tk-pill').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('#tk-pills-estado .tk-pill').forEach(p => p.classList.remove('active'));
     if (btn) btn.classList.add('active');
     document.querySelectorAll('.tk-card').forEach(c => c.classList.remove('card-active'));
     const kpi = document.getElementById('card-' + estado);
@@ -331,4 +365,140 @@ function mtFiltrar(estado, btn) {
 function mtBuscar() { mtBusqueda = document.getElementById('mt-buscar').value; mtRender(); }
 document.addEventListener('DOMContentLoaded', mtRender);
 function cerrarPanelEdicion() {}
+
+/* ── VISTA DISPONIBLES ─────────────────────────────────────────── */
+const TICKETS_DISPONIBLES = @json($ticketsDisponibles->values());
+
+function cambiarVista(vista, btn) {
+    document.querySelectorAll('#tk-pills .tk-pill').forEach(p => p.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    if (vista === 'mis') {
+        document.getElementById('seccion-mis').style.display = 'block';
+        document.getElementById('seccion-disponibles').style.display = 'none';
+    } else {
+        document.getElementById('seccion-mis').style.display = 'none';
+        document.getElementById('seccion-disponibles').style.display = 'block';
+        renderDisponibles();
+    }
+}
+
+function filtrarDisponibles() { renderDisponibles(); }
+
+function renderDisponibles() {
+    const q     = (document.getElementById('disp-buscar')?.value || '').toLowerCase();
+    const grid  = document.getElementById('disp-grid');
+    const empty = document.getElementById('disp-empty');
+
+    let lista = TICKETS_DISPONIBLES;
+    if (q) lista = lista.filter(t =>
+        (t.asunto||'').toLowerCase().includes(q) ||
+        (t.razon_social||'').toLowerCase().includes(q) ||
+        (t.codigo_ticket||'').toLowerCase().includes(q) ||
+        (t.usuario_nombre||'').toLowerCase().includes(q)
+    );
+
+    if (!lista.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+
+    grid.innerHTML = lista.map(t => {
+        const badgeMap = {
+            'PENDIENTE':  'background:#F5F3FF;color:#7c3aed;border:1px solid #c4b5fd;',
+            'PROGRAMADO': 'background:#EFF6FF;color:#1d4ed8;border:1px solid #bfdbfe;',
+            'EN PROCESO': 'background:#FFF7ED;color:#c2410c;border:1px solid #fed7aa;',
+        };
+        const badgeStyle = badgeMap[t.estado] ?? 'background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;';
+        const prioStyle  = t.prioridad_color
+            ? `background:${t.prioridad_color}22;color:${t.prioridad_color};border:1px solid ${t.prioridad_color}55;`
+            : 'background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;';
+        const fecha = t.created_at
+            ? new Date(t.created_at).toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})
+            : '—';
+
+        return `
+<div class="tk-tcard" id="disp-card-${t.id_ticket}">
+    <div class="tk-tcard-head">
+        <span class="tk-tcard-codigo">${t.codigo_ticket||'—'}</span>
+        <span class="tk-tcard-estado" style="${badgeStyle}">${t.estado}</span>
+    </div>
+    <div class="tk-tcard-body">
+        <p class="tk-tcard-asunto">${t.asunto||'Sin asunto'}</p>
+        <div class="tk-tcard-rows">
+            <div class="tk-tcard-row">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                <span>${t.razon_social||'—'}</span>
+            </div>
+            <div class="tk-tcard-row">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>${t.usuario_nombre||'—'}</span>
+            </div>
+        </div>
+        <hr class="tk-tcard-divider">
+        <div class="tk-tcard-bottom">
+            <div class="tk-tcard-badges">
+                <span class="tk-badge-tipo">${t.tipo_ticket_nombre||'—'}</span>
+                <span class="tk-badge-prio" style="${prioStyle}">${t.prioridad_nombre||'—'}</span>
+            </div>
+            <div class="tk-tcard-fecha">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                ${fecha}
+            </div>
+        </div>
+    </div>
+    <div class="tk-tcard-foot">
+        <button class="tk-btn-ver tk-btn-autoasignar" onclick="autoAsignarDesdeDisponibles(${t.id_ticket}, this)"
+            style="color:#7c3aed;gap:6px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            Autoasignarme este ticket
+        </button>
+    </div>
+</div>`;
+    }).join('');
+}
+
+async function autoAsignarDesdeDisponibles(idTicket, btn) {
+    if (!confirm('¿Deseas autoasignarte este ticket?')) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Asignando…';
+
+    try {
+        const res  = await fetch(`/tecnico/ticket/${idTicket}/autoasignar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+            const card = document.getElementById('disp-card-' + idTicket);
+            if (card) {
+                card.style.transition = 'opacity .3s, transform .3s';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(.95)';
+                setTimeout(() => {
+                    card.remove();
+                    // Actualizar badge de disponibles
+                    const badge = document.getElementById('badge-disponibles');
+                    if (badge) {
+                        const actual = parseInt(badge.textContent) - 1;
+                        badge.textContent = actual;
+                        if (actual <= 0) badge.style.display = 'none';
+                    }
+                }, 300);
+            }
+            showNotification('success', '¡Autoasignado!', 'El ticket se agregó a tus "Mis Tickets". Recarga para verlo.');
+        } else {
+            showNotification('danger', 'Error', data.message || 'No se pudo autoasignar.');
+            btn.disabled = false;
+            btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Autoasignarme este ticket`;
+        }
+    } catch(e) {
+        showNotification('danger', 'Error', 'No se pudo conectar.');
+        btn.disabled = false;
+    }
+}
 </script>
