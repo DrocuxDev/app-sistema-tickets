@@ -75,6 +75,10 @@
                     <div class="card-info">
                         <h3 class="user-name">{{ $usuario->nombre }} {{ $usuario->apellido_paterno }} {{ $usuario->apellido_materno }}</h3>
                         <span class="user-code">{{ $usuario->codigo_usuario }}</span>
+                        <div class="user-email">
+                            <svg viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+                            {{ $usuario->correo }}
+                        </div>
                         <span class="user-empresa">
                             <svg viewBox="0 0 20 20"><path d="M4 4h12a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zm4 5H6v2h2V9zm4 0h-2v2h2V9zm2-3H6v1h8V6z"/></svg>
                             {{ $empresa }}
@@ -240,6 +244,12 @@
         gap: 4px; font-size: 11.5px; color: #5a8ab5; margin-top: 2px;
     }
     .user-empresa svg { width: 12px; height: 12px; fill: #7aabcc; flex-shrink: 0; }
+    .user-email {
+        display: flex; align-items: center; justify-content: center;
+        gap: 4px; font-size: 11.5px; color: #1a7fd4; margin-top: 4px; margin-bottom: 2px;
+        font-weight: 500; word-break: break-all; text-align: center;
+    }
+    .user-email svg { width: 12px; height: 12px; fill: #1a7fd4; flex-shrink: 0; }
 
     .phone-section { width: 100%; }
     .phone-box {
