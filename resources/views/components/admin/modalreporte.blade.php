@@ -205,7 +205,7 @@ function descargarReporteAdmin() {
         return;
     }
 
-let url = `{{ route('admin.reporte.pdf') }}?desde=${desde}&hasta=${hasta}&tipo=${adminTipoReporte}`;
+let url = `{{ route('admin.reporte.pdf') }}?desde=${desde}&hasta=${hasta}&tipo=${adminTipoReporte}&tz=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)}`;
     if (clienteId)  url += `&cliente_id=${clienteId}`;
     if (adminTipoReporte === 'individual' && userId) url += `&usuario_id=${userId}`;
 

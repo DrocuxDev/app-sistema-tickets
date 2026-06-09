@@ -493,7 +493,7 @@ class AdminController extends Controller
         NotificacionService::asignacionTecnico((int) $id, (int) $request->id_tecnico);
 
         if (isset($update['id_estado'])) {
-            NotificacionService::cambioEstadoUsuario((int) $id, (int) $update['id_estado']);
+            NotificacionService::cambioEstadoUsuario((int) $id, (int) $update['id_estado'], (int) $ticket->id_estado);
         }
 
         $tecnico = DB::table('tecnico')->where('id_tecnico', $request->id_tecnico)->first();
@@ -866,12 +866,14 @@ class AdminController extends Controller
             return response()->json(['ok' => false, 'message' => 'Estado CANCELADO no encontrado en la base de datos.'], 500);
         }
 
+        $ticket = DB::table('ticket')->where('id_ticket', $id)->first();
+
         DB::table('ticket')->where('id_ticket', $id)->update([
             'id_estado'  => $estadoCancelado,
             'updated_at' => now(),
         ]);
 
-        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCancelado);
+        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCancelado, (int) $ticket->id_estado);
 
         return response()->json(['ok' => true]);
     }
@@ -926,7 +928,7 @@ class AdminController extends Controller
         DB::table('ticket')->where('id_ticket', $id)->update($update);
 
         if (isset($update['id_estado'])) {
-            NotificacionService::cambioEstadoUsuario((int) $id, (int) $update['id_estado']);
+            NotificacionService::cambioEstadoUsuario((int) $id, (int) $update['id_estado'], (int) $ticket->id_estado);
         }
      
         return response()->json(['ok' => true]);
@@ -980,7 +982,7 @@ class AdminController extends Controller
                 'updated_at'       => now(),
             ]);
 
-            NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso);
+            NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso, (int) $ticket->id_estado);
         }
      
         return response()->json(['ok' => true]);
@@ -1065,7 +1067,7 @@ class AdminController extends Controller
                     'updated_at'       => now(),
                 ]);
 
-                NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso);
+                NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso, (int) $ticket->id_estado);
             }
 
             return response()->json(['ok' => true]);
@@ -1111,7 +1113,7 @@ class AdminController extends Controller
             'updated_at'     => now(),
         ]);
 
-        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCerrado);
+        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCerrado, (int) $ticket->id_estado);
      
         DB::table('reporte_tecnico')
             ->where('id_ticket', $id)

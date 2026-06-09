@@ -925,10 +925,38 @@
         el.textContent = (valor === null || valor === undefined || valor === '') ? '—' : valor;
     }
 
+    function tecFmtFecha(fecha) {
+        if (!fecha) return '—';
+        let date;
+        if (String(fecha).includes('Z') || String(fecha).match(/[+-]\d{2}:?\d{2}$/)) {
+            date = new Date(fecha);
+        } else {
+            // Asumimos que viene del servidor en America/Lima (UTC-5)
+            const isoStr = String(fecha).replace(' ', 'T');
+            date = new Date(isoStr + '-05:00');
+        }
+        if (isNaN(date.getTime())) return fecha;
+        
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        
+        const offsetMin = date.getTimezoneOffset();
+        const sign = offsetMin > 0 ? '-' : '+';
+        const absOffset = Math.abs(offsetMin);
+        const offsetHours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+        const offsetMinutes = String(absOffset % 60).padStart(2, '0');
+        const localOffsetStr = `UTC${sign}${offsetHours}:${offsetMinutes}`;
+        
+        return `${day}/${month}/${year} ${hours}:${minutes} (${localOffsetStr})`;
+    }
+
     function tecFillDate(id, fecha) {
         const el = document.getElementById(id);
         if (!el) return;
-        el.textContent = fecha ? fecha.substring(0, 10) : '—';
+        el.textContent = tecFmtFecha(fecha);
     }
 
     function tecRenderEvidencias(id, evidencias) {
@@ -966,7 +994,7 @@
 
         let html = `<div class="tec-label" style="margin-bottom:8px;">Comentarios (${comentarios.length})</div>`;
         comentarios.forEach(c => {
-            const fecha = c.created_at ? c.created_at.substring(0, 10) : '';
+            const fecha = c.created_at ? tecFmtFecha(c.created_at) : '';
             html += `<div class="tec-comentario-item"><div class="tec-comentario-texto">${tecEscHtml(c.comentario)}</div><div class="tec-comentario-fecha">📅 ${fecha}</div></div>`;
         });
         cont.innerHTML = html;

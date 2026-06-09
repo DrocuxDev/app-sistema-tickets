@@ -31,13 +31,24 @@ class NotificacionService
         }
     }
 
-    public static function cambioEstadoUsuario(int $ticketId, int $nuevoEstadoId): void
+    public static function cambioEstadoUsuario(int $ticketId, int $nuevoEstadoId, ?int $estadoAnteriorId = null): void
     {
         $ticket = DB::table('ticket')->where('id_ticket', $ticketId)->first();
         if (!$ticket) {
             return;
         }
 
+        // Si no se pasa el estado anterior, lo obtenemos del ticket actual
+        // NOTA: Esto solo funciona si se llama ANTES de actualizar el ticket
+        if ($estadoAnteriorId === null) {
+            $estadoAnteriorId = $ticket->id_estado;
+        }
+
+        $estadoAnterior = DB::table('estado_ticket')
+            ->where('id_estado', $estadoAnteriorId)
+            ->value('nombre_estado') ?? 'PENDIENTE';
+
+        // Obtener el estado NUEVO
         $estado = DB::table('estado_ticket')->where('id_estado', $nuevoEstadoId)->first();
         if (!$estado) {
             return;
@@ -50,6 +61,26 @@ class NotificacionService
             'tipo'       => 'cambio_estado',
             'mensaje'    => "Tu ticket {$ticket->codigo_ticket} cambió a {$estado->nombre_estado}",
         ]);
+
+        // Enviar email al usuario
+        $usuario = DB::table('usuario')->where('id_usuario', $ticket->id_usuario)->first();
+        if ($usuario && $usuario->correo) {
+            try {
+                \Mail::to($usuario->correo)->send(
+                    new \App\Mail\TicketCambioEstado(
+                        (object)[
+                            'codigo_ticket' => $ticket->codigo_ticket,
+                            'asunto' => $ticket->asunto,
+                        ],
+                        $usuario,
+                        $estadoAnterior,
+                        $estado->nombre_estado
+                    )
+                );
+            } catch (\Exception $e) {
+                \Log::error('Error enviando email de cambio estado: ' . $e->getMessage());
+            }
+        }
     }
 
     public static function asignacionTecnico(int $ticketId, int $idTecnico): void

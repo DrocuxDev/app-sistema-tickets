@@ -161,7 +161,7 @@ function descargarReporte() {
         return;
     }
 
-    let url = `/cliente/reporte-pdf?desde=${desde}&hasta=${hasta}&tipo=${tipoReporte}`;
+    let url = `/cliente/reporte-pdf?desde=${desde}&hasta=${hasta}&tipo=${tipoReporte}&tz=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)}`;
     if (tipoReporte === 'individual') url += `&usuario_id=${userId}`;
 
     window.open(url, '_blank');

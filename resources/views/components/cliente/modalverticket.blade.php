@@ -355,6 +355,35 @@
 
 <script>
 // ── Utilidades ──────────────────────────────────────────
+// ── Formato fecha y hora: 'aaaa-mm-dd HH:MM:SS' → 'dd/mm/aaaa HH:MM (UTC+/-offset)' ──
+function fmtFechaVtk(str) {
+    if (!str) return null;
+    let date;
+    if (String(str).includes('Z') || String(str).match(/[+-]\d{2}:?\d{2}$/)) {
+        date = new Date(str);
+    } else {
+        // Asumimos que viene del servidor en America/Lima (UTC-5)
+        const isoStr = String(str).replace(' ', 'T');
+        date = new Date(isoStr + '-05:00');
+    }
+    if (isNaN(date.getTime())) return str;
+    
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    const offsetMin = date.getTimezoneOffset();
+    const sign = offsetMin > 0 ? '-' : '+';
+    const absOffset = Math.abs(offsetMin);
+    const offsetHours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+    const offsetMinutes = String(absOffset % 60).padStart(2, '0');
+    const localOffsetStr = `UTC${sign}${offsetHours}:${offsetMinutes}`;
+    
+    return `${day}/${month}/${year} ${hours}:${minutes} (${localOffsetStr})`;
+}
+
 function vtkFill(id, val) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -491,10 +520,10 @@ function vtk_render(t) {
     vtkFill('vtk-problema',    t.problema);
 
     // Fechas
-    document.getElementById('vtk-f-creado').textContent = t.created_at?.substring(0,10)        || '—';
-    document.getElementById('vtk-f-prog').textContent   = t.fecha_programado?.substring(0,10)  || '—';
-    document.getElementById('vtk-f-proc').textContent   = t.fecha_en_proceso?.substring(0,10)  || '—';
-    document.getElementById('vtk-f-res').textContent    = t.fecha_resuelto?.substring(0,10)    || '—';
+    document.getElementById('vtk-f-creado').textContent = fmtFechaVtk(t.created_at)        || '—';
+    document.getElementById('vtk-f-prog').textContent   = fmtFechaVtk(t.fecha_programado)  || '—';
+    document.getElementById('vtk-f-proc').textContent   = fmtFechaVtk(t.fecha_en_proceso)  || '—';
+    document.getElementById('vtk-f-res').textContent    = fmtFechaVtk(t.fecha_resuelto)    || '—';
 
     // Evidencias
     vtkRenderArchivos('vtk-evidencia', t.evidencias ?? []);
@@ -522,7 +551,7 @@ function vtk_render(t) {
         if (comentarios.length >= 1) {
             vtkShow('vtk-sec-com-ini');
             vtkFill('vtk-com-ini', comentarios[0].comentario);
-            document.getElementById('vtk-com-ini-fecha').textContent = comentarios[0].created_at?.substring(0,10) ?? '';
+            document.getElementById('vtk-com-ini-fecha').textContent = fmtFechaVtk(comentarios[0].created_at) ?? '';
             hayAlgo = true;
         }
         if (reportes.length >= 1) {
@@ -534,7 +563,7 @@ function vtk_render(t) {
             vtkShow('vtk-sec-com-fin');
             const ultimo = comentarios[comentarios.length - 1];
             vtkFill('vtk-com-fin', ultimo.comentario);
-            document.getElementById('vtk-com-fin-fecha').textContent = ultimo.created_at?.substring(0,10) ?? '';
+            document.getElementById('vtk-com-fin-fecha').textContent = fmtFechaVtk(ultimo.created_at) ?? '';
             hayAlgo = true;
         }
         if (hayAlgo) vtkShow('vtk-sec-proceso');

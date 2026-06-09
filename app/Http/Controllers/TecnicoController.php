@@ -203,7 +203,7 @@ class TecnicoController extends Controller
             'updated_at'          => now(),
         ]);
 
-        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoProgramado);
+        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoProgramado, (int) $estadoPendiente);
 
         return response()->json(['ok' => true]);
     }
@@ -410,7 +410,7 @@ class TecnicoController extends Controller
         DB::table('ticket')->where('id_ticket', $id)->update($update);
 
         if (isset($update['id_estado'])) {
-            NotificacionService::cambioEstadoUsuario((int) $id, (int) $update['id_estado']);
+            NotificacionService::cambioEstadoUsuario((int) $id, (int) $update['id_estado'], (int) $ticket->id_estado);
         }
 
         return response()->json(['ok' => true]);
@@ -464,7 +464,7 @@ class TecnicoController extends Controller
                 'updated_at'       => now(),
             ]);
 
-            NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso);
+            NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso, (int) $ticket->id_estado);
         }
 
         return response()->json(['ok' => true]);
@@ -534,7 +534,7 @@ class TecnicoController extends Controller
                     'updated_at'       => now(),
                 ]);
 
-                NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso);
+                NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoEnProceso, (int) $ticket->id_estado);
             }
 
             return response()->json(['ok' => true]);
@@ -565,6 +565,7 @@ class TecnicoController extends Controller
             return response()->json(['ok' => false, 'message' => 'No puedes cerrar el ticket sin subir el reporte técnico.'], 422);
         }
 
+        $ticket = DB::table('ticket')->where('id_ticket', $id)->first();
         $estadoCerrado = DB::table('estado_ticket')
             ->where('nombre_estado', 'CERRADO')->value('id_estado');
 
@@ -574,7 +575,7 @@ class TecnicoController extends Controller
             'updated_at'     => now(),
         ]);
 
-        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCerrado);
+        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCerrado, (int) $ticket->id_estado);
 
         return response()->json(['ok' => true]);
     }
@@ -613,7 +614,7 @@ class TecnicoController extends Controller
             'updated_at' => now(),
         ]);
 
-        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCancelado);
+        NotificacionService::cambioEstadoUsuario((int) $id, (int) $estadoCancelado, (int) $ticket->id_estado);
 
         return response()->json(['ok' => true]);
     }

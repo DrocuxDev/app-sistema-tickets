@@ -227,7 +227,7 @@ function tecDescargarReporte() {
         return;
     }
 
-    let url = `/tecnico/reporte-pdf?desde=${desde}&hasta=${hasta}&tipo=${tecTipoReporte}`;
+    let url = `/tecnico/reporte-pdf?desde=${desde}&hasta=${hasta}&tipo=${tecTipoReporte}&tz=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)}`;
     if (clienteId)  url += `&cliente_id=${clienteId}`;
     if (tecTipoReporte === 'individual' && userId) url += `&usuario_id=${userId}`;
 

@@ -412,6 +412,35 @@
 </style>
 
 <script>
+// ── Formato fecha y hora: 'aaaa-mm-dd HH:MM:SS' → 'dd/mm/aaaa HH:MM (UTC+/-offset)' ──
+function fmtFecha(str) {
+    if (!str) return null;
+    let date;
+    if (String(str).includes('Z') || String(str).match(/[+-]\d{2}:?\d{2}$/)) {
+        date = new Date(str);
+    } else {
+        // Asumimos que viene del servidor en America/Lima (UTC-5)
+        const isoStr = String(str).replace(' ', 'T');
+        date = new Date(isoStr + '-05:00');
+    }
+    if (isNaN(date.getTime())) return str;
+    
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    const offsetMin = date.getTimezoneOffset();
+    const sign = offsetMin > 0 ? '-' : '+';
+    const absOffset = Math.abs(offsetMin);
+    const offsetHours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+    const offsetMinutes = String(absOffset % 60).padStart(2, '0');
+    const localOffsetStr = `UTC${sign}${offsetHours}:${offsetMinutes}`;
+    
+    return `${day}/${month}/${year} ${hours}:${minutes} (${localOffsetStr})`;
+}
+
 // ── Utilidades ──
 function dtkFill(id, val) {
     const el = document.getElementById(id);
@@ -609,10 +638,10 @@ function openModal(idx) {
     dtkFill('mAsunto',     t.asunto);
     dtkFill('mProblema',   t.problema);
 
-    dtkFill('mFechaCreado', t.created_at?.substring(0,10)        ?? null);
-    dtkFill('mFechaProg',   t.fecha_programado?.substring(0,10)  ?? null);
-    dtkFill('mFechaProc',   t.fecha_en_proceso?.substring(0,10)  ?? null);
-    dtkFill('mFechaRes',    t.fecha_resuelto?.substring(0,10)    ?? null);
+    dtkFill('mFechaCreado', fmtFecha(t.created_at));
+    dtkFill('mFechaProg',   fmtFecha(t.fecha_programado));
+    dtkFill('mFechaProc',   fmtFecha(t.fecha_en_proceso));
+    dtkFill('mFechaRes',    fmtFecha(t.fecha_resuelto));
 
     // ── Evidencias (siempre visible) ──
     renderEvidencias('mEvidencia', t.evidencias ?? []);
@@ -646,7 +675,7 @@ function openModal(idx) {
             secShow('sec-comentario-inicial');
             dtkFill('mComentarioInicial', comentarios[0].comentario);
             document.getElementById('mComentarioInicialFecha').textContent =
-                comentarios[0].created_at?.substring(0,10) ?? '';
+                comentarios[0].created_at ? fmtFecha(comentarios[0].created_at) : '';
             hayAlgo = true;
         }
 
@@ -663,7 +692,7 @@ function openModal(idx) {
             const ultimo = comentarios[comentarios.length - 1];
             dtkFill('mComentarioFinal', ultimo.comentario);
             document.getElementById('mComentarioFinalFecha').textContent =
-                ultimo.created_at?.substring(0,10) ?? '';
+                ultimo.created_at ? fmtFecha(ultimo.created_at) : '';
             hayAlgo = true;
         }
 

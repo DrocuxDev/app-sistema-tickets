@@ -278,6 +278,14 @@ const MT_TICKETS = @json($tickets->values());
 let mtFiltroActual = 'todos';
 let mtBusqueda = '';
 
+// ── Formato fecha: 'aaaa-mm-dd ...' → 'dd/mm/aaaa' ──
+function fmtFecha(str) {
+    if (!str) return '—';
+    const d = String(str).substring(0, 10).split('-');
+    if (d.length !== 3) return str;
+    return d[2] + '/' + d[1] + '/' + d[0];
+}
+
 function badgeEstado(estado) {
     const map = {
         'PENDIENTE':  'background:#F5F3FF;color:#7c3aed;border:1px solid #c4b5fd;',
@@ -309,9 +317,7 @@ function mtRender() {
         const prioStyle = t.prioridad_color
             ? `background:${t.prioridad_color}22;color:${t.prioridad_color};border:1px solid ${t.prioridad_color}55;`
             : 'background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;';
-        const fecha = t.created_at
-            ? new Date(t.created_at).toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})
-            : '—';
+        const fecha = fmtFecha(t.created_at);
         return `
 <div class="tk-tcard">
     <div class="tk-tcard-head">
@@ -411,9 +417,7 @@ function renderDisponibles() {
         const prioStyle  = t.prioridad_color
             ? `background:${t.prioridad_color}22;color:${t.prioridad_color};border:1px solid ${t.prioridad_color}55;`
             : 'background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;';
-        const fecha = t.created_at
-            ? new Date(t.created_at).toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})
-            : '—';
+        const fecha = fmtFecha(t.created_at);
 
         return `
 <div class="tk-tcard" id="disp-card-${t.id_ticket}">

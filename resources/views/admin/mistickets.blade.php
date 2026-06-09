@@ -189,6 +189,14 @@ const MT_TICKETS = @json($tickets->values());
 let mtFiltroActual = 'todos';
 let mtBusqueda     = '';
 
+// ── Formato fecha: 'aaaa-mm-dd ...' → 'dd/mm/aaaa' ──
+function fmtFecha(str) {
+    if (!str) return '—';
+    const d = String(str).substring(0, 10).split('-');
+    if (d.length !== 3) return str;
+    return d[2] + '/' + d[1] + '/' + d[0];
+}
+
 // ── Render ────────────────────────────────────────────────────────
 function mtRender() {
     const tbody = document.getElementById('mt-tbody');
@@ -255,7 +263,7 @@ function mtRender() {
                             t.estado === 'CERRADO' ? 'badge-cerrado' : 'badge-cancelado';
 
         const prioColor = t.prioridad_color ? `background:${t.prioridad_color}20;color:${t.prioridad_color};border:1px solid ${t.prioridad_color}40` : '';
-        const fecha = t.created_at ? new Date(t.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+        const fecha = fmtFecha(t.created_at);
 
         return `
         <tr>

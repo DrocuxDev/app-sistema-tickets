@@ -364,6 +364,14 @@ let filtroClienteActual = 'all';
 let filtroUsuarioActual = 'all';
 let viniendoDeUsuario = false;
 
+// ── Formato fecha: 'aaaa-mm-dd ...' → 'dd/mm/aaaa' ──
+function fmtFecha(str) {
+    if (!str) return '—';
+    const d = String(str).substring(0, 10).split('-');
+    if (d.length !== 3) return str;
+    return d[2] + '/' + d[1] + '/' + d[0];
+}
+
 // ─── FILTROS CLIENTES ─────────────────────────────────────────
 function filtrarClientes(btn) {
     document.querySelectorAll('#panel-clientes .filter-toggle').forEach(b => b.classList.remove('active'));
@@ -734,7 +742,7 @@ function renderTickets(tickets, filtroInicial) {
                             t.estado === 'EN PROCESO' ? 'badge-proceso' :
                             t.estado === 'CERRADO' ? 'badge-cerrado' : 'badge-cancelado';
         const prioColor = t.prioridad_color ? `background:${t.prioridad_color}20;color:${t.prioridad_color};border:1px solid ${t.prioridad_color}40` : '';
-        const fecha = t.created_at ? new Date(t.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+        const fecha = fmtFecha(t.created_at);
 
         const btnAsignar = t.estado === 'PENDIENTE' ? `<button class="btn-action-sm" onclick="abrirAsignar(${t.id_ticket}, this)">🔧 Asignar</button>` : '';
         const btnCancelar = t.estado === 'PROGRAMADO' ? `<button class="btn-action-sm btn-deactivate" onclick="cancelarTicket(${t.id_ticket})">❌ Cancelar</button>` : '';
@@ -843,7 +851,7 @@ function renderTicketsGlobal(tickets, filtroInicial) {
                             t.estado === 'EN PROCESO' ? 'badge-proceso' :
                             t.estado === 'CERRADO' ? 'badge-cerrado' : 'badge-cancelado';
         const prioColor = t.prioridad_color ? `background:${t.prioridad_color}20;color:${t.prioridad_color};border:1px solid ${t.prioridad_color}40` : '';
-        const fecha = t.created_at ? new Date(t.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+        const fecha = fmtFecha(t.created_at);
 
         const btnAsignar = t.estado === 'PENDIENTE' ? `<button class="btn-action-sm" onclick="abrirAsignar(${t.id_ticket}, this, ${t.id_usuario})">🔧 Asignar</button>` : '';
         const btnCancelar = t.estado === 'PROGRAMADO' ? `<button class="btn-action-sm btn-deactivate" onclick="cancelarTicket(${t.id_ticket}, ${t.id_usuario})">❌ Cancelar</button>` : '';

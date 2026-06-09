@@ -400,6 +400,14 @@ input[type="date"]::-webkit-calendar-picker-indicator { opacity:.5; cursor:point
     const tickets = @json($tickets->values());
     let filtro = 'all';
 
+    // ── Formato fecha: 'aaaa-mm-dd ...' → 'dd/mm/aaaa' ──
+    function fmtFecha(str) {
+        if (!str) return '—';
+        const d = String(str).substring(0, 10).split('-');
+        if (d.length !== 3) return str;
+        return d[2] + '/' + d[1] + '/' + d[0];
+    }
+
     function clearFilters() {
         document.getElementById('searchInput').value = '';
         document.getElementById('dateFilter').value = '';
@@ -470,7 +478,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { opacity:.5; cursor:point
                 <td class="tk-asunto-cell"><span title="${t.asunto}">${t.asunto}</span></td>
                 <td>${badge(t.estado)}</td>
                 <td>${priorityBadge(t.prioridad_nombre, t.prioridad_color)}</td>
-                <td style="color:#64748b;font-size:12.5px;">${(t.created_at ?? '').substring(0,10)}</td>
+                <td style="color:#64748b;font-size:12.5px;">${fmtFecha(t.created_at)}</td>
                 <td style="text-align:center;">
                     <button class="btn-detalle" onclick="openModal(${t._idx})">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>

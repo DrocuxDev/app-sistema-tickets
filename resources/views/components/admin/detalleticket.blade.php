@@ -415,6 +415,35 @@
 }
 </style>
 <script>
+// ── Formato fecha y hora: 'aaaa-mm-dd HH:MM:SS' → 'dd/mm/aaaa HH:MM (UTC+/-offset)' ──
+function fmtFecha(str) {
+    if (!str) return null;
+    let date;
+    if (String(str).includes('Z') || String(str).match(/[+-]\d{2}:?\d{2}$/)) {
+        date = new Date(str);
+    } else {
+        // Asumimos que viene del servidor en America/Lima (UTC-5)
+        const isoStr = String(str).replace(' ', 'T');
+        date = new Date(isoStr + '-05:00');
+    }
+    if (isNaN(date.getTime())) return str;
+    
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    const offsetMin = date.getTimezoneOffset();
+    const sign = offsetMin > 0 ? '-' : '+';
+    const absOffset = Math.abs(offsetMin);
+    const offsetHours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+    const offsetMinutes = String(absOffset % 60).padStart(2, '0');
+    const localOffsetStr = `UTC${sign}${offsetHours}:${offsetMinutes}`;
+    
+    return `${day}/${month}/${year} ${hours}:${minutes} (${localOffsetStr})`;
+}
+
 function secShow(id) {
     const el = document.getElementById(id);
     if (el) el.style.display = 'block';
@@ -611,10 +640,10 @@ function openModalConDatos(t) {
     dtkFill('mAsunto',     t.asunto);
     dtkFill('mProblema',   t.problema);
 
-    dtkFill('mFechaCreado', t.created_at?.substring(0,10)       ?? null);
-    dtkFill('mFechaProg',   t.fecha_programado?.substring(0,10) ?? null);
-    dtkFill('mFechaProc',   t.fecha_en_proceso?.substring(0,10) ?? null);
-    dtkFill('mFechaRes',    t.fecha_resuelto?.substring(0,10)   ?? null);
+    dtkFill('mFechaCreado', fmtFecha(t.created_at));
+    dtkFill('mFechaProg',   fmtFecha(t.fecha_programado));
+    dtkFill('mFechaProc',   fmtFecha(t.fecha_en_proceso));
+    dtkFill('mFechaRes',    fmtFecha(t.fecha_resuelto));
 
     renderEvidencias('mEvidencia', t.evidencias ?? []);
 
@@ -632,7 +661,7 @@ function openModalConDatos(t) {
         if (comentarios.length >= 1) {
             secShow('sec-comentario-inicial');
             dtkFill('mComentarioInicial', comentarios[0].comentario);
-            document.getElementById('mComentarioInicialFecha').textContent = comentarios[0].created_at?.substring(0,10) ?? '';
+            document.getElementById('mComentarioInicialFecha').textContent = fmtFecha(comentarios[0].created_at) ?? '';
             hayAlgo = true;
         }
         if (reportes.length >= 1) { secShow('sec-reporte'); renderReporte(reportes); hayAlgo = true; }
@@ -640,7 +669,7 @@ function openModalConDatos(t) {
             secShow('sec-comentario-final');
             const ultimo = comentarios[comentarios.length - 1];
             dtkFill('mComentarioFinal', ultimo.comentario);
-            document.getElementById('mComentarioFinalFecha').textContent = ultimo.created_at?.substring(0,10) ?? '';
+            document.getElementById('mComentarioFinalFecha').textContent = fmtFecha(ultimo.created_at) ?? '';
             hayAlgo = true;
         }
         if (hayAlgo) secShow('sec-proceso');

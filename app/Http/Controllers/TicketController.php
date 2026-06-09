@@ -181,6 +181,15 @@ if ($validator->fails()) {
 
     NotificacionService::nuevoTicketCliente($ticket, $usuario);
 
+    // Enviar email de confirmación al usuario
+    try {
+        \Mail::to($usuario->correo)->send(
+            new \App\Mail\TicketCreado($ticket, $usuario)
+        );
+    } catch (\Exception $e) {
+        \Log::error('Error enviando email de ticket creado: ' . $e->getMessage());
+    }
+
     return response()->json([
         'ok'      => true,
         'message' => 'Ticket creado correctamente.',

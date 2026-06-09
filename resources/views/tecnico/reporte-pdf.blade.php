@@ -1,3 +1,24 @@
+@php
+if (!function_exists('formatUserDate')) {
+    function formatUserDate($dateStr, $userTz = null, $includeALas = true) {
+        if (!$dateStr) return '—';
+        if (!$userTz) {
+            $userTz = request()->input('tz');
+        }
+        try {
+            new \DateTimeZone($userTz);
+        } catch (\Exception $e) {
+            $userTz = config('app.timezone') ?: 'America/Lima';
+        }
+        $date = \Carbon\Carbon::parse($dateStr)->setTimezone($userTz);
+        $offset = $date->format('P');
+        if ($offset === 'Z') $offset = '+00:00';
+        
+        $format = $includeALas ? 'd/m/Y \a \l\a\s H:i' : 'd/m/Y H:i';
+        return $date->format($format) . ' (UTC' . $offset . ')';
+    }
+}
+@endphp
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -128,7 +149,7 @@ body { font-family: DejaVu Sans, sans-serif; font-size:10px; color:#111; backgro
       </td>
       <td class="hdr-r">
         <div class="doc-t">REPORTE DEL TÉCNICO</div>
-        <div class="doc-s">Generado el {{ now()->format('d/m/Y') }} a las {{ now()->format('H:i') }}</div>
+        <div class="doc-s">Generado el {{ formatUserDate(now()) }}</div>
       </td>
     </tr>
   </table>
@@ -304,7 +325,7 @@ body { font-family: DejaVu Sans, sans-serif; font-size:10px; color:#111; backgro
                 <span style="font-family:monospace;">{{ $t->codigo_ticket }}</span>
               </td>
               <td class="tc-fecha">
-                Creado el <strong>{{ \Carbon\Carbon::parse($t->created_at)->format('d/m/Y \a \l\a\s H:i') }}</strong>
+                Creado el <strong>{{ formatUserDate($t->created_at) }}</strong>
               </td>
             </tr>
           </table>
@@ -343,15 +364,15 @@ body { font-family: DejaVu Sans, sans-serif; font-size:10px; color:#111; backgro
                 <span class="sub-val">{{ $tecnico->nombre }} {{ $tecnico->apellido_paterno }}</span>
                 @if($t->fecha_programado)
                   <span class="sub-lbl" style="margin-top:6px;">Programado</span>
-                  <span class="sub-val">{{ \Carbon\Carbon::parse($t->fecha_programado)->format('d/m/Y') }}</span>
+                  <span class="sub-val">{{ formatUserDate($t->fecha_programado) }}</span>
                 @endif
                 @if($t->fecha_en_proceso)
                   <span class="sub-lbl" style="margin-top:6px;">En proceso desde</span>
-                  <span class="sub-val">{{ \Carbon\Carbon::parse($t->fecha_en_proceso)->format('d/m/Y') }}</span>
+                  <span class="sub-val">{{ formatUserDate($t->fecha_en_proceso) }}</span>
                 @endif
                 @if($t->fecha_resuelto)
                   <span class="sub-lbl" style="margin-top:6px;">Resuelto el</span>
-                  <span class="sub-val">{{ \Carbon\Carbon::parse($t->fecha_resuelto)->format('d/m/Y') }}</span>
+                  <span class="sub-val">{{ formatUserDate($t->fecha_resuelto) }}</span>
                 @endif
               </td>
             </tr>
@@ -369,7 +390,7 @@ body { font-family: DejaVu Sans, sans-serif; font-size:10px; color:#111; backgro
 <table class="ftr" style="width:100%;border-collapse:collapse;">
   <tr>
     <td class="ftr-l">JHARDSYSTEX &mdash; Soluciones Especializadas de TI &mdash; Documento confidencial</td>
-    <td class="ftr-r">{{ $tecnico->nombre }} {{ $tecnico->apellido_paterno }} &bull; Cód: {{ $tecnico->codigo_tecnico }} &bull; {{ now()->format('d/m/Y H:i') }}</td>
+    <td class="ftr-r">{{ $tecnico->nombre }} {{ $tecnico->apellido_paterno }} &bull; Cód: {{ $tecnico->codigo_tecnico }} &bull; {{ formatUserDate(now(), null, false) }}</td>
   </tr>
 </table>
 

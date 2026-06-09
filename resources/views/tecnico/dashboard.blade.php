@@ -259,6 +259,14 @@ function renderStatsUsuarios(usuarios) {
         <div class="stat-card" style="border-left:4px solid #7c3aed"><div class="stat-icon" style="background:#ede9fe;color:#7c3aed">⏳</div><div class="stat-info"><span class="stat-label">Total pendientes</span><span class="stat-number">${totalTickets}</span></div></div>`;
 }
 
+// ── Formato fecha: 'aaaa-mm-dd ...' → 'dd/mm/aaaa' ──
+function fmtFecha(str) {
+    if (!str) return '—';
+    const d = String(str).substring(0, 10).split('-');
+    if (d.length !== 3) return str;
+    return d[2] + '/' + d[1] + '/' + d[0];
+}
+
 // ── Render Tickets ─────────────────────────────────────────────
 function renderTickets(tickets) {
     const grid = document.getElementById('grid-tickets');
@@ -280,8 +288,7 @@ function renderTickets(tickets) {
     grid.innerHTML = tickets.map(t => {
         const prioColor = t.prioridad_color
             ? `background:${t.prioridad_color}20;color:${t.prioridad_color};border:1px solid ${t.prioridad_color}40` : '';
-        const fecha = t.created_at
-            ? new Date(t.created_at).toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+        const fecha = fmtFecha(t.created_at);
 
         return `
         <div class="ticket-card" id="ticket-card-${t.id_ticket}">
