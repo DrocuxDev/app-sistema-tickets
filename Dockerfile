@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev libpng-dev libjpeg-dev libfreetype6-dev libzip-dev libonig-dev \
     zip unzip curl git python3 nginx supervisor \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql pgsql zip opcache bcmath mbstring gd \
+    && docker-php-ext-install pdo pdo_pgsql pgsql pdo_mysql mysqli zip opcache bcmath mbstring gd \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Node.js 20
