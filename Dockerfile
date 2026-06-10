@@ -2,9 +2,10 @@ FROM php:8.2-fpm
 
 # 1. Sistema + extensiones PHP + python3 + nginx + supervisor
 RUN apt-get update && apt-get install -y \
-    libpq-dev libpng-dev libjpeg-dev libzip-dev libonig-dev \
+    libpq-dev libpng-dev libjpeg-dev libfreetype6-dev libzip-dev libonig-dev \
     zip unzip curl git python3 nginx supervisor \
-    && docker-php-ext-install pdo pdo_pgsql pgsql zip opcache bcmath mbstring \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql pgsql zip opcache bcmath mbstring gd \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Node.js 20
