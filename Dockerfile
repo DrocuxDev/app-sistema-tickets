@@ -17,6 +17,7 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # 4. Nginx + Supervisor config
 COPY docker/nginx/default.conf /etc/nginx/sites-available/default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN mkdir -p /var/log/supervisor
 
