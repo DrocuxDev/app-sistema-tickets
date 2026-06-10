@@ -2,7 +2,7 @@
 set -e
 
 echo "==> Laravel startup"
-cd /var/www/html
+cd /app
 
 # 1. Parsear DATABASE_URL si las vars individuales no vienen
 if [ -n "$DATABASE_URL" ] && [ -z "$DB_HOST" ]; then
@@ -25,7 +25,7 @@ env_vars = {
     "APP_ENV":           os.environ.get("APP_ENV", "production"),
     "APP_KEY":           os.environ.get("APP_KEY", ""),
     "APP_DEBUG":         os.environ.get("APP_DEBUG", "false"),
-    "APP_URL":           os.environ.get("APP_URL", "https://ticketeria-app.onrender.com"),
+    "APP_URL":           os.environ.get("APP_URL", "http://localhost:10000"),
     "LOG_CHANNEL":       "stderr",
     "LOG_LEVEL":         os.environ.get("LOG_LEVEL", "error"),
     "DB_CONNECTION":     "pgsql",
@@ -55,7 +55,7 @@ for k, v in env_vars.items():
         v = '"' + v.replace('"', '\\"') + '"'
     lines.append(f"{k}={v}")
 
-with open("/var/www/html/.env", "w") as f:
+with open("/app/.env", "w") as f:
     f.write("\n".join(lines) + "\n")
 
 print("==> .env written OK")
@@ -73,7 +73,7 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-[ ! -L /var/www/html/public/storage ] && php artisan storage:link 2>/dev/null || true
+[ ! -L /app/public/storage ] && php artisan storage:link 2>/dev/null || true
 
 # 4. Migraciones + seeder en background
 (
@@ -90,6 +90,6 @@ php artisan view:cache
     php artisan db:seed --class=AdminUserSeeder --force && echo "==> [bg] Seed OK" || echo "==> [bg] Seed skipped/failed"
 ) &
 
-# 5. Arrancar Apache
-echo "==> Starting Apache on port 10000..."
-exec apache2-foreground
+# 5. Arrancar PHP-FPM + Nginx via Supervisor
+echo "==> Starting PHP-FPM + Nginx via Supervisor on port 10000..."
+exec supervisord -c /etc/supervisor/conf.d/supervisord.conf
