@@ -7,13 +7,14 @@ cd /var/www/html
 # 1. Parsear DATABASE_URL si las vars individuales no vienen
 if [ -n "$DATABASE_URL" ] && [ -z "$DB_HOST" ]; then
     echo "==> Parsing DATABASE_URL..."
-    DB_HOST=$(echo "$DATABASE_URL"     | sed -E 's|.*@([^:/]+).*|\1|')
-    DB_PORT=$(echo "$DATABASE_URL"     | sed -E 's|.*:([0-9]+)/[^/?].*|\1|')
-    DB_DATABASE=$(echo "$DATABASE_URL" | sed -E 's|.*/([^?]+)(\?.*)?$|\1|')
-    DB_USERNAME=$(echo "$DATABASE_URL" | sed -E 's|[a-z]+://([^:]+):.*|\1|')
-    DB_PASSWORD=$(echo "$DATABASE_URL" | sed -E 's|[a-z]+://[^:]+:([^@]+)@.*|\1|')
-    DB_SSLMODE=require
-    echo "==> HOST=${DB_HOST} PORT=${DB_PORT} DB=${DB_DATABASE} USER=${DB_USERNAME}"
+    DB_CONNECTION=$(echo "$DATABASE_URL" | sed -E 's|([a-z]+)://.*|\1|' | sed 's/mysql2/mysql/')
+    DB_HOST=$(echo "$DATABASE_URL"       | sed -E 's|.*@([^:/]+).*|\1|')
+    DB_PORT=$(echo "$DATABASE_URL"       | sed -E 's|.*:([0-9]+)/[^/?].*|\1|')
+    DB_DATABASE=$(echo "$DATABASE_URL"   | sed -E 's|.*/([^?]+)(\?.*)?$|\1|')
+    DB_USERNAME=$(echo "$DATABASE_URL"   | sed -E 's|[a-z]+://([^:]+):.*|\1|')
+    DB_PASSWORD=$(echo "$DATABASE_URL"   | sed -E 's|[a-z]+://[^:]+:([^@]+)@.*|\1|')
+    export DB_CONNECTION DB_HOST DB_PORT DB_DATABASE DB_USERNAME DB_PASSWORD
+    echo "==> CONNECTION=${DB_CONNECTION} HOST=${DB_HOST} PORT=${DB_PORT} DB=${DB_DATABASE} USER=${DB_USERNAME}"
 fi
 
 # 2. Escribir .env
@@ -28,13 +29,12 @@ env_vars = {
     "APP_URL":           os.environ.get("APP_URL", "https://ticketeria-app.onrender.com"),
     "LOG_CHANNEL":       "stderr",
     "LOG_LEVEL":         os.environ.get("LOG_LEVEL", "error"),
-    "DB_CONNECTION":     "pgsql",
+    "DB_CONNECTION":     os.environ.get("DB_CONNECTION", "mysql"),
     "DB_HOST":           os.environ.get("DB_HOST", ""),
-    "DB_PORT":           os.environ.get("DB_PORT", "5432"),
+    "DB_PORT":           os.environ.get("DB_PORT", "3306"),
     "DB_DATABASE":       os.environ.get("DB_DATABASE", ""),
     "DB_USERNAME":       os.environ.get("DB_USERNAME", ""),
     "DB_PASSWORD":       os.environ.get("DB_PASSWORD", ""),
-    "DB_SSLMODE":        os.environ.get("DB_SSLMODE", "require"),
     "CACHE_DRIVER":      os.environ.get("CACHE_DRIVER", "file"),
     "SESSION_DRIVER":    "cookie",
     "QUEUE_CONNECTION":  os.environ.get("QUEUE_CONNECTION", "sync"),
@@ -90,6 +90,6 @@ php artisan view:cache
     php artisan db:seed --class=AdminUserSeeder --force && echo "==> [bg] Seed OK" || echo "==> [bg] Seed skipped/failed"
 ) &
 
-# 5. Arrancar Apache
+# 5. Arrancar nginx + php-fpm via supervisor
 echo "==> Starting nginx + php-fpm via supervisor..."
 exec supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
