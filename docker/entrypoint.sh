@@ -91,5 +91,5 @@ php artisan view:cache
 ) &
 
 # 5. Arrancar Apache
-echo "==> Starting Apache on port 10000..."
-exec apache2-foreground
+echo "==> Starting nginx + php-fpm via supervisor..."
+exec supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
