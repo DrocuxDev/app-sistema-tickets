@@ -1,14 +1,18 @@
 [providers]
-providers = ["...", "php", "node"]
+# Explicitly use only PHP and Node providers, bypassing the Dockerfile provider
+providers = ["php", "node"]
 
 [variables]
 NIXPACKS_PHP_ROOT_DIR = "/app/public"
 
 [phases.setup]
+# Explicitly list packages to prevent default php81 from conflicting with our custom PHP build
 nixPkgs = [
-  "...",
   "'(php81.withExtensions (pe: pe.enabled ++ [ pe.all.gd pe.all.dom pe.all.xml pe.all.mbstring ]))'",
-  "nodejs"
+  "php81Packages.composer",
+  "nginx",
+  "nodejs",
+  "git"
 ]
 
 [phases.install]
