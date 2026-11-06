@@ -9,14 +9,14 @@ class NotificacionService
 {
     public static function nuevoTicketCliente(object $ticket, object $usuario): void
     {
-        $nombre = trim(($usuario->nombre ?? '') . ' ' . ($usuario->apellido_paterno ?? ''));
+        $nombre = trim(($usuario->nombre ?? '').' '.($usuario->apellido_paterno ?? ''));
 
         // Notificar al cliente
         Notificacion::create([
             'id_cliente' => $ticket->id_cliente,
-            'id_ticket'  => $ticket->id_ticket,
-            'tipo'       => 'nuevo_ticket',
-            'mensaje'    => "{$nombre} creó el ticket {$ticket->codigo_ticket}",
+            'id_ticket' => $ticket->id_ticket,
+            'tipo' => 'nuevo_ticket',
+            'mensaje' => "{$nombre} creó el ticket {$ticket->codigo_ticket}",
         ]);
 
         // Notificar a todos los técnicos activos
@@ -24,9 +24,9 @@ class NotificacionService
         foreach ($tecnicos as $idTecnico) {
             Notificacion::create([
                 'id_tecnico' => $idTecnico,
-                'id_ticket'  => $ticket->id_ticket,
-                'tipo'       => 'nuevo_ticket',
-                'mensaje'    => "Nuevo ticket de {$nombre}: {$ticket->codigo_ticket}",
+                'id_ticket' => $ticket->id_ticket,
+                'tipo' => 'nuevo_ticket',
+                'mensaje' => "Nuevo ticket de {$nombre}: {$ticket->codigo_ticket}",
             ]);
         }
     }
@@ -34,7 +34,7 @@ class NotificacionService
     public static function cambioEstadoUsuario(int $ticketId, int $nuevoEstadoId, ?int $estadoAnteriorId = null): void
     {
         $ticket = DB::table('ticket')->where('id_ticket', $ticketId)->first();
-        if (!$ticket) {
+        if (! $ticket) {
             return;
         }
 
@@ -50,16 +50,16 @@ class NotificacionService
 
         // Obtener el estado NUEVO
         $estado = DB::table('estado_ticket')->where('id_estado', $nuevoEstadoId)->first();
-        if (!$estado) {
+        if (! $estado) {
             return;
         }
 
         Notificacion::create([
             'id_usuario' => $ticket->id_usuario,
-            'id_ticket'  => $ticketId,
-            'id_estado'  => $nuevoEstadoId,
-            'tipo'       => 'cambio_estado',
-            'mensaje'    => "Tu ticket {$ticket->codigo_ticket} cambió a {$estado->nombre_estado}",
+            'id_ticket' => $ticketId,
+            'id_estado' => $nuevoEstadoId,
+            'tipo' => 'cambio_estado',
+            'mensaje' => "Tu ticket {$ticket->codigo_ticket} cambió a {$estado->nombre_estado}",
         ]);
 
         // Enviar email al usuario
@@ -68,7 +68,7 @@ class NotificacionService
             try {
                 \Mail::to($usuario->correo)->send(
                     new \App\Mail\TicketCambioEstado(
-                        (object)[
+                        (object) [
                             'codigo_ticket' => $ticket->codigo_ticket,
                             'asunto' => $ticket->asunto,
                         ],
@@ -78,7 +78,7 @@ class NotificacionService
                     )
                 );
             } catch (\Exception $e) {
-                \Log::error('Error enviando email de cambio estado: ' . $e->getMessage());
+                \Log::error('Error enviando email de cambio estado: '.$e->getMessage());
             }
         }
     }
@@ -86,37 +86,37 @@ class NotificacionService
     public static function asignacionTecnico(int $ticketId, int $idTecnico): void
     {
         $ticket = DB::table('ticket')->where('id_ticket', $ticketId)->first();
-        if (!$ticket) {
+        if (! $ticket) {
             return;
         }
 
         Notificacion::create([
             'id_tecnico' => $idTecnico,
-            'id_ticket'  => $ticketId,
-            'tipo'       => 'asignacion',
-            'mensaje'    => "Se te asignó el ticket {$ticket->codigo_ticket}",
+            'id_ticket' => $ticketId,
+            'tipo' => 'asignacion',
+            'mensaje' => "Se te asignó el ticket {$ticket->codigo_ticket}",
         ]);
     }
 
     public static function marcarLeida(int $idNotificacion): bool
     {
         $tipo = session('tipo');
-        $id   = session('id');
+        $id = session('id');
 
-        if (!$tipo || !$id) {
+        if (! $tipo || ! $id) {
             return false;
         }
 
-        $query = Notificacion::where('id_notificacion', $idNotificacion)->where('leido', false);
+        $query = Notificacion::where('id_notificacion', $idNotificacion)
+            ->where('leido', false);
 
-        match ($tipo) {
-            'cliente' => $query->where('id_cliente', $id),
-            'usuario' => $query->where('id_usuario', $id),
-            'tecnico' => $query->where('id_tecnico', $id),
-            default   => null,
-        };
-
-        if ($tipo === 'admin') {
+        if ($tipo === 'cliente') {
+            $query->where('id_cliente', $id);
+        } elseif ($tipo === 'usuario') {
+            $query->where('id_usuario', $id);
+        } elseif ($tipo === 'tecnico') {
+            $query->where('id_tecnico', $id);
+        } else {
             return false;
         }
 

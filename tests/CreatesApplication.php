@@ -12,6 +12,9 @@ trait CreatesApplication
      */
     public function createApplication(): Application
     {
+        putenv('SESSION_DRIVER=array');
+        putenv('CACHE_DRIVER=array');
+
         $app = require __DIR__.'/../bootstrap/app.php';
 
         $app->make(Kernel::class)->bootstrap();

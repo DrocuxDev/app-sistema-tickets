@@ -20,7 +20,9 @@ Route::get('/', function () {
 Route::post('/register', [RegisterController::class, 'store'])->name('register');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::post('/notificaciones/{id}/leer', [NotificacionController::class, 'marcarLeida'])->name('notificaciones.leer');
+Route::post('/notificaciones/{id}/leer', [NotificacionController::class, 'marcarLeida'])
+    ->middleware('role:cliente,usuario,tecnico')
+    ->name('notificaciones.leer');
 
 // ── Recuperación de contraseña ──
 Route::post('/password/email', [App\Http\Controllers\Auth\PasswordResetController::class, 'sendResetLink'])->name('password.email');
@@ -29,7 +31,7 @@ Route::post('/password/reset', [App\Http\Controllers\Auth\PasswordResetControlle
 
 
 // ===================== 1. CLIENTE (Empresas) =====================
-Route::prefix('cliente')->name('cliente.')->group(function () {
+Route::prefix('cliente')->name('cliente.')->middleware('role:cliente')->group(function () {
     Route::get('/', function () { return redirect()->route('cliente.datos'); });
     Route::get('/datos',         [ClienteController::class, 'datos'])->name('datos');
     Route::post('/datos/update', [ClienteController::class, 'update'])->name('update');
@@ -49,7 +51,7 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
 
 
 // ===================== 2. ADMIN =====================
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
 
     // Toggle estado (activar/desactivar)
     Route::post('/{tipo}/{id}/toggle', [AdminController::class, 'toggleEstado']);
@@ -89,7 +91,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // ===================== 3. TECNICO =====================
-Route::prefix('tecnico')->name('tecnico.')->group(function () {
+Route::prefix('tecnico')->name('tecnico.')->middleware('role:tecnico')->group(function () {
 
     Route::get('/dashboard',   [TecnicoController::class, 'dashboard'])->name('dashboard');
     Route::get('/datos',       [TecnicoController::class, 'datos'])->name('datos');
@@ -110,7 +112,7 @@ Route::prefix('tecnico')->name('tecnico.')->group(function () {
 
 
 // ===================== 4. USUARIO (Personal General) =====================
-Route::prefix('usuario')->name('usuario.')->group(function () {
+Route::prefix('usuario')->name('usuario.')->middleware('role:usuario,admin')->group(function () {
 
     Route::get('/dashboard', [UsuarioController::class, 'dashboard'])->name('dashboard');
     Route::get('/datos',     [UsuarioController::class, 'datos'])->name('datos');
